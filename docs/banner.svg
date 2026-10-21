@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="t d">
+  <title id="t">PC Optimizer</title>
+  <desc id="d">A friendly Windows tool for cleaning up and speeding up your PC.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b2a3f"/>
+      <stop offset="1" stop-color="#4b3850"/>
+    </linearGradient>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffc25a"/>
+      <stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" rx="28" fill="url(#bg)"/>
+  <circle cx="1060" cy="40" r="170" fill="#ffc25a" opacity=".10"/>
+  <circle cx="1130" cy="290" r="120" fill="#178f86" opacity=".28"/>
+  <g transform="translate(96 76) scale(5.5)">
+    <rect width="32" height="32" rx="8" fill="#fff8f1"/>
+    <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#e8d9c8" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)"/>
+  </g>
+  <text x="318" y="152" font-family="Nunito, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" font-size="76" font-weight="800" fill="#f3e6ef" letter-spacing="-1.5">PC Optimizer</text>
+  <text x="320" y="204" font-family="Nunito, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" font-size="30" font-weight="600" fill="#ffc25a">A friendly way to tidy up and speed up your PC.</text>
+  <rect x="320" y="236" width="150" height="10" rx="5" fill="#178f86"/>
+  <rect x="478" y="236" width="60" height="10" rx="5" fill="#ffc25a" opacity=".6"/>
+</svg>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PC Optimizer Setup</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffc25a" />
+        <stop offset="1" stop-color="#ff9d6c" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div id="setup">
+    <aside class="side">
+      <div class="side-glow"></div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#fff8f1" />
+          <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#e8d9c8" stroke-width="3" stroke-linecap="round" />
+          <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" />
+          <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)" />
+        </svg>
+        <span>PC Optimizer</span>
+      </div>
+      <ol class="steps" id="steps"></ol>
+      <div class="side-foot"><span id="ver"></span></div>
+    </aside>
+
+    <main class="main">
+      <div class="titlebar">
+        <div class="drag"></div>
+        <button class="wbtn" id="min" aria-label="Minimise">&#8211;</button>
+        <button class="wbtn close" id="close" aria-label="Close">&#10005;</button>
+      </div>
+      <div id="screen"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

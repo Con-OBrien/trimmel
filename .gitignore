@@ -1,0 +1,16 @@
+# Personal / machine-specific
+.idea/
+.vscode/
+*.user
+
+# Build output
+build/bin/
+installer/build/bin/
+installer/payload/*.exe
+frontend/node_modules/
+frontend/dist/
+frontend/wailsjs/
+installer/frontend/wailsjs/
+
+build/windows/installer/tmp/
+frontend/package.json.md5

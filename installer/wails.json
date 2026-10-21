@@ -1,0 +1,10 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "pcoptimizer-setup",
+  "outputfilename": "PC-Optimizer-Setup",
+  "info": {
+    "companyName": "PC Optimizer",
+    "productName": "PC Optimizer Setup",
+    "productVersion": "0.1.0"
+  }
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PC Optimizer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233b2a3f'/%3E%3Cpath d='M6 22a10 10 0 0 1 15.5-8.3' fill='none' stroke='%23ffc25a' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z' fill='%23ff9d6c'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="app">
+      <nav class="sidebar">
+        <div class="brand">
+          <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffc25a" />
+                <stop offset="1" stop-color="#ff9d6c" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="#3b2a3f" />
+            <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#5a4560" stroke-width="3" stroke-linecap="round" />
+            <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" />
+            <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)" />
+          </svg>
+          <span>PC Optimizer</span>
+        </div>
+        <button class="nav-item active" data-view="overview">Overview</button>
+        <button class="nav-item" data-view="processes">Processes</button>
+        <button class="nav-item" data-view="cleanup">Cleanup</button>
+        <button class="nav-item" data-view="startup">Startup</button>
+        <button class="nav-item" data-view="move">Move apps</button>
+        <button class="nav-item" data-view="oldversions">Old versions</button>
+        <button class="nav-item" data-view="drivers">Drivers</button>
+        <div class="sidebar-foot"><div id="user-status"></div><div id="admin-status"></div></div>
+      </nav>
+      <main id="view"></main>
+    </div>
+    <div id="login" class="login" hidden>
+      <div class="login-card">
+        <svg class="logo logo-lg" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#3b2a3f" />
+          <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#5a4560" stroke-width="3" stroke-linecap="round" />
+          <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" />
+          <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)" />
+        </svg>
+        <h1>PC Optimizer</h1>
+        <p class="muted" id="login-msg">Welcome back. Sign in with Google to get started.</p>
+        <button class="btn primary" id="login-btn">Sign in with Google</button>
+        <button class="btn ghost small" id="login-cancel" hidden>Cancel</button>
+        <p class="error small" id="login-err"></p>
+      </div>
+    </div>
+    <div id="toast" class="toast" hidden></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
