@@ -82,7 +82,7 @@ function renderUser(status: AuthStatus) {
 function showLogin(status: AuthStatus) {
   loginEl.hidden = false
   loginErr.textContent = status.error ?? ""
-  loginMsg.textContent = "Welcome back. Sign in with Google to get started."
+  loginMsg.textContent = "Sign in with your Google account to get started."
   loginBtn.disabled = false
   loginCancel.hidden = true
 }
@@ -98,7 +98,7 @@ loginBtn.addEventListener("click", async () => {
     start(await api.AuthStatus())
   } catch (e) {
     loginErr.textContent = errMsg(e)
-    loginMsg.textContent = "Welcome back. Sign in with Google to get started."
+    loginMsg.textContent = "Sign in with your Google account to get started."
     loginBtn.disabled = false
     loginCancel.hidden = true
   }

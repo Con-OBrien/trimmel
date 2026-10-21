@@ -14,3 +14,4 @@ installer/frontend/wailsjs/
 
 build/windows/installer/tmp/
 frontend/package.json.md5
+.env.local

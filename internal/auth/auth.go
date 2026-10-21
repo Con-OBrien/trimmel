@@ -350,7 +350,9 @@ func randString() string {
 }
 
 func page(title, body string) string {
-	return `<!doctype html><meta charset="utf-8"><title>` + title + `</title>
-<body style="font-family:Segoe UI,sans-serif;background:#111318;color:#e6e8ee;display:grid;place-items:center;height:100vh;margin:0">
-<div style="text-align:center"><h2>` + title + `</h2><p>` + body + `</p></div>`
+	return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>` + title + `</title>
+<body style="font-family:'Segoe UI',system-ui,sans-serif;background:radial-gradient(ellipse at 50% 0%,#ffe9c9 0%,#fff8f1 60%);color:#3a2b3d;display:grid;place-items:center;min-height:100vh;margin:0">
+<div style="text-align:center;background:#fff;border:1px solid #f0e0cf;border-radius:28px;padding:40px 44px;max-width:380px;box-shadow:0 6px 18px rgba(92,56,40,.07)">
+<svg width="64" height="64" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc25a"/><stop offset="1" stop-color="#ff9d6c"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="#3b2a3f"/><path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#5a4560" stroke-width="3" stroke-linecap="round"/><path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/><path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#g)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)"/></svg>
+<h2 style="margin:16px 0 8px">` + title + `</h2><p style="margin:0;color:#86768a">` + body + `</p></div>`
 }

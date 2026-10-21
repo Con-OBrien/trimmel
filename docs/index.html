@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PC Optimizer</title>
+  <meta name="description" content="A friendly Windows tool to free up space, trim slow startups and keep drivers current.">
+  <style>
+    :root { --bg:#fff8f1; --panel:#fff; --line:#f0e0cf; --text:#3a2b3d; --muted:#86768a; --accent:#178f86; --side:#3b2a3f; --honey:#ffc25a; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+    header { background:linear-gradient(135deg,#3b2a3f,#4b3850); color:#f3e6ef; padding:64px 20px; text-align:center; }
+    header img { width:84px; height:84px; border-radius:20px; }
+    h1 { margin:16px 0 8px; font-size:40px; letter-spacing:-.02em; }
+    header p { margin:0 auto; max-width:520px; color:#d9c6d6; font-size:18px; }
+    main { max-width:760px; margin:0 auto; padding:36px 20px 64px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; }
+    .card b { display:block; margin-bottom:4px; }
+    .card span { color:var(--muted); font-size:14px; }
+    a { color:var(--accent); font-weight:600; }
+    .btn { display:inline-block; margin-top:20px; background:var(--honey); color:#3b2a3f; padding:12px 26px; border-radius:999px; text-decoration:none; font-weight:800; }
+    footer { text-align:center; color:var(--muted); font-size:14px; padding-bottom:40px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PC Optimizer</h1>
+    <p>Free up space. Trim slow startups. Keep drivers current. Plain-English explanations and nothing deleted behind your back.</p>
+    <a class="btn" href="https://github.com/Con-OBrien/pcoptimizer">View on GitHub</a>
+  </header>
+  <main>
+    <div class="grid">
+      <div class="card"><b>Cleanup</b><span>See what temp files and caches take up, then tick what goes.</span></div>
+      <div class="card"><b>Startup</b><span>Switch slow launchers off. Fully reversible.</span></div>
+      <div class="card"><b>Move apps</b><span>Shift big programs to another drive and keep them working.</span></div>
+      <div class="card"><b>Drivers</b><span>Signed updates straight from Windows Update.</span></div>
+    </div>
+    <p style="margin-top:32px">PC Optimizer is free, open source software for Windows 10 and 11. Everything runs on your own PC. See the <a href="privacy.html">privacy policy</a> for exactly what is, and is not, collected.</p>
+  </main>
+  <footer>PC Optimizer &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="https://github.com/Con-OBrien/pcoptimizer/issues">Support</a></footer>
+</body>
+</html>

@@ -109,15 +109,23 @@ The installer is its own small Wails app in `installer/`, themed to match PC Opt
 
 PC Optimizer asks for administrator rights at launch (a UAC prompt). It needs them for Windows temp and Windows Update cleanup, startup items for all users, driver installs, and moving apps out of Program Files. Standard accounts need an admin password to start it.
 
-## 🔑 Optional sign-in
+## 🔑 Sign in with Google
 
-Sign-in is off by default. To require Google (or any OpenID Connect provider) before the app unlocks, set it up one of these ways:
+Users just click **Sign in with Google** the first time. After that the app remembers them, so there is nothing to configure. To make that work, the maintainer builds the Google credentials into the app once:
 
-- **Build time:** `wails build -ldflags "-X pcoptimizer/internal/auth.GoogleClientID=<id> -X pcoptimizer/internal/auth.GoogleClientSecret=<secret>"`
-- **Config file:** `%APPDATA%\pcoptimizer\auth.json` with `issuer`, `clientId` and optionally `clientSecret`
-- **Environment:** `PCOPT_OIDC_ISSUER`, `PCOPT_OIDC_CLIENT_ID`, `PCOPT_OIDC_CLIENT_SECRET`
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create an **OAuth client ID** of type **Desktop app**. On the consent screen, add only the `openid`, `email` and `profile` scopes, then set the publishing status to **In production** so anyone with a Google account can sign in.
+2. Create a git-ignored file named `.env.local` next to `build-installer.ps1`:
 
-It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Create a "Desktop app" OAuth client in Google Cloud Console to get an ID.
+   ```
+   PCOPT_GOOGLE_CLIENT_ID=<client id>
+   PCOPT_GOOGLE_CLIENT_SECRET=<client secret>
+   ```
+
+3. Run `.\build-installer.ps1`. The values are compiled into the app. Without a client ID the build has no sign-in and opens straight into the app.
+
+Google issues a secret for desktop apps but does not treat it as confidential, because PKCE protects the flow. Still, keep it out of git.
+
+It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Other OpenID Connect providers work through `%APPDATA%\pcoptimizer\auth.json` (`issuer`, `clientId`, optional `clientSecret`) or the `PCOPT_OIDC_ISSUER`, `PCOPT_OIDC_CLIENT_ID` and `PCOPT_OIDC_CLIENT_SECRET` environment variables.
 
 > Sign-in is a convenience gate, not a security boundary against someone with access to your user account.
 
