@@ -92,8 +92,8 @@ Run `wails doctor` to check everything is in place.
 ### Run it
 
 ```powershell
-git clone https://github.com/<your-username>/pcoptimizer.git
-cd pcoptimizer
+git clone https://github.com/<your-username>/trimmel.git
+cd trimmel
 go mod tidy
 wails dev          # hot-reloading dev build
 wails build        # release build -> build\bin\trimmel.exe

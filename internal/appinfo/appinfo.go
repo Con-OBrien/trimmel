@@ -20,7 +20,7 @@ import (
 const (
 	// SiteURL is the public download page; releases are described by
 	// <SiteURL>/downloads/version.json.
-	SiteURL    = "https://pcoptimizer-docs.vercel.app"
+	SiteURL    = "https://trimmel.vercel.app"
 	versionURL = SiteURL + "/downloads/version.json"
 )
 
