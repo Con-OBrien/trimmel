@@ -25,15 +25,15 @@ No download needed. Here is how each main screen looks.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screens/overview.svg" alt="Overview screen: CPU, memory, uptime, drives and a friendly suggestion"><br><sub><b>🏠 Overview</b>: your PC at a glance, with plain-English tips.</sub></td>
-    <td width="50%"><img src="docs/screens/cleanup.svg" alt="Cleanup screen: tick boxes for temp files and caches with sizes"><br><sub><b>🧹 Cleanup</b>: see what each item takes up, tick what goes.</sub></td>
+    <td width="50%"><img src="docs/screens/overview.png" alt="Overview screen: CPU, memory, uptime, drives and a friendly suggestion"><br><sub><b>🏠 Overview</b>: your PC at a glance, with plain-English tips.</sub></td>
+    <td width="50%"><img src="docs/screens/cleanup.png" alt="Cleanup screen: tick boxes for temp files and caches with sizes"><br><sub><b>🧹 Cleanup</b>: see what each item takes up, tick what goes.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/screens/startup.svg" alt="Startup screen: programs with impact badges and on/off switches"><br><sub><b>🚀 Startup</b>: switch slow launchers off. Fully reversible.</sub></td>
-    <td width="50%"><img src="docs/screens/move.svg" alt="Move apps screen: large programs with Move to D: buttons"><br><sub><b>📦 Move apps</b>: shift big programs to another drive.</sub></td>
+    <td width="50%"><img src="docs/screens/startup.png" alt="Startup screen: programs with impact badges and on/off switches"><br><sub><b>🚀 Startup</b>: switch slow launchers off. Fully reversible.</sub></td>
+    <td width="50%"><img src="docs/screens/move.png" alt="Move apps screen: large programs with Move to D: buttons"><br><sub><b>📦 Move apps</b>: shift big programs to another drive.</sub></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="docs/screens/drivers.svg" width="50%" alt="Drivers screen: updates from Windows Update with install button"><br><sub><b>🔧 Drivers</b>: signed updates straight from Windows Update.</sub></td>
+    <td colspan="2" align="center"><img src="docs/screens/drivers.png" width="50%" alt="Drivers screen: updates from Windows Update with install button"><br><sub><b>🔧 Drivers</b>: signed updates straight from Windows Update.</sub></td>
   </tr>
 </table>
 
