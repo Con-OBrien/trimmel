@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Brass shaving curling off a clean board" color="#1D2125">
+  <rect x="6" y="38" width="52" height="12" rx="3.5" fill="currentColor"/>
+  <path d="M12 38 C12 27 24 19 34 19 C45 19 51 27.5 46.5 33.2 C43 37.6 36.2 34.6 39 29.6"
+        fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

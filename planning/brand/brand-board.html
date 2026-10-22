@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fettle brand board (working name)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --iron: #1D2125;
+    --plaster: #F3F4F1;
+    --glaze: #0E6B73;
+    --glaze-soft: #D8EBEC;
+    --brass: #E0A526;
+    --muted: #4F5A60;
+    --warn: #8A5300;
+    --crit: #B42318;
+    --ok: #1E7B4F;
+    --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --text: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--plaster); color: var(--iron); font: 17px/1.6 var(--text); }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.05; margin: 0; letter-spacing: -.02em; }
+  p { margin: 0 0 12px; max-width: 62ch; }
+  a { color: var(--glaze); }
+  :focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero: the wordmark is the one big moment */
+  .hero { background: var(--iron); color: var(--plaster); padding: 64px 0 72px; overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 40px; align-items: center; }
+  .hero h1 { font-size: clamp(88px, 18vw, 196px); font-weight: 800; letter-spacing: -.045em; }
+  .hero p { color: #C9D0D4; font-size: 20px; margin-top: 18px; }
+  .hero img { width: 100%; height: auto; display: block; }
+  .tag { display: inline-block; background: var(--brass); color: var(--iron); font-weight: 700; padding: 2px 12px; border-radius: 999px; font-size: 14px; margin-bottom: 18px; }
+
+  section { padding: 64px 0 8px; }
+  h2 { font-size: 40px; font-weight: 800; margin-bottom: 14px; }
+  h3 { font-size: 22px; font-weight: 700; margin: 28px 0 8px; }
+  .lead { font-size: 20px; max-width: 58ch; }
+  .muted { color: var(--muted); }
+
+  /* Mark section */
+  .marks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+  .mk { border-radius: 20px; padding: 28px; display: grid; place-items: center; min-height: 220px; position: relative; }
+  .mk img { width: 120px; height: 120px; }
+  .mk small { position: absolute; left: 16px; bottom: 12px; font-size: 14px; }
+  .mk.light { background: #fff; border: 1px solid #DCDFDA; }
+  .mk.dark { background: var(--iron); color: var(--plaster); }
+  .mk.glaze { background: var(--glaze); color: var(--plaster); }
+  .sizes { display: flex; align-items: flex-end; gap: 22px; margin-top: 22px; }
+  .sizes img { display: block; }
+
+  /* Colour */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 24px; }
+  .sw { border-radius: 20px; padding: 20px; min-height: 168px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .sw b { font-family: var(--display); font-size: 24px; font-weight: 700; }
+  .sw span { font-size: 14px; }
+  .sw.iron { background: var(--iron); color: var(--plaster); }
+  .sw.plaster { background: var(--plaster); border: 2px solid var(--iron); }
+  .sw.glaze { background: var(--glaze); color: var(--plaster); }
+  .sw.soft { background: var(--glaze-soft); }
+  .sw.brass { background: var(--brass); color: var(--iron); }
+  .sw.muted { background: var(--muted); color: var(--plaster); }
+  .status { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .pill { padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: 15px; background: #fff; border: 1px solid #DCDFDA; }
+  .pill i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+
+  table { border-collapse: collapse; margin-top: 18px; font-size: 15px; }
+  td, th { text-align: left; padding: 6px 22px 6px 0; border-bottom: 1px solid #DCDFDA; }
+  th { font-weight: 700; }
+
+  /* Type */
+  .specimen { background: #fff; border: 1px solid #DCDFDA; border-radius: 24px; padding: 32px; margin-top: 22px; }
+  .specimen .big { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 8vw, 84px); letter-spacing: -.035em; line-height: 1; }
+  .specimen .sub { font-family: var(--display); font-weight: 700; font-size: 28px; margin-top: 18px; }
+  .specimen .body { margin-top: 10px; }
+
+  /* Voice */
+  .say { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .say div { border-radius: 18px; padding: 18px 20px; }
+  .say .was { background: #fff; border: 1px solid #DCDFDA; color: var(--muted); }
+  .say .now { background: var(--glaze-soft); }
+  .say small { display: block; font-weight: 700; margin-bottom: 4px; }
+
+  /* App preview */
+  .app { margin-top: 24px; display: grid; grid-template-columns: 190px 1fr; border-radius: 22px; overflow: hidden; border: 1px solid #DCDFDA; background: var(--plaster); box-shadow: 0 18px 40px rgba(29,33,37,.12); }
+  .side { background: var(--iron); color: var(--plaster); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .side .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; font-size: 20px; padding: 2px 8px 18px; letter-spacing: -.02em; }
+  .side .brand img { width: 30px; height: 30px; }
+  .side a { color: #B8C0C5; text-decoration: none; padding: 8px 12px; border-radius: 10px; font-weight: 500; }
+  .side a.on { background: var(--brass); color: var(--iron); font-weight: 700; }
+  .main { padding: 22px 26px; }
+  .main h3 { margin: 0 0 14px; font-size: 26px; }
+  .health { display: flex; gap: 22px; background: #fff; border: 1px solid #DCDFDA; border-radius: 18px; padding: 20px; }
+  .score { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 1; color: var(--glaze); letter-spacing: -.04em; }
+  .health ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+  .health li { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--glaze-soft); border-radius: 12px; padding: 10px 14px; font-size: 15px; }
+  .btn { border: 0; border-radius: 999px; padding: 8px 18px; font: 700 14px var(--text); background: var(--glaze); color: var(--plaster); white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--glaze); border: 1.5px solid var(--glaze); }
+
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; }
+  .rules div { background: #fff; border: 1px solid #DCDFDA; border-radius: 18px; padding: 18px 20px; }
+  .rules b { font-family: var(--display); font-size: 20px; display: block; margin-bottom: 6px; }
+  footer { padding: 56px 0 72px; color: var(--muted); font-size: 15px; }
+
+  @media (max-width: 720px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero img { max-width: 140px; }
+    .say { grid-template-columns: 1fr; }
+    .app { grid-template-columns: 1fr; }
+    .side { flex-direction: row; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="tag">Working name, not yet cleared</span>
+      <h1>fettle</h1>
+      <p>To fettle is to trim the rough edges off a casting until it is finished and fit to use. In fine fettle means in good condition. That is the whole job of the app.</p>
+    </div>
+    <img src="icons/mark-tile-512.png" alt="Fettle app icon: a brass shaving curling off a clean board" width="220" height="220">
+  </div>
+</header>
+
+<main>
+<section>
+  <div class="wrap">
+    <h2>What we are</h2>
+    <p class="lead">A calm, plain-spoken workshop for your PC. It finds what is clogging it up, tells you in ordinary words what each thing is, and does nothing until you say so. Everything it does can be undone.</p>
+    <div class="rules">
+      <div><b>Plain English</b>Say what a thing is and what happens if it goes. No jargon, no scare numbers.</div>
+      <div><b>Nothing behind your back</b>Show it first. Act only on what the person ticks. Never run a surprise scan.</div>
+      <div><b>Undo anything</b>Switched off, moved, cleaned: each step says how to reverse it.</div>
+    </div>
+    <h3>Who it is for</h3>
+    <p>People who own a Windows PC and are not sure what is safe to remove. The parent whose laptop got slow, the gamer whose C: drive is full, the person who has been burnt by a cleaner that deleted something. They want a competent friend, not a dashboard.</p>
+    <h3>Why this name</h3>
+    <p>Short, easy to say and spell, no "PC" or "optimizer" (generic words that cannot be owned, and a trademark record for PCOPTIMIZER already turns up in search). The meaning is quietly specific: finishing and conditioning, not "boosting" or "cleaning up". Clearance check is still open, see the plan.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The mark</h2>
+    <p class="lead">A brass shaving curling off a clean board. The board is your drive or your PC; the curl is the rough stuff coming away. It is a simple shape that survives at 16 pixels, and it does not depend on the letter F, so the name can change without redrawing it.</p>
+    <div class="marks">
+      <div class="mk light"><img src="mark-tile.svg" alt="App icon on white"><small class="muted">App icon</small></div>
+      <div class="mk light"><img src="mark.svg" alt="Bare mark on white"><small class="muted">Bare mark, light backgrounds</small></div>
+      <div class="mk dark"><img src="mark-mono.svg" alt="One-colour mark, set to cream" style="filter: invert(.95) sepia(.05)"><small>One colour, on iron</small></div>
+      <div class="mk glaze"><img src="mark-tile.svg" alt="App icon on glaze green"><small>On glaze</small></div>
+    </div>
+    <div class="sizes" aria-label="The icon at 16, 24, 32, 48 and 64 pixels">
+      <img src="icons/mark-tile-256.png" width="16" height="16" alt="16 px">
+      <img src="icons/mark-tile-256.png" width="24" height="24" alt="24 px">
+      <img src="icons/mark-tile-256.png" width="32" height="32" alt="32 px">
+      <img src="icons/mark-tile-256.png" width="48" height="48" alt="48 px">
+      <img src="icons/mark-tile-256.png" width="64" height="64" alt="64 px">
+      <span class="muted">From the taskbar to the installer.</span>
+    </div>
+    <h3>Rules for the mark</h3>
+    <p>Keep clear space of one board-height around it. Never recolour the curl except to a single colour, never add shine or a gradient, never rotate it. Brass is only for the curl: it has too little contrast to be text or a thin line on light backgrounds.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Colour</h2>
+    <p class="lead">Named after the workshop. Cast iron and plaster carry the page; glaze is the one working colour; brass is the spark and is used sparingly.</p>
+    <div class="swatches">
+      <div class="sw iron"><b>Iron</b><span>#1D2125 · text, sidebar, icon</span></div>
+      <div class="sw plaster"><b>Plaster</b><span>#F3F4F1 · backgrounds</span></div>
+      <div class="sw glaze"><b>Glaze</b><span>#0E6B73 · buttons, links, scores</span></div>
+      <div class="sw soft"><b>Glaze mist</b><span>#D8EBEC · tips, selected rows</span></div>
+      <div class="sw brass"><b>Brass</b><span>#E0A526 · the curl, current tab</span></div>
+      <div class="sw muted"><b>Slate</b><span>#4F5A60 · secondary text</span></div>
+    </div>
+    <div class="status" aria-label="Status colours">
+      <span class="pill"><i style="background:var(--ok)"></i>Done #1E7B4F</span>
+      <span class="pill"><i style="background:var(--warn)"></i>Check first #8A5300</span>
+      <span class="pill"><i style="background:var(--crit)"></i>Problem #B42318</span>
+    </div>
+    <h3>Contrast, measured</h3>
+    <table>
+      <tr><th>Pair</th><th>Ratio</th><th>Use</th></tr>
+      <tr><td>Iron on plaster</td><td>14.7 : 1</td><td>Body text</td></tr>
+      <tr><td>Slate on plaster</td><td>6.4 : 1</td><td>Secondary text</td></tr>
+      <tr><td>Glaze on plaster</td><td>5.7 : 1</td><td>Links, large scores, outlines</td></tr>
+      <tr><td>Plaster on glaze</td><td>5.7 : 1</td><td>Button text</td></tr>
+      <tr><td>Brass on iron</td><td>7.4 : 1</td><td>Curl, current tab</td></tr>
+      <tr><td>Brass on plaster</td><td>2.0 : 1</td><td>Never for text or thin lines</td></tr>
+    </table>
+    <p class="muted" style="margin-top:12px">Today's app uses cream, teal and honey. This replaces them. The new palette is cooler and more grown-up, and every text pair passes WCAG AA.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Type</h2>
+    <p class="lead">Two families with different jobs. Bricolage Grotesque has the character of a hand-cut sign: it carries the name and headlines. Atkinson Hyperlegible Next was designed by the Braille Institute so that every letter is unmistakable. It carries everything people have to read and act on, which suits an app about being clear.</p>
+    <div class="specimen">
+      <div class="big">Keep your PC in fine fettle.</div>
+      <div class="sub">Bricolage Grotesque, ExtraBold and Bold, tight tracking</div>
+      <p class="body">Atkinson Hyperlegible Next, Regular and Bold, normal tracking. Sentence case everywhere. Disk sizes read 1.4 GB, folders read C:\Users\you\Downloads, and nothing ever shouts in capitals.</p>
+    </div>
+    <p class="muted" style="margin-top:12px">Both are open source (SIL OFL) and ship as variable fonts through <code>@fontsource</code>, so they can be bundled in the app with no network request. Today's app uses Nunito.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Voice</h2>
+    <p class="lead">A capable friend who has seen this before. Calm, concrete and a little dry. Says what happened and what to do next. Never apologises, never panics, never sells.</p>
+    <div class="say">
+      <div class="was"><small>Today</small>No startup programs found.</div>
+      <div class="now"><small>Fettle</small>Nothing starts with Windows on this PC.</div>
+      <div class="was"><small>Today</small>uninstaller failed:</div>
+      <div class="now"><small>Fettle</small>The uninstaller closed before it finished, so nothing was removed. Try again, or remove it in Settings.</div>
+      <div class="was"><small>Today</small>Freed 2.1 GB</div>
+      <div class="now"><small>Fettle</small>Freed 2.1 GB. Nothing else was touched.</div>
+      <div class="was"><small>Today</small>Memory is 88% used. Check Processes for heavy apps.</div>
+      <div class="now"><small>Fettle</small>Memory is nearly full, so Windows is leaning on the slower disk. These three apps use the most.</div>
+    </div>
+    <h3>Taglines to test</h3>
+    <p><b>Keep your PC in fine fettle.</b> The warm, memorable one: teaches the word and states the benefit.<br>
+       <b>Tidy up. Speed up. Undo anything.</b> The plain, literal one for the website's first line.<br>
+       <b>Nothing deleted behind your back.</b> The trust one, already true of the product.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>In the app</h2>
+    <p class="lead">The Overview with the new identity. Iron sidebar, brass marking the current place, glaze for the one thing to press.</p>
+    <div class="app" role="img" aria-label="Mock-up of the Overview screen in the new colours">
+      <div class="side">
+        <div class="brand"><img src="mark-tile.svg" alt="">fettle</div>
+        <a class="on">Overview</a><a>Processes</a><a>Cleanup</a><a>Storage</a><a>Startup</a><a>Apps</a>
+      </div>
+      <div class="main">
+        <h3>Overview</h3>
+        <div class="health">
+          <div><div class="score">72</div><div class="muted" style="font-size:14px">out of 100</div></div>
+          <div style="flex:1">
+            <h3 style="margin:0;font-size:22px">Could use a tidy</h3>
+            <ul>
+              <li><span><b>C: is getting full.</b> 14% free. See what is using the space.</span><button class="btn">See what uses space</button></li>
+              <li><span><b>4 programs start with Windows</b> that you can probably turn off.</span><button class="btn ghost">Review startup</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Working draft. The name is a candidate, not a decision: see <code>planning/brand/brand-plan.md</code> for clearance status, alternatives and what changes in the product.</div>
+</footer>
+</body>
+</html>
