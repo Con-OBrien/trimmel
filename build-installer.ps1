@@ -6,8 +6,8 @@
 #
 # Sign-in: Google sign-in is optional. To include it, put your OAuth "Desktop app"
 # credentials in .env.local (git-ignored), or set the same names as environment variables:
-#   PCOPT_GOOGLE_CLIENT_ID=...
-#   PCOPT_GOOGLE_CLIENT_SECRET=...
+#   TRIMMEL_GOOGLE_CLIENT_ID=...
+#   TRIMMEL_GOOGLE_CLIENT_SECRET=...
 # They are compiled into the app. Without them the build has no sign-in and opens straight
 # into the app. -Publish refuses to publish such a build unless you pass -NoSignIn, so a
 # missing .env.local can never silently ship a build without sign-in.
@@ -24,15 +24,15 @@ if (Test-Path .env.local) {
 }
 
 $version = (Get-Content wails.json | ConvertFrom-Json).info.productVersion
-$id = $env:PCOPT_GOOGLE_CLIENT_ID
-$secret = $env:PCOPT_GOOGLE_CLIENT_SECRET
+$id = if ($env:TRIMMEL_GOOGLE_CLIENT_ID) { $env:TRIMMEL_GOOGLE_CLIENT_ID } else { $env:PCOPT_GOOGLE_CLIENT_ID }  # PCOPT_ = pre-0.2.0 name
+$secret = if ($env:TRIMMEL_GOOGLE_CLIENT_SECRET) { $env:TRIMMEL_GOOGLE_CLIENT_SECRET } else { $env:PCOPT_GOOGLE_CLIENT_SECRET }
 
 $ldflags = "-X main.version=$version"
 if ($id) {
-  $ldflags += " -X pcoptimizer/internal/auth.GoogleClientID=$id"
-  if ($secret) { $ldflags += " -X pcoptimizer/internal/auth.GoogleClientSecret=$secret" }
+  $ldflags += " -X trimmel/internal/auth.GoogleClientID=$id"
+  if ($secret) { $ldflags += " -X trimmel/internal/auth.GoogleClientSecret=$secret" }
 } else {
-  if ($Publish -and -not $NoSignIn) { throw "PCOPT_GOOGLE_CLIENT_ID is not set (add it to .env.local), so this build has no sign-in. Pass -NoSignIn to publish it anyway." }
+  if ($Publish -and -not $NoSignIn) { throw "TRIMMEL_GOOGLE_CLIENT_ID is not set (add it to .env.local), so this build has no sign-in. Pass -NoSignIn to publish it anyway." }
   Write-Warning "No Google client ID: this build has NO sign-in and opens straight into the app."
 }
 

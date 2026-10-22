@@ -28,7 +28,7 @@ import (
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
 
-	"pcoptimizer/internal/appdir"
+	"trimmel/internal/appdir"
 )
 
 const (
@@ -63,18 +63,29 @@ func LoadConfig() (Config, error) {
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return c, err
 	}
-	if v := os.Getenv("PCOPT_OIDC_ISSUER"); v != "" {
+	if v := envOr("TRIMMEL_OIDC_ISSUER", "PCOPT_OIDC_ISSUER"); v != "" {
 		c.Issuer = v
 	}
-	if v := os.Getenv("PCOPT_OIDC_CLIENT_ID"); v != "" {
+	if v := envOr("TRIMMEL_OIDC_CLIENT_ID", "PCOPT_OIDC_CLIENT_ID"); v != "" {
 		c.ClientID = v
 	}
-	if v := os.Getenv("PCOPT_OIDC_CLIENT_SECRET"); v != "" {
+	if v := envOr("TRIMMEL_OIDC_CLIENT_SECRET", "PCOPT_OIDC_CLIENT_SECRET"); v != "" {
 		c.ClientSecret = v
 	}
 	c.Issuer = strings.TrimSpace(c.Issuer)
 	c.ClientID = strings.TrimSpace(c.ClientID)
 	return c, nil
+}
+
+// envOr returns the first non-empty variable. The PCOPT_ names are the
+// pre-0.2.0 spelling and still work.
+func envOr(names ...string) string {
+	for _, n := range names {
+		if v := os.Getenv(n); v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 type User struct {

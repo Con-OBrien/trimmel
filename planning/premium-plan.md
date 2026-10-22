@@ -1,4 +1,4 @@
-# PC Optimizer: premium version plan
+# Trimmel: premium version plan
 
 Status: draft for discussion, written 2026-10-22. Nothing here is built yet.
 This file lives in `planning/`, not `docs/`, because `docs/` is published as the public website.
@@ -23,7 +23,7 @@ Two facts shape everything below:
 1. **Keep every safety feature free.** Previews, reversibility, protected processes, the health score, and the explanations stay free. Nobody should pay to be safe.
 2. **Charge for time saved and depth, not for basics.** Free users can do everything once, by hand. Premium removes repetition (automation), adds depth (history, deeper analysis) and covers more than one PC.
 3. **No dark patterns.** No scare scans, no fake "issues found" counts, no pop-ups, no nagging banners. One quiet "Plus" entry in Settings and a short, honest note where a locked feature would have been.
-4. **The free app must stay good.** Microsoft PC Manager and BleachBit are free. If free PC Optimizer is worse than them, nobody reaches the paid tier.
+4. **The free app must stay good.** Microsoft PC Manager and BleachBit are free. If free Trimmel is worse than them, nobody reaches the paid tier.
 5. **Never lock users out of their own data or undo.** If a licence lapses, anything already moved or changed keeps working and can still be undone.
 
 ## 3. What goes in each tier
@@ -46,7 +46,7 @@ Two facts shape everything below:
 Grouped by why someone would pay. Priority marks: **A** build first, **B** next, **C** later.
 
 **Automation (A):** the strongest reason to pay, because a free user has to remember.
-- Scheduled cleanup (weekly or monthly) that runs quietly and reports what it freed. Needs a small background piece (Windows scheduled task running `pcoptimizer.exe --scheduled`, no always-on service).
+- Scheduled cleanup (weekly or monthly) that runs quietly and reports what it freed. Needs a small background piece (Windows scheduled task running `trimmel.exe --scheduled`, no always-on service).
 - Low-disk alert: a notification when a drive falls below a chosen threshold, with a "Clean now" button.
 - Weekly health report notification.
 

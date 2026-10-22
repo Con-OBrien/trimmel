@@ -4,6 +4,8 @@
 // therefore fully reversible, and the state shows up in Task Manager too.
 package startup
 
+import "strings"
+
 type Item struct {
 	ID            string `json:"id"` // "<source>|<name>", stable across refreshes
 	Name          string `json:"name"`
@@ -15,4 +17,15 @@ type Item struct {
 	Impact        string `json:"impact"`    // "high" | "medium" | "low": rough effect on sign-in time
 	Note          string `json:"note"`      // plain-English explanation, may be empty
 	Recommend     string `json:"recommend"` // "disable" | "keep" | ""
+}
+
+// storeAppName turns a package family name such as
+// "SpotifyAB.SpotifyMusic_zpdnekdrzrea0" into "SpotifyMusic". Names that are
+// only a GUID keep their GUID part.
+func storeAppName(family string) string {
+	name, _, _ := strings.Cut(family, "_")
+	if i := strings.LastIndex(name, "."); i >= 0 && i < len(name)-1 {
+		name = name[i+1:]
+	}
+	return name
 }

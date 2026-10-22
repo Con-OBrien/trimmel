@@ -5,7 +5,7 @@ export const startupView: View = root => {
   root.innerHTML = `
     <header class="view-head"><h1>Startup</h1><span class="muted" id="st-count"></span></header>
     <p class="muted small">Disabling works like Task Manager: the entry stays, Windows just skips it at sign-in.
-      You can turn it back on any time. Impact is a rough guide from what each program usually does. Microsoft Store apps are not listed here; use Task Manager for those.</p>
+      You can turn it back on any time. Impact is a rough guide from what each program usually does. Microsoft Store apps are listed too.</p>
     <div id="st-account"></div>
     <div id="st-suggest"></div>
     <div id="st-body" class="panel list"><p class="muted">Loading…</p></div>`

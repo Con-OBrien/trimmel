@@ -24,6 +24,13 @@ type Update struct {
 	NeedsEula    bool   `json:"needsEula"`
 }
 
+// Progress is one step of InstallUpdates. Windows Update reports no byte
+// counts through this API, so progress is by stage, not by percent.
+type Progress struct {
+	Stage string `json:"stage"` // "restore" | "download" | "install"
+	Count int    `json:"count"` // number of updates in this run
+}
+
 type InstallResult struct {
 	Installed      []string `json:"installed"` // titles
 	Failed         []string `json:"failed"`

@@ -1,7 +1,7 @@
 package auth
 
 // Built-in Google sign-in. Fill these in once (or set them at build time with
-// -ldflags "-X pcoptimizer/internal/auth.GoogleClientID=... -X pcoptimizer/internal/auth.GoogleClientSecret=...")
+// -ldflags "-X trimmel/internal/auth.GoogleClientID=... -X trimmel/internal/auth.GoogleClientSecret=...")
 // and users just click "Sign in with Google": no config files.
 //
 // Create the values in Google Cloud Console: APIs & Services > Credentials >

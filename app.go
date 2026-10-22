@@ -11,20 +11,20 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"pcoptimizer/internal/advisor"
-	"pcoptimizer/internal/appinfo"
-	"pcoptimizer/internal/auth"
-	"pcoptimizer/internal/cleanup"
-	"pcoptimizer/internal/drivers"
-	"pcoptimizer/internal/elevation"
-	"pcoptimizer/internal/health"
-	"pcoptimizer/internal/mover"
-	"pcoptimizer/internal/oldver"
-	"pcoptimizer/internal/overview"
-	"pcoptimizer/internal/procs"
-	"pcoptimizer/internal/startup"
-	"pcoptimizer/internal/state"
-	"pcoptimizer/internal/storage"
+	"trimmel/internal/advisor"
+	"trimmel/internal/appinfo"
+	"trimmel/internal/auth"
+	"trimmel/internal/cleanup"
+	"trimmel/internal/drivers"
+	"trimmel/internal/elevation"
+	"trimmel/internal/health"
+	"trimmel/internal/mover"
+	"trimmel/internal/oldver"
+	"trimmel/internal/overview"
+	"trimmel/internal/procs"
+	"trimmel/internal/startup"
+	"trimmel/internal/state"
+	"trimmel/internal/storage"
 )
 
 // App is the single object bound to the frontend. Every exported method
@@ -236,6 +236,10 @@ func (a *App) StartDriverScan(force bool) (DriverScanState, error) {
 	return a.scan.snapshot(), nil
 }
 
+// NetworkMetered reports whether Windows marks the current connection as
+// metered, so the driver page can warn before a large download.
+func (a *App) NetworkMetered() bool { return drivers.OnMeteredConnection() }
+
 func (a *App) InstallDriverUpdates(updateIDs []string) (drivers.InstallResult, error) {
 	if err := a.guard(); err != nil {
 		return drivers.InstallResult{}, err
@@ -243,7 +247,9 @@ func (a *App) InstallDriverUpdates(updateIDs []string) (drivers.InstallResult, e
 	if !elevation.IsAdmin() {
 		return drivers.InstallResult{}, fmt.Errorf("installing drivers needs admin rights; start the app with “Run as administrator”")
 	}
-	res, err := drivers.InstallUpdates(updateIDs)
+	res, err := drivers.InstallUpdates(updateIDs, func(p drivers.Progress) {
+		runtime.EventsEmit(a.ctx, "drivers:progress", p)
+	})
 	a.scan.remove(res.Installed)
 	return res, err
 }

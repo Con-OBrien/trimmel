@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"pcoptimizer/internal/drivers"
+	"trimmel/internal/drivers"
 )
 
 // scanStaleAfter is how long a result is trusted before an automatic rescan.

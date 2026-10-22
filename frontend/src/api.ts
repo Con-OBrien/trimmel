@@ -216,6 +216,7 @@ interface AppBindings {
   DriverScanState(): Promise<DriverScanState>
   StartDriverScan(force: boolean): Promise<DriverScanState>
   InstallDriverUpdates(ids: string[]): Promise<InstallResult>
+  NetworkMetered(): Promise<boolean>
 }
 
 declare global {
@@ -240,6 +241,11 @@ export interface Install {
   reason: string
   movedTo: string
   broken: boolean
+}
+
+export interface DriverProgress {
+  stage: "restore" | "download" | "install"
+  count: number
 }
 
 export interface MoveProgress {

@@ -13,10 +13,10 @@ import (
 	"sync"
 	"time"
 
-	"pcoptimizer/internal/cleanup"
-	"pcoptimizer/internal/mover"
-	"pcoptimizer/internal/oldver"
-	"pcoptimizer/internal/storage"
+	"trimmel/internal/cleanup"
+	"trimmel/internal/mover"
+	"trimmel/internal/oldver"
+	"trimmel/internal/storage"
 )
 
 const (

@@ -121,15 +121,15 @@ Users just click **Sign in with Google** the first time. After that the app reme
 2. Create a git-ignored file named `.env.local` next to `build-installer.ps1`:
 
    ```
-   PCOPT_GOOGLE_CLIENT_ID=<client id>
-   PCOPT_GOOGLE_CLIENT_SECRET=<client secret>
+   TRIMMEL_GOOGLE_CLIENT_ID=<client id>
+   TRIMMEL_GOOGLE_CLIENT_SECRET=<client secret>
    ```
 
 3. Run `.\build-installer.ps1`. The values are compiled into the app. Without a client ID the build has no sign-in and opens straight into the app.
 
 Google issues a secret for desktop apps but does not treat it as confidential, because PKCE protects the flow. Still, keep it out of git.
 
-It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Other OpenID Connect providers work through `%APPDATA%\trimmel\auth.json` (`issuer`, `clientId`, optional `clientSecret`) or the `PCOPT_OIDC_ISSUER`, `PCOPT_OIDC_CLIENT_ID` and `PCOPT_OIDC_CLIENT_SECRET` environment variables.
+It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Other OpenID Connect providers work through `%APPDATA%\trimmel\auth.json` (`issuer`, `clientId`, optional `clientSecret`) or the `TRIMMEL_OIDC_ISSUER`, `TRIMMEL_OIDC_CLIENT_ID` and `TRIMMEL_OIDC_CLIENT_SECRET` environment variables.
 
 > Sign-in is a convenience gate, not a security boundary against someone with access to your user account.
 

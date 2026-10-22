@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"pcoptimizer/internal/appdir"
+	"trimmel/internal/appdir"
 )
 
 const DefaultReminderDays = 14

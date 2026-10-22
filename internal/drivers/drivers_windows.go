@@ -3,6 +3,7 @@
 package drivers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
@@ -167,8 +168,12 @@ func SearchUpdates() ([]Update, error) {
 	return out, err
 }
 
-func InstallUpdates(ids []string) (InstallResult, error) {
+func InstallUpdates(ids []string, emit func(Progress)) (InstallResult, error) {
+	if emit == nil {
+		emit = func(Progress) {}
+	}
 	var res InstallResult
+	emit(Progress{Stage: "restore", Count: len(ids)})
 	res.RestorePoint = createRestorePoint()
 	want := map[string]bool{}
 	for _, id := range ids {
@@ -217,6 +222,7 @@ func InstallUpdates(ids []string) (InstallResult, error) {
 			return nil
 		}
 
+		emit(Progress{Stage: "download", Count: len(titles)})
 		downloader, err := callDispatch(session, "CreateUpdateDownloader")
 		if err != nil {
 			return err
@@ -236,6 +242,7 @@ func InstallUpdates(ids []string) (InstallResult, error) {
 		}
 		dl.Release()
 
+		emit(Progress{Stage: "install", Count: len(titles)})
 		installer, err := callDispatch(session, "CreateUpdateInstaller")
 		if err != nil {
 			return err
@@ -375,6 +382,26 @@ func createRestorePoint() bool {
 		_ = cmd.Process.Kill()
 		return false
 	}
+}
+
+// OnMeteredConnection reports whether Windows treats the current internet
+// connection as metered (a data cap or pay-as-you-go). It asks the same WinRT
+// API Settings uses and answers false when it can't tell.
+func OnMeteredConnection() bool {
+	const script = `$null=[Windows.Networking.Connectivity.NetworkInformation,Windows.Networking.Connectivity,ContentType=WindowsRuntime];` +
+		`$p=[Windows.Networking.Connectivity.NetworkInformation]::GetInternetConnectionProfile();` +
+		`if($p){[int]$p.GetConnectionCost().NetworkCostType}else{0}`
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	out, err := cmd.Output()
+	if err != nil {
+		return false
+	}
+	// NetworkCostType: 0 unknown, 1 unrestricted, 2 fixed (data cap), 3 variable (pay as you go).
+	t := strings.TrimSpace(string(out))
+	return t == "2" || t == "3"
 }
 
 // friendlyWUError turns common Windows Update COM failures into plain English.

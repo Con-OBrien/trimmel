@@ -145,6 +145,21 @@ func removeAtReboot(path string) {
 	_ = windows.MoveFileEx(p, nil, windows.MOVEFILE_DELAY_UNTIL_REBOOT)
 }
 
+// removeSavedSignIn deletes the sign-in token the app keeps in Windows
+// Credential Manager (generic credentials named "<service>:<user>", the same
+// target go-keyring uses). It only reaches the account running the uninstaller.
+func removeSavedSignIn() {
+	del := windows.NewLazySystemDLL("advapi32.dll").NewProc("CredDeleteW")
+	for _, service := range []string{"trimmel", "pcoptimizer"} {
+		target, err := windows.UTF16PtrFromString(service + ":oidc-refresh-token")
+		if err != nil {
+			continue
+		}
+		const credTypeGeneric = 1
+		_, _, _ = del.Call(uintptr(unsafe.Pointer(target)), credTypeGeneric, 0)
+	}
+}
+
 func writeFile(path string, data []byte) error {
 	var err error
 	for i := 0; i < 5; i++ {
@@ -211,7 +226,7 @@ func makeShortcut(link, target, dir string) error {
 	return err
 }
 
-func install(o Options, emit emitFn) error {
+func install(o Options, emit emitFn) (err error) {
 	dir := filepath.Clean(strings.TrimSpace(o.Dir))
 	if dir == "" || dir == "." || !filepath.IsAbs(dir) {
 		return fmt.Errorf("choose a full folder path, such as %s", defaultInstallDir())
@@ -224,6 +239,22 @@ func install(o Options, emit emitFn) error {
 	old := existingInstallDir()
 	emit("Closing Trimmel if it is running…", 4)
 	killApp(dir, old)
+
+	// If setup fails part-way, undo what it added so no half install is left.
+	// An install that was already in place keeps working: its files are only
+	// removed when they live in a different folder from the new one.
+	sameDir := old != "" && strings.EqualFold(filepath.Clean(old), dir)
+	defer func() {
+		if err == nil || sameDir {
+			return
+		}
+		removeInstallFiles(dir)
+		if old == "" {
+			_ = os.Remove(startMenuLink())
+			_ = os.Remove(desktopLink())
+			_ = registry.DeleteKey(registry.LOCAL_MACHINE, uninstallKey)
+		}
+	}()
 
 	emit("Creating the install folder…", 10)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -315,6 +346,7 @@ func uninstall(o Options, emit emitFn) error {
 		emit("Deleting your settings…", 70)
 		_ = os.RemoveAll(filepath.Join(os.Getenv("APPDATA"), "trimmel"))
 		_ = os.RemoveAll(filepath.Join(os.Getenv("APPDATA"), "pcoptimizer"))
+		removeSavedSignIn()
 	}
 
 	emit("Deleting program files…", 85)

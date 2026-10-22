@@ -67,6 +67,9 @@ func List() ([]Item, error) {
 	if tasks, err := listTasks(); err == nil {
 		items = append(items, tasks...)
 	}
+	if apps, err := listStoreApps(); err == nil {
+		items = append(items, apps...)
+	}
 	for i := range items {
 		a := Advise(items[i].Name, items[i].Command)
 		items[i].Impact, items[i].Note, items[i].Recommend = a.Impact, a.Note, a.Recommend
@@ -82,6 +85,9 @@ func SetEnabled(id string, enabled bool) error {
 	}
 	if srcID == "task" {
 		return setTaskEnabled(name, enabled)
+	}
+	if srcID == "store" {
+		return setStoreEnabled(name, enabled)
 	}
 	var s *source
 	for i := range sources {

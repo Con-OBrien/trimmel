@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"pcoptimizer/internal/appdir"
+	"trimmel/internal/appdir"
 )
 
 const (

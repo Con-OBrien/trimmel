@@ -1,4 +1,4 @@
-import { api, Driver, DriverScanState, DriverUpdate } from "../api"
+import { api, Driver, DriverProgress, DriverScanState, DriverUpdate } from "../api"
 import { busy, errMsg, esc, fmtAgo, toast, View } from "../ui"
 
 interface Category { name: string, desc: string, classes: string[] }
@@ -34,6 +34,7 @@ export const driversView: View = root => {
       <button class="btn primary" id="dr-check">Check now</button></header>
     <p class="muted small">Updates come from Windows Update, so they're signed by Microsoft and matched to your hardware.
       Checked automatically when you open the app.</p>
+    <div id="dr-progress"></div>
     <div id="dr-updates"></div>
     <h2>Installed <span class="muted small" id="dr-count"></span></h2>
     <div class="toolbar"><input id="dr-filter" type="search" placeholder="Filter by device, class or provider" /></div>
@@ -47,6 +48,22 @@ export const driversView: View = root => {
   const chosen = new Set<string>()
   const filterEl = root.querySelector<HTMLInputElement>("#dr-filter")!
   const updatesEl = root.querySelector<HTMLElement>("#dr-updates")!
+  const progEl = root.querySelector<HTMLElement>("#dr-progress")!
+
+  // Windows Update gives no byte counts, so show which of the three steps is running.
+  const STEPS: Record<DriverProgress["stage"], string> = {
+    restore: "Making a System Restore point…",
+    download: "Downloading from Windows Update…",
+    install: "Installing…",
+  }
+  const showProgress = (stage: DriverProgress["stage"], count: number) => {
+    const n = ["restore", "download", "install"].indexOf(stage) + 1
+    progEl.innerHTML = `<div class="panel"><div class="row-between"><strong>${count} driver update${count === 1 ? "" : "s"}</strong>
+      <span class="muted">Step ${n} of 3: ${STEPS[stage]}</span></div>
+      <div class="bar"><div class="bar-fill" style="width:${(n * 100) / 3}%"></div></div>
+      <div class="muted small">Keep the app open. This can take several minutes.</div></div>`
+  }
+  const off = window.runtime?.EventsOn("drivers:progress", (p: DriverProgress) => showProgress(p.stage, p.count))
   const statusEl = root.querySelector<HTMLElement>("#dr-status")!
   const checkBtn = root.querySelector<HTMLButtonElement>("#dr-check")!
 
@@ -134,16 +151,20 @@ export const driversView: View = root => {
   updatesEl.addEventListener("click", async e => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("#dr-install")
     if (!btn) return
-    if (!confirm(`Install ${chosen.size} driver update(s)? Devices may briefly disconnect while they install. A System Restore point is made first if Windows allows it, and this can take several minutes.`)) return
+    const metered = await api.NetworkMetered().catch(() => false)
+    if (!confirm(`${metered ? "This connection is metered, so the download may use part of your data allowance.\n\n" : ""}Install ${chosen.size} driver update(s)? Devices may briefly disconnect while they install. A System Restore point is made first if Windows allows it, and this can take several minutes.`)) return
+    showProgress("restore", chosen.size)
     try {
       const r = await busy(btn, "Downloading and installing…", () => api.InstallDriverUpdates([...chosen]))
       const ok = r.installed?.length ?? 0, bad = r.failed?.length ?? 0
       toast(`${ok} installed${bad ? `, ${bad} failed` : ""}${r.rebootRequired ? ". Restart to finish." : ""}${r.restorePoint ? "" : ". No restore point was made (System Protection may be off)"}`, bad ? "err" : "ok")
+      progEl.innerHTML = ""
       chosen.clear()
       lastKey = ""
       await poll()
       loadInstalled()
     } catch (err) {
+      progEl.innerHTML = ""
       toast(errMsg(err), "err")
     }
   })
@@ -182,5 +203,5 @@ export const driversView: View = root => {
   loadInstalled()
   poll()
   const timer = window.setInterval(() => poll(), 2000)
-  return () => clearInterval(timer)
+  return () => { clearInterval(timer); off?.() }
 }

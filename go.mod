@@ -1,4 +1,4 @@
-module pcoptimizer
+module trimmel
 
 go 1.26.0
 
