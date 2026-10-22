@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to free up disk space on Windows 11 (what is safe to delete) | Trimmel</title>
+  <meta name="description" content="A safe order for freeing disk space on Windows 10 and 11: Storage Sense, Windows Update cleanup, caches, hibernation, big apps. Plus what never to delete by hand.">
+  <link rel="canonical" href="https://www.trimmel.app/guides/free-up-disk-space-windows-11.html">
+  <meta name="theme-color" content="#3b2a3f">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Trimmel">
+  <meta property="og:title" content="How to free up disk space on Windows 11 (what is safe to delete) | Trimmel">
+  <meta property="og:description" content="A safe order for freeing disk space on Windows 10 and 11: Storage Sense, Windows Update cleanup, caches, hibernation, big apps. Plus what never to delete by hand.">
+  <meta property="og:url" content="https://www.trimmel.app/guides/free-up-disk-space-windows-11.html">
+  <meta property="og:image" content="https://www.trimmel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How to free up disk space on Windows 11 (and what is safe to delete)", "description": "A safe order for freeing disk space on Windows 10 and 11: Storage Sense, Windows Update cleanup, caches, hibernation, big apps. Plus what never to delete by hand.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "mainEntityOfPage": "https://www.trimmel.app/guides/free-up-disk-space-windows-11.html", "image": "https://www.trimmel.app/og.png", "author": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}, "publisher": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}}</script>
+  <link rel="icon" href="../logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../guides.css">
+  <script defer src="../analytics.js"></script>
+</head>
+<body>
+  <nav><div class="in"><a class="brand" href="../">trimmel</a><a class="l" href="./">Guides</a><a class="l" href="../#download">Download</a></div></nav>
+  <main>
+    <h1>How to free up disk space on Windows 11 (and what is safe to delete)</h1>
+    <p class="meta">Last reviewed 22 October 2026 &middot; Windows 10 and 11</p>
+    <div class="answer"><p>Start with Storage Sense and Disk Cleanup (including Windows Update Cleanup), then uninstall apps you do not use and clear temp and shader caches. Never delete <code>WinSxS</code> or <code>Installer</code> by hand.</p></div>
+
+    <h2>Quick wins, in order</h2>
+    <ol>
+      <li><b>Storage Sense.</b> Settings, System, Storage. Turn on <b>Storage Sense</b> and click <b>Temporary files</b> to see what Windows suggests. Review the list before you delete.</li>
+      <li><b>Uninstall what you do not use.</b> Settings, Apps, Installed apps, then sort by size. Large games and old creative tools are usually the biggest wins.</li>
+      <li><b>Windows Update leftovers.</b> In <b>Disk Cleanup</b> (<code>cleanmgr</code>), choose <b>Clean up system files</b> and tick <b>Windows Update Cleanup</b>. This is safe and can free several GB.</li>
+      <li><b>Component store.</b> Run this in an admin terminal. It removes superseded system components safely:
+<pre><code>DISM /Online /Cleanup-Image /StartComponentCleanup</code></pre></li>
+      <li><b>Downloads and the Recycle Bin.</b> Both are often large. Check them by hand.</li>
+      <li><b>Browser caches.</b> Clear them from the browser's settings. They refill, so this only helps once.</li>
+    </ol>
+
+    <h2>Bigger options, with trade-offs</h2>
+    <ul>
+      <li><b>Hibernation file.</b> <code>powercfg /h off</code> deletes <code>hiberfil.sys</code>, often 6 to 12 GB. You lose hibernate and Fast Startup. Turn it back on with <code>powercfg /h on</code>.</li>
+      <li><b>Move a large program to another drive.</b> See <a href="move-installed-program-to-another-drive.html">how to move an installed program</a>.</li>
+      <li><b>Find what is actually big.</b> A folder size view shows where the space went, so you do not guess.</li>
+    </ul>
+
+    <h2>What not to delete by hand</h2>
+    <div class="warn">
+      <ul>
+        <li><code>C:\Windows\WinSxS</code>. It looks huge because it contains hard links. Use the DISM command above instead.</li>
+        <li><code>C:\Windows\Installer</code>. Programs need these files to repair or uninstall.</li>
+        <li><code>pagefile.sys</code>, or anything in <code>System32</code> or <code>Program Files</code>.</li>
+        <li>Folders you do not recognise inside <code>AppData</code>. They often hold settings and saved games.</li>
+      </ul>
+    </div>
+
+    <h2>Is it safe to empty these folders?</h2>
+    <ul>
+      <li><b><code>%TEMP%</code> and <code>C:\Windows\Temp</code>:</b> yes for files that are not in use, ideally older than a day. Windows skips files that are locked. Close Office documents first, since some lock files look like junk.</li>
+      <li><b><code>C:\Windows\SoftwareDistribution\Download</code>:</b> yes when no update is downloading or waiting for a restart. Restart first.</li>
+      <li><b>Shader caches (DirectX, NVIDIA, AMD):</b> yes. Games rebuild them, so the first launch may stutter once.</li>
+      <li><b>Crash dumps (<code>CrashDumps</code>, <code>Minidump</code>):</b> yes, unless you are debugging a crash.</li>
+    </ul>
+
+    <h2>The same thing in Trimmel</h2>
+    <p>Trimmel's <b>Cleanup</b> page lists each of these targets with its size before it touches anything. It skips Office lock files and refuses to clear update downloads while a restart is pending. <b>Storage</b> shows folder sizes with a click-through and suggests whether to clean, move or review each large item.</p>
+
+    <div class="cta">
+      <h2>See what is filling your drive</h2>
+      <p>Trimmel shows every cleanup target and folder size before it deletes anything.</p>
+      <a class="btn" href="../#download" data-umami-event="guide-download" data-umami-event-guide="free-up-disk-space-windows-11">Get Trimmel, free</a>
+    </div>
+  </main>
+  <footer><a href="../">Trimmel</a> &middot; <a href="./">All guides</a> &middot; <a href="../privacy.html">Privacy policy</a></footer>
+</body>
+</html>

@@ -126,3 +126,10 @@ All absolute URLs use `https://trimmel.vercel.app`. When the custom domain is li
 ### Domain (2026-10-22)
 
 `trimmel.app` bought on Cloudflare, DNS only, pointed at Vercel. `www.trimmel.app` works. The apex `trimmel.app` returned no DNS answer when last checked (Cloudflare nameservers had no apex record), so the canonical host is **`https://www.trimmel.app`** for now. The old `trimmel.vercel.app` host redirects (301) to it through `docs/vercel.json`. Once the apex resolves and Vercel serves it directly, switch the canonical URLs to `https://trimmel.app` (same files as the earlier swap plus `internal/appinfo/appinfo.go`) and make `www` redirect to the apex.
+
+### Progress (2026-10-22, later)
+
+- Phase 1 started: three guides and a guides index in `docs/guides/` (move a program, free disk space, startup programs), with Article JSON-LD, added to the sitemap and linked from the home page nav and footer. The `robocopy` / `mklink /J` recipe was run once on a temp folder to check it works.
+- GitHub: description, homepage (`https://www.trimmel.app`), topics and Discussions set. Discussion #1 asks about Trimmel Plus and is linked from the home page.
+- Analytics: `docs/analytics.js` loads Umami (cookie-free) once an ID is set; it is inert now. Download buttons already carry `data-umami-event` attributes. Before enabling, add a "Website analytics" section to `privacy.html`.
+- Directory copy and checklist: `planning/directory-submissions.md`.

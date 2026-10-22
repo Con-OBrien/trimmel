@@ -26,6 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <script defer src="analytics.js"></script>
   <style>
     :root {
       --cream:#fff8f1; --white:#fff; --line:#f0e0cf; --text:#3a2b3d; --muted:#6c5c70;
@@ -136,6 +137,7 @@
       <a class="link" href="#features">Features</a>
       <a class="link" href="#how">How it works</a>
       <a class="link" href="#faq">FAQ</a>
+      <a class="link" href="guides/">Guides</a>
       <a class="btn small" href="#download">Download</a>
     </div>
   </nav>
@@ -146,7 +148,7 @@
         <h1><span>Free up space.</span><span>Speed up startup.</span><span>Undo anything.</span></h1>
         <p class="lead">The free Windows tune-up: disk cleanup, startup manager and app mover. It shows what it will change before it changes it.</p>
         <div class="cta">
-          <a class="btn" id="hero-dl" href="downloads/Trimmel-Setup.exe" download>Download for Windows</a>
+          <a class="btn" id="hero-dl" href="downloads/Trimmel-Setup.exe" download data-umami-event="download-hero">Download for Windows</a>
           <a class="btn ghost" href="#features">See what it does</a>
         </div>
         <div class="meta" id="hero-meta">Free &middot; Windows 10 and 11</div>
@@ -237,8 +239,8 @@
         <div>
           <h2>Get Trimmel</h2>
           <p>Free for Windows 10 and 11 (64-bit). It asks for administrator rights on launch so it can clean system folders and install drivers.</p>
-          <a class="btn" id="dl-btn" href="downloads/Trimmel-Setup.exe" download>Download installer</a>
-          <a class="btn ghost" href="downloads/Trimmel-Portable.zip" download>Portable zip</a>
+          <a class="btn" id="dl-btn" href="downloads/Trimmel-Setup.exe" download data-umami-event="download-installer">Download installer</a>
+          <a class="btn ghost" href="downloads/Trimmel-Portable.zip" download data-umami-event="download-portable">Portable zip</a>
           <details open>
             <summary>Windows or Edge shows a warning?</summary>
             <p>The app is not code signed yet, so Windows does not know the publisher. That is expected for a new, small app.</p>
@@ -259,6 +261,12 @@
       </div>
     </section>
 
+    <section id="plus">
+      <h2>Thinking about Trimmel Plus</h2>
+      <p class="sub">Everything above stays free. I am considering an optional paid Plus for time savers such as scheduled cleanup, low-disk alerts and unlimited app moves. Nothing is built or priced yet.</p>
+      <p><a class="btn small" href="https://github.com/Con-OBrien/trimmel/discussions/1" data-umami-event="plus-interest" rel="noopener">Tell me what you would pay for</a></p>
+    </section>
+
     <section id="faq">
       <h2>Quick answers</h2>
       <p class="sub">&nbsp;</p>
@@ -269,7 +277,7 @@
     </section>
   </main>
 
-  <footer>Trimmel &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="#download">Download</a></footer>
+  <footer>Trimmel &middot; <a href="guides/">Guides</a> &middot; <a href="https://github.com/Con-OBrien/trimmel">Source on GitHub</a> &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="#download">Download</a></footer>
 
   <script>
     // Feature tabs

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Which startup programs can you disable on Windows? | Trimmel</title>
+  <meta name="description" content="A plain-English list of Windows startup programs that are usually safe to turn off, which to keep, and where to find items Task Manager does not show.">
+  <link rel="canonical" href="https://www.trimmel.app/guides/which-startup-programs-to-disable-windows.html">
+  <meta name="theme-color" content="#3b2a3f">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Trimmel">
+  <meta property="og:title" content="Which startup programs can you disable on Windows? | Trimmel">
+  <meta property="og:description" content="A plain-English list of Windows startup programs that are usually safe to turn off, which to keep, and where to find items Task Manager does not show.">
+  <meta property="og:url" content="https://www.trimmel.app/guides/which-startup-programs-to-disable-windows.html">
+  <meta property="og:image" content="https://www.trimmel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Which startup programs can you safely disable on Windows?", "description": "A plain-English list of Windows startup programs that are usually safe to turn off, which to keep, and where to find items Task Manager does not show.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "mainEntityOfPage": "https://www.trimmel.app/guides/which-startup-programs-to-disable-windows.html", "image": "https://www.trimmel.app/og.png", "author": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}, "publisher": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}}</script>
+  <link rel="icon" href="../logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../guides.css">
+  <script defer src="../analytics.js"></script>
+</head>
+<body>
+  <nav><div class="in"><a class="brand" href="../">trimmel</a><a class="l" href="./">Guides</a><a class="l" href="../#download">Download</a></div></nav>
+  <main>
+    <h1>Which startup programs can you safely disable on Windows?</h1>
+    <p class="meta">Last reviewed 22 October 2026 &middot; Windows 10 and 11</p>
+    <div class="answer"><p>Open Task Manager, go to Startup apps and disable updaters, launchers and tray helpers you rarely use. Keep antivirus and audio, graphics and touchpad drivers. Disabling is reversible.</p></div>
+
+    <h2>Where to turn things off</h2>
+    <ol>
+      <li><b>Task Manager.</b> Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Esc</kbd>, open <b>Startup apps</b>, sort by <b>Startup impact</b>, right-click an item and choose <b>Disable</b>.</li>
+      <li><b>Settings.</b> Settings, Apps, Startup has the same switches and also lists Microsoft Store apps.</li>
+    </ol>
+    <p>Disabling does not uninstall anything. You can turn it back on the same way.</p>
+
+    <h2>What is usually safe to turn off</h2>
+    <ul>
+      <li><b>Updaters and launchers</b> for programs you open rarely: Adobe, Java, Spotify, Steam, Epic, Discord, Teams.</li>
+      <li><b>Helper tray icons</b> from printer, camera or peripheral software. The device still works without them.</li>
+      <li><b>Cloud sync you do not use.</b> Keep OneDrive or Dropbox if you rely on them.</li>
+    </ul>
+
+    <h2>What to leave on</h2>
+    <div class="warn">
+      <ul>
+        <li><b>Antivirus and security software.</b></li>
+        <li><b>Audio, graphics and touchpad drivers.</b> Names such as Realtek, NVIDIA, Intel Graphics or Synaptics. Switching them off can break volume keys or gestures.</li>
+        <li><b>Anything you do not recognise.</b> Search the name first. If you cannot tell, leave it.</li>
+      </ul>
+    </div>
+
+    <h2>Startup items Task Manager does not show</h2>
+    <p>Some programs start through <b>scheduled tasks</b> instead of the Startup tab, and Microsoft Store apps use their own startup tasks. These are easy to miss. A complete check covers the registry <code>Run</code> keys, the two Startup folders, scheduled tasks that run at sign-in or boot, and Store app startup tasks.</p>
+
+    <h2>How much will it help?</h2>
+    <p>Each item mostly slows the first minute after you sign in, not day-to-day speed. Disable the high-impact items you do not need and judge the result over a few restarts. Do not expect miracles on a machine with an SSD and plenty of memory.</p>
+
+    <h2>The same thing in Trimmel</h2>
+    <p>Trimmel's <b>Startup</b> page lists all of the sources above in one place, with a plain-English note and a rough impact rating on each item. Its switches use the same flags Task Manager uses, so the change shows up there too and is fully reversible. Items it suggests turning off are tagged, and nothing is changed until you flip the switch.</p>
+
+    <div class="cta">
+      <h2>Check everything that starts with Windows</h2>
+      <p>Trimmel lists run keys, startup folders, scheduled tasks and Store apps with a note on each.</p>
+      <a class="btn" href="../#download" data-umami-event="guide-download" data-umami-event-guide="which-startup-programs-to-disable-windows">Get Trimmel, free</a>
+    </div>
+  </main>
+  <footer><a href="../">Trimmel</a> &middot; <a href="./">All guides</a> &middot; <a href="../privacy.html">Privacy policy</a></footer>
+</body>
+</html>
