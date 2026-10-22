@@ -80,17 +80,24 @@ jobs:
         run: go test ./... -covermode=atomic -coverprofile=coverage.out
 
       - name: Coverage report
-        shell: pwsh
+        shell: bash
         run: |
           go tool cover -html=coverage.out -o coverage.html
-          $lines = go tool cover -func=coverage.out
-          $total = [double](($lines | Select-Object -Last 1) -replace '.*\s([\d.]+)%.*', '$1')
-          $summary = @("## Go test coverage", "", "**Total: $total%** (floor $env:COVERAGE_FLOOR%)", "", "| Function | Coverage |", "| --- | --- |")
-          $summary += $lines | Where-Object { $_ -notmatch '^total' } | Sort-Object { [double](($_ -replace '.*\s([\d.]+)%.*', '$1')) } | Select-Object -First 15 | ForEach-Object {
-            $p = $_ -split '\s+' ; "| $($p[0]) $($p[1]) | $($p[-1]) |" }
-          $summary | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
-          "Total coverage: $total%"
-          if ($total -lt [double]$env:COVERAGE_FLOOR) { throw "coverage $total% is below the floor of $env:COVERAGE_FLOOR%" }
+          go tool cover -func=coverage.out > coverage.txt
+          total=$(awk '/^total:/ { gsub("%", "", $3); print $3 }' coverage.txt)
+          {
+            echo "## Go test coverage"
+            echo
+            echo "**Total: ${total}%** (floor ${COVERAGE_FLOOR}%)"
+            echo
+            echo "Least covered functions:"
+            echo
+            echo "| Function | Coverage |"
+            echo "| --- | --- |"
+            grep -v '^total:' coverage.txt | awk '{ v=$NF; gsub("%", "", v); print v, $1, $2 }' | sort -n | head -15 | awk '{ print "| " $2 " " $3 " | " $1 "% |" }'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Total coverage: ${total}%"
+          awk -v t="$total" -v f="$COVERAGE_FLOOR" 'BEGIN { if (t + 0 < f + 0) { print "coverage " t "% is below the floor of " f "%"; exit 1 } }'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -98,6 +105,7 @@ jobs:
           path: |
             coverage.out
             coverage.html
+            coverage.txt
 
       - name: Upload to Codecov (optional)
         if: ${{ env.CODECOV_TOKEN != '' }}
