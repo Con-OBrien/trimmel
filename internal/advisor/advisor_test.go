@@ -30,6 +30,24 @@ func TestHumanBytes(t *testing.T) {
 	}
 }
 
+func TestRankKeepsOrderOfEqualSizesAndShortLists(t *testing.T) {
+	out := rank([]Suggestion{{ID: "a", Size: 5}, {ID: "b", Size: 5}, {ID: "c", Size: 9}})
+	if len(out) != 3 || out[0].ID != "c" || out[1].ID != "a" || out[2].ID != "b" {
+		t.Errorf("unexpected order: %+v", out)
+	}
+	if got := rank(nil); len(got) != 0 {
+		t.Errorf("nothing in, nothing out, got %+v", got)
+	}
+}
+
+func TestHumanBytesLargeAndBoundary(t *testing.T) {
+	for in, want := range map[uint64]string{1024: "1.0 KB", 1 << 20: "1.0 MB", 5 << 40: "5.0 TB"} {
+		if got := HumanBytes(in); got != want {
+			t.Errorf("%d: got %q want %q", in, got, want)
+		}
+	}
+}
+
 func TestFolderRulesStayInsideProfile(t *testing.T) {
 	for _, r := range folderRules {
 		p := r.path(`C:\Users\x`, `C:\Users\x\AppData\Local`)
