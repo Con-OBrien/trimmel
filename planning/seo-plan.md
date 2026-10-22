@@ -122,3 +122,7 @@ All absolute URLs use `https://trimmel.vercel.app`. When the custom domain is li
 | gettrimmel.com, usetrimmel.com, trimmelapp.com | No registration found, probably available |
 
 `trimmel.app` is the best fit: short, clearly a software product, and `.app` is HTTPS-only. Check the live price on Cloudflare Registrar before buying.
+
+### Domain (2026-10-22)
+
+`trimmel.app` bought on Cloudflare, DNS only, pointed at Vercel. `www.trimmel.app` works. The apex `trimmel.app` returned no DNS answer when last checked (Cloudflare nameservers had no apex record), so the canonical host is **`https://www.trimmel.app`** for now. The old `trimmel.vercel.app` host redirects (301) to it through `docs/vercel.json`. Once the apex resolves and Vercel serves it directly, switch the canonical URLs to `https://trimmel.app` (same files as the earlier swap plus `internal/appinfo/appinfo.go`) and make `www` redirect to the apex.

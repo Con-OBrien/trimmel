@@ -1,6 +1,17 @@
 {
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "trimmel.vercel.app"
+        }
+      ],
+      "destination": "https://www.trimmel.app/$1",
+      "permanent": true
+    },
+    {
       "source": "/downloads/PC-Optimizer-Setup.exe",
       "destination": "/downloads/Trimmel-Setup.exe",
       "permanent": true

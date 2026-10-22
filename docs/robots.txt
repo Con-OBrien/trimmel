@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://trimmel.vercel.app/sitemap.xml
+Sitemap: https://www.trimmel.app/sitemap.xml
