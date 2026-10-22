@@ -55,6 +55,9 @@ export interface StartupItem {
   scope: "user" | "machine"
   enabled: boolean
   requiresAdmin: boolean
+  impact: "high" | "medium" | "low"
+  note: string
+  recommend: "disable" | "keep" | ""
 }
 
 export interface Driver {

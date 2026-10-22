@@ -202,3 +202,9 @@ select { background: var(--panel); border: 1px solid var(--line); color: var(--t
   .move-table th:nth-child(2), .move-table td:nth-child(2) { display: none; }
   th, td { padding: 10px 10px; }
 }
+
+/* Startup impact */
+.tag.good { background: var(--accent-soft); color: var(--accent-2); }
+.tag.impact-high { background: #fde3e3; color: var(--crit); }
+.tag.impact-medium { background: #fff1d6; color: var(--warn); }
+.tag.impact-low { background: var(--panel-2); color: var(--muted); }

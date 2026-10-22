@@ -64,6 +64,13 @@ func List() ([]Item, error) {
 			})
 		}
 	}
+	if tasks, err := listTasks(); err == nil {
+		items = append(items, tasks...)
+	}
+	for i := range items {
+		a := Advise(items[i].Name, items[i].Command)
+		items[i].Impact, items[i].Note, items[i].Recommend = a.Impact, a.Note, a.Recommend
+	}
 	sort.Slice(items, func(i, j int) bool { return strings.ToLower(items[i].Name) < strings.ToLower(items[j].Name) })
 	return items, nil
 }
@@ -72,6 +79,9 @@ func SetEnabled(id string, enabled bool) error {
 	srcID, name, ok := strings.Cut(id, "|")
 	if !ok {
 		return fmt.Errorf("bad startup item id %q", id)
+	}
+	if srcID == "task" {
+		return setTaskEnabled(name, enabled)
 	}
 	var s *source
 	for i := range sources {

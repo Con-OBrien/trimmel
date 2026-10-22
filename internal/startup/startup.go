@@ -12,4 +12,7 @@ type Item struct {
 	Scope         string `json:"scope"`  // "user" or "machine"
 	Enabled       bool   `json:"enabled"`
 	RequiresAdmin bool   `json:"requiresAdmin"`
+	Impact        string `json:"impact"`    // "high" | "medium" | "low": rough effect on sign-in time
+	Note          string `json:"note"`      // plain-English explanation, may be empty
+	Recommend     string `json:"recommend"` // "disable" | "keep" | ""
 }
