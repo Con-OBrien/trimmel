@@ -108,7 +108,7 @@ export const processesView: View = (root, params) => {
     const name = btn.dataset.name!
     if (!confirm(`End ${name}? Unsaved work in it will be lost.`)) return
     try {
-      await api.KillProcess(Number(btn.dataset.kill))
+      await api.KillProcess(Number(btn.dataset.kill), name)
       toast(`Ended ${name}`)
       load()
     } catch (err) {

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -75,7 +76,7 @@ func Scan() ([]Old, error) {
 	olds := find(entries)
 	var wg sync.WaitGroup
 	for i := range olds {
-		if olds[i].Size != 0 || loc[olds[i].ID] == "" {
+		if olds[i].Size != 0 || loc[olds[i].ID] == "" || !measurable(loc[olds[i].ID]) {
 			continue
 		}
 		wg.Add(1)
@@ -92,6 +93,22 @@ func Scan() ([]Old, error) {
 		return olds[i].Name < olds[j].Name
 	})
 	return olds, nil
+}
+
+// measurable reports whether an InstallLocation is a folder belonging to one
+// program. A drive root or a shared folder such as Program Files would make
+// the size walk cover far more than the program.
+func measurable(dir string) bool {
+	dir = filepath.Clean(dir)
+	if !filepath.IsAbs(dir) || filepath.Dir(dir) == dir {
+		return false
+	}
+	for _, env := range []string{"ProgramFiles", "ProgramFiles(x86)", "ProgramData", "USERPROFILE", "SystemRoot"} {
+		if v := os.Getenv(env); v != "" && strings.EqualFold(filepath.Clean(v), dir) {
+			return false
+		}
+	}
+	return true
 }
 
 func dirSize(root string) (n uint64) {
@@ -138,10 +155,13 @@ func Uninstall(id string) error {
 	cmd := exec.Command("cmd.exe")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow: true,
-		CmdLine:    `cmd.exe /S /C "start "" /wait ` + quoteCommand(target.uninstall) + `"`,
+		CmdLine:    `cmd.exe /S /C "start "" /wait ` + quoteCommand(msiUninstall(target.uninstall)) + `"`,
 	}
 	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("uninstaller failed: %s", strings.TrimSpace(string(out)))
+		if msg := strings.TrimSpace(string(out)); msg != "" {
+			return fmt.Errorf("uninstaller failed: %s", msg)
+		}
+		return fmt.Errorf("the uninstaller of %s closed without finishing. It may have been cancelled", target.name)
 	}
 	return nil
 }
@@ -176,4 +196,13 @@ func quoteCommand(cmdline string) string {
 		return `"` + s[:i+4] + `"` + s[i+4:]
 	}
 	return s
+}
+
+var reMsiModify = regexp.MustCompile(`(?i)^(\s*"?(?:[^"\s]*\\)?msiexec(?:\.exe)?"?\s+)/i(\s*\{)`)
+
+// msiUninstall turns the "/I{product-code}" Windows Installer command many
+// MSI packages register as their UninstallString (which opens Modify/Repair)
+// into "/X{product-code}", which uninstalls.
+func msiUninstall(cmdline string) string {
+	return reMsiModify.ReplaceAllString(cmdline, "${1}/X${2}")
 }

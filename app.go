@@ -149,11 +149,11 @@ func (a *App) ListProcesses() ([]procs.Process, error) {
 	return a.procs.List()
 }
 
-func (a *App) KillProcess(pid int32) error {
+func (a *App) KillProcess(pid int32, name string) error {
 	if err := a.guard(); err != nil {
 		return err
 	}
-	return a.procs.Kill(pid)
+	return a.procs.Kill(pid, name)
 }
 
 // ---- Cleanup ----

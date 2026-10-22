@@ -347,10 +347,14 @@ func userFrom(idt *oidc.IDToken) (*User, error) {
 		Name              string `json:"name"`
 		PreferredUsername string `json:"preferred_username"`
 		Email             string `json:"email"`
+		EmailVerified     *bool  `json:"email_verified"`
 		Picture           string `json:"picture"`
 	}
 	if err := idt.Claims(&c); err != nil {
 		return nil, err
+	}
+	if c.Email != "" && c.EmailVerified != nil && !*c.EmailVerified {
+		return nil, errors.New("that account's email address isn't verified")
 	}
 	name := c.Name
 	if name == "" {

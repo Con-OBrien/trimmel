@@ -5,9 +5,11 @@ package drivers
 import (
 	"errors"
 	"fmt"
+	"os/exec"
 	"runtime"
 	"sort"
 	"strings"
+	"syscall"
 	"time"
 
 	ole "github.com/go-ole/go-ole"
@@ -119,7 +121,7 @@ func search(session *ole.IDispatch) (*ole.IDispatch, error) {
 
 	result, err := callDispatch(searcher, "Search", driverCriteria)
 	if err != nil {
-		return nil, fmt.Errorf("Windows Update search failed: %w", err)
+		return nil, friendlyWUError("Windows Update search failed", err)
 	}
 	defer result.Release()
 
@@ -158,6 +160,7 @@ func SearchUpdates() ([]Update, error) {
 
 func InstallUpdates(ids []string) (InstallResult, error) {
 	var res InstallResult
+	res.RestorePoint = createRestorePoint()
 	want := map[string]bool{}
 	for _, id := range ids {
 		want[id] = true
@@ -213,11 +216,16 @@ func InstallUpdates(ids []string) (InstallResult, error) {
 		if _, err := oleutil.PutProperty(downloader, "Updates", coll); err != nil {
 			return err
 		}
-		if v, err := oleutil.CallMethod(downloader, "Download"); err != nil {
-			return fmt.Errorf("download failed: %w", err)
-		} else {
-			v.Clear()
+		dl, err := callDispatch(downloader, "Download")
+		if err != nil {
+			return friendlyWUError("Download failed", err)
 		}
+		// OperationResultCode: 2 succeeded, 3 succeeded with errors.
+		if code := getInt(dl, "ResultCode"); code != 2 && code != 3 {
+			dl.Release()
+			return fmt.Errorf("Windows Update couldn't download the drivers (result code %d). Check your connection and try again", code)
+		}
+		dl.Release()
 
 		installer, err := callDispatch(session, "CreateUpdateInstaller")
 		if err != nil {
@@ -229,7 +237,7 @@ func InstallUpdates(ids []string) (InstallResult, error) {
 		}
 		result, err := callDispatch(installer, "Install")
 		if err != nil {
-			return fmt.Errorf("install failed: %w", err)
+			return friendlyWUError("Install failed", err)
 		}
 		defer result.Release()
 
@@ -335,4 +343,43 @@ func getInt(d *ole.IDispatch, prop string) int {
 		return n
 	}
 	return 0
+}
+
+// ---- Safety net and errors ----
+
+// createRestorePoint makes a System Restore point before drivers change, so a
+// bad driver can be rolled back. Windows allows one per 24 hours by default and
+// System Protection may be off, so a failure here is reported, not fatal.
+func createRestorePoint() bool {
+	cmd := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+		`Checkpoint-Computer -Description 'PC Optimizer: before driver update' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop`)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	done := make(chan error, 1)
+	if err := cmd.Start(); err != nil {
+		return false
+	}
+	go func() { done <- cmd.Wait() }()
+	select {
+	case err := <-done:
+		return err == nil
+	case <-time.After(90 * time.Second):
+		_ = cmd.Process.Kill()
+		return false
+	}
+}
+
+// friendlyWUError turns common Windows Update COM failures into plain English.
+func friendlyWUError(what string, err error) error {
+	msg := err.Error()
+	low := strings.ToLower(msg)
+	switch {
+	case strings.Contains(low, "80240438"), strings.Contains(low, "8024402c"), strings.Contains(low, "8024401c"),
+		strings.Contains(low, "80072ee"), strings.Contains(low, "80072ef"):
+		return fmt.Errorf("%s: couldn't reach Windows Update. Check your internet connection (%s)", what, msg)
+	case strings.Contains(low, "80240fff"), strings.Contains(low, "8024500c"), strings.Contains(low, "80240037"):
+		return fmt.Errorf("%s: this PC's updates seem to be managed by your organisation or a policy, so PC Optimizer can't use Windows Update here (%s)", what, msg)
+	case strings.Contains(low, "80240016"), strings.Contains(low, "8024001e"):
+		return fmt.Errorf("%s: Windows Update is busy or a restart is pending. Restart the PC and try again (%s)", what, msg)
+	}
+	return fmt.Errorf("%s: %w", what, err)
 }

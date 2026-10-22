@@ -82,6 +82,7 @@ export interface InstallResult {
   failed: string[] | null
   skipped: string[] | null
   rebootRequired: boolean
+  restorePoint: boolean
 }
 
 export interface AuthUser {
@@ -114,7 +115,7 @@ interface AppBindings {
   OtherAccount(): Promise<string>
   GetOverview(): Promise<Overview>
   ListProcesses(): Promise<Process[] | null>
-  KillProcess(pid: number): Promise<void>
+  KillProcess(pid: number, name: string): Promise<void>
   ScanCleanup(): Promise<CleanupTarget[] | null>
   RunCleanup(ids: string[]): Promise<CleanResult[] | null>
   ListStartup(): Promise<StartupItem[] | null>

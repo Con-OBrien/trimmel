@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -20,6 +21,9 @@ type target struct {
 	RequiresAdmin bool
 	MinAge        time.Duration // skip files modified more recently than this
 	Roots         func() []string
+	// Guard, if set, is checked before scanning or cleaning. A non-nil error
+	// means the target is unsafe right now and explains why.
+	Guard func() error
 	// Special targets (Recycle Bin) supply their own scan and clean.
 	ScanFn  func() (bytes uint64, files int64, err error)
 	CleanFn func() (bytes uint64, files int64, err error)
@@ -60,6 +64,13 @@ func Scan(isAdmin bool) []TargetReport {
 			out = append(out, r)
 			continue
 		}
+		if t.Guard != nil {
+			if gerr := t.Guard(); gerr != nil {
+				r.Available, r.Error = false, gerr.Error()
+				out = append(out, r)
+				continue
+			}
+		}
 		var err error
 		if t.ScanFn != nil {
 			r.Bytes, r.Files, err = t.ScanFn()
@@ -90,6 +101,8 @@ func Clean(ids []string, isAdmin bool) []CleanResult {
 		switch {
 		case t.RequiresAdmin && !isAdmin:
 			r.Error = errNeedsAdmin.Error()
+		case t.Guard != nil && t.Guard() != nil:
+			r.Error = t.Guard().Error()
 		case t.CleanFn != nil:
 			var err error
 			r.FreedBytes, r.Deleted, err = t.CleanFn()
@@ -111,6 +124,9 @@ func walk(t target, del bool, skipped *int64) (bytes uint64, files int64) {
 	cutoff := time.Now().Add(-t.MinAge)
 
 	for _, root := range t.Roots() {
+		if unsafeRoot(root) {
+			continue
+		}
 		info, err := os.Lstat(root)
 		if err != nil || info.Mode()&(fs.ModeSymlink|fs.ModeIrregular) != 0 {
 			continue
@@ -159,7 +175,7 @@ func walk(t target, del bool, skipped *int64) (bytes uint64, files int64) {
 }
 
 func handleFile(path string, fi fs.FileInfo, cutoff time.Time, del bool, bytes *uint64, files *int64, skipped *int64) {
-	if fi.ModTime().After(cutoff) {
+	if fi.ModTime().After(cutoff) || keepFile(path) {
 		return
 	}
 	if del {
@@ -182,4 +198,36 @@ func globAll(patterns ...string) []string {
 		out = append(out, m...)
 	}
 	return out
+}
+
+// unsafeRoot reports whether a cleanup root is somewhere that must never be
+// swept: a drive root, the Windows folder or the profile root. This guards
+// against a TEMP variable pointing somewhere unexpected (or being unset, which
+// makes os.TempDir fall back to the Windows folder).
+func unsafeRoot(root string) bool {
+	root = filepath.Clean(root)
+	if filepath.Dir(root) == root {
+		return true
+	}
+	for _, env := range []string{"SystemRoot", "SystemDrive", "USERPROFILE", "ProgramFiles", "ProgramFiles(x86)", "ProgramData"} {
+		if v := os.Getenv(env); v != "" && strings.EqualFold(filepath.Clean(v), root) {
+			return true
+		}
+	}
+	return false
+}
+
+// keepFile reports whether a file looks like live document state that an
+// open application may still depend on, however old it is: Office lock files
+// (~$name) and Word AutoRecover/backup files.
+func keepFile(path string) bool {
+	name := strings.ToLower(filepath.Base(path))
+	if strings.HasPrefix(name, "~$") {
+		return true
+	}
+	switch filepath.Ext(name) {
+	case ".asd", ".wbk":
+		return true
+	}
+	return false
 }

@@ -38,3 +38,26 @@ func TestQuoteCommand(t *testing.T) {
 		}
 	}
 }
+
+func TestMsiUninstall(t *testing.T) {
+	cases := map[string]string{
+		`MsiExec.exe /I{ABC-1}`:                      `MsiExec.exe /X{ABC-1}`,
+		`MsiExec.exe /X{ABC-1}`:                      `MsiExec.exe /X{ABC-1}`,
+		`"C:\Windows\System32\msiexec.exe" /i {ABC}`: `"C:\Windows\System32\msiexec.exe" /X {ABC}`,
+		`C:\Program Files\App\unins000.exe /SILENT`:  `C:\Program Files\App\unins000.exe /SILENT`,
+	}
+	for in, want := range cases {
+		if got := msiUninstall(in); got != want {
+			t.Errorf("%q: got %q want %q", in, got, want)
+		}
+	}
+}
+
+func TestMeasurable(t *testing.T) {
+	t.Setenv("ProgramFiles", `C:\Program Files`)
+	for dir, want := range map[string]bool{`C:\`: false, `C:\Program Files`: false, `C:\Program Files\App`: true} {
+		if got := measurable(dir); got != want {
+			t.Errorf("%s: got %v want %v", dir, got, want)
+		}
+	}
+}

@@ -3,9 +3,12 @@
 package cleanup
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"time"
+
+	"golang.org/x/sys/windows/registry"
 )
 
 const day = 24 * time.Hour
@@ -45,6 +48,12 @@ func targets() []target {
 			ID: "wu-cache", Name: "Windows Update downloads",
 			Description:   "Update packages that are already installed. Windows re-downloads anything it still needs.",
 			RequiresAdmin: true, MinAge: day,
+			Guard: func() error {
+				if rebootPending() {
+					return errors.New("Windows is waiting for a restart to finish updating. Restart first, then clean this")
+				}
+				return nil
+			},
 			Roots: func() []string { return []string{filepath.Join(winDir, "SoftwareDistribution", "Download")} },
 		},
 		{
@@ -76,4 +85,20 @@ func targets() []target {
 			CleanFn:     emptyRecycleBin,
 		},
 	}
+}
+
+// rebootPending reports whether Windows Update or component servicing is
+// waiting for a restart. Clearing the update download cache then could
+// corrupt the half-applied update.
+func rebootPending() bool {
+	for _, p := range []string{
+		`SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired`,
+		`SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending`,
+	} {
+		if k, err := registry.OpenKey(registry.LOCAL_MACHINE, p, registry.QUERY_VALUE); err == nil {
+			k.Close()
+			return true
+		}
+	}
+	return false
 }

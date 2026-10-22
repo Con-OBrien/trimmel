@@ -188,7 +188,7 @@ export const overviewView: View = root => {
       const name = kill.dataset.name!
       if (!confirm(`End ${name}? Unsaved work in it will be lost.`)) return
       try {
-        await api.KillProcess(Number(kill.dataset.kill))
+        await api.KillProcess(Number(kill.dataset.kill), name)
         toast(`Ended ${name}`)
         await loadProcs(); render()
       } catch (err) { toast(errMsg(err), "err") }

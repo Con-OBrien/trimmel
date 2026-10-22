@@ -101,7 +101,7 @@ func (m *Monitor) List() ([]Process, error) {
 			Name:       name,
 			CPUPercent: cpuPct / m.threads,
 			MemoryRSS:  rss,
-			Protected:  pid == self || pid <= 4 || critical[strings.ToLower(name)],
+			Protected:  pid == self || pid <= 4 || critical[strings.ToLower(name)] || ownChild(h, name, self),
 			RelatedTo:  info.relatedTo,
 			Vendor:     info.vendor,
 			Path:       info.path,
@@ -113,16 +113,51 @@ func (m *Monitor) List() ([]Process, error) {
 	return out, nil
 }
 
-func (m *Monitor) Kill(pid int32) error {
-	if pid == int32(os.Getpid()) || pid <= 4 {
+// ownChild reports whether h is one of this app's own WebView2 helper
+// processes. Ending one blanks the window.
+func ownChild(h *process.Process, name string, self int32) bool {
+	if !strings.EqualFold(name, "msedgewebview2.exe") {
+		return false
+	}
+	cur := h
+	for depth := 0; depth < 6; depth++ {
+		ppid, err := cur.Ppid()
+		if err != nil || ppid <= 0 {
+			return false
+		}
+		if ppid == self {
+			return true
+		}
+		if cur, err = process.NewProcess(ppid); err != nil {
+			return false
+		}
+	}
+	return false
+}
+
+// Kill ends a process. expectName is the name the user saw in the list; if
+// the PID has since been reused by a different program, nothing is ended.
+func (m *Monitor) Kill(pid int32, expectName string) error {
+	self := int32(os.Getpid())
+	if pid == self || pid <= 4 {
 		return fmt.Errorf("refusing to end protected process %d", pid)
 	}
 	p, err := process.NewProcess(pid)
 	if err != nil {
 		return fmt.Errorf("process %d not found", pid)
 	}
-	if name, err := p.Name(); err == nil && critical[strings.ToLower(name)] {
+	name, err := p.Name()
+	if err != nil {
+		return fmt.Errorf("could not identify process %d, so it was left alone", pid)
+	}
+	if !strings.EqualFold(name, expectName) {
+		return fmt.Errorf("process %d is now %s, not %s. The list was out of date, so nothing was ended", pid, name, expectName)
+	}
+	if critical[strings.ToLower(name)] {
 		return fmt.Errorf("refusing to end %s: Windows depends on it", name)
+	}
+	if ownChild(p, name, self) {
+		return fmt.Errorf("refusing to end %s: PC Optimizer's own window depends on it", name)
 	}
 	if err := p.Kill(); err != nil {
 		return fmt.Errorf("could not end process %d: %w (it may need admin rights)", pid, err)

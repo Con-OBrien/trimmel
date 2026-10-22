@@ -29,4 +29,5 @@ type InstallResult struct {
 	Failed         []string `json:"failed"`
 	Skipped        []string `json:"skipped"` // e.g. licence terms not yet accepted
 	RebootRequired bool     `json:"rebootRequired"`
+	RestorePoint   bool     `json:"restorePoint"` // a System Restore point was made first
 }

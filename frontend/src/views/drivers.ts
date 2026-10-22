@@ -134,11 +134,11 @@ export const driversView: View = root => {
   updatesEl.addEventListener("click", async e => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("#dr-install")
     if (!btn) return
-    if (!confirm(`Install ${chosen.size} driver update(s)? Devices may briefly disconnect while they install.`)) return
+    if (!confirm(`Install ${chosen.size} driver update(s)? Devices may briefly disconnect while they install. A System Restore point is made first if Windows allows it, and this can take several minutes.`)) return
     try {
       const r = await busy(btn, "Downloading and installing…", () => api.InstallDriverUpdates([...chosen]))
       const ok = r.installed?.length ?? 0, bad = r.failed?.length ?? 0
-      toast(`${ok} installed${bad ? `, ${bad} failed` : ""}${r.rebootRequired ? ". Restart to finish." : ""}`, bad ? "err" : "ok")
+      toast(`${ok} installed${bad ? `, ${bad} failed` : ""}${r.rebootRequired ? ". Restart to finish." : ""}${r.restorePoint ? "" : ". No restore point was made (System Protection may be off)"}`, bad ? "err" : "ok")
       chosen.clear()
       lastKey = ""
       await poll()
