@@ -1,10 +1,11 @@
 import { api, CleanupTarget } from "../api"
-import { busy, errMsg, esc, fmtBytes, toast, View } from "../ui"
+import { accountWarning, busy, errMsg, esc, fmtBytes, toast, View } from "../ui"
 
 export const cleanupView: View = root => {
   root.innerHTML = `
     <header class="view-head"><h1>Cleanup</h1>
       <button class="btn" id="cl-scan">Scan again</button></header>
+    <div id="cl-account"></div>
     <div id="cl-body"><p class="muted">Scanning…</p></div>`
 
   let targets: CleanupTarget[] = []
@@ -78,5 +79,6 @@ export const cleanupView: View = root => {
   })
 
   root.querySelector("#cl-scan")!.addEventListener("click", scan)
+  accountWarning().then(h => { root.querySelector("#cl-account")!.innerHTML = h })
   scan()
 }

@@ -27,6 +27,7 @@ if ($id) {
   $ldflags = "-X pcoptimizer/internal/auth.GoogleClientID=$id"
   if ($secret) { $ldflags += " -X pcoptimizer/internal/auth.GoogleClientSecret=$secret" }
 } else {
+  if ($Publish) { throw "PCOPT_GOOGLE_CLIENT_ID is not set (add it to .env.local). Refusing to publish a build with no sign-in." }
   Write-Warning "PCOPT_GOOGLE_CLIENT_ID is not set. This build has NO sign-in and opens straight into the app."
 }
 

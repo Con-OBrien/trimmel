@@ -44,3 +44,9 @@ func TestChooseDest(t *testing.T) {
 		t.Fatal("collision folder was modified")
 	}
 }
+
+func TestCheckDestVolumeAcceptsSystemDrive(t *testing.T) {
+	if err := checkDestVolume(os.Getenv("SystemDrive") + `\`); err != nil {
+		t.Fatalf("system drive should be an acceptable destination: %v", err)
+	}
+}

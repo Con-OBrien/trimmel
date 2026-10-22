@@ -17,6 +17,7 @@ import (
 
 	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/shirou/gopsutil/v4/process"
+	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -80,6 +81,9 @@ func enumerate() []Install {
 			in := Install{Name: name, Publisher: pub, Path: loc, Drive: filepath.VolumeName(loc), Movable: true}
 			if isLink(fi) {
 				in.MovedTo = linkTarget(loc)
+				if _, err := os.Stat(loc); err != nil {
+					in.Broken = true // the drive holding the program is gone
+				}
 			} else if reason := blockReason(loc, pub, sysComp != 0); reason != "" {
 				in.Movable, in.Reason = false, reason
 			}
@@ -109,6 +113,9 @@ func Scan() ([]Install, error) {
 			target := in.Path
 			if in.MovedTo != "" {
 				target = in.MovedTo
+			}
+			if in.Broken {
+				return
 			}
 			in.Size, _, _ = dirStats(target)
 		}(&found[i])
@@ -181,6 +188,9 @@ func Move(src, destRoot string, emit func(Progress)) (Result, error) {
 	destRoot = vol + `\`
 	if _, err := os.Stat(destRoot); err != nil {
 		return Result{}, fmt.Errorf("drive %s isn't available", vol)
+	}
+	if err := checkDestVolume(destRoot); err != nil {
+		return Result{}, err
 	}
 	dest, err := chooseDest(filepath.Join(destRoot, holdFolder, name), src)
 	if err != nil {
@@ -266,6 +276,9 @@ func MoveBack(src string, emit func(Progress)) (Result, error) {
 	if target == "" {
 		return Result{}, errors.New("couldn't read where the install was moved to")
 	}
+	if _, err := os.Stat(target); err != nil {
+		return Result{}, fmt.Errorf("the drive holding this program (%s) isn't available. Reconnect it, then try again", filepath.VolumeName(target))
+	}
 	if procs := runningFrom(target); len(procs) > 0 {
 		return Result{}, fmt.Errorf("close these first: %s", strings.Join(procs, ", "))
 	}
@@ -301,8 +314,32 @@ func MoveBack(src string, emit func(Progress)) (Result, error) {
 
 // ---- helpers ----
 
+// checkDestVolume refuses drives a moved program can't safely live on: ones
+// that can disappear (removable, network) and ones that can't hold the
+// original permissions (anything but NTFS or ReFS).
+func checkDestVolume(root string) error {
+	p, err := windows.UTF16PtrFromString(root)
+	if err != nil {
+		return err
+	}
+	switch windows.GetDriveType(p) {
+	case windows.DRIVE_REMOVABLE, windows.DRIVE_CDROM:
+		return fmt.Errorf("%s is a removable drive. The program would stop working whenever it is unplugged", root)
+	case windows.DRIVE_REMOTE:
+		return fmt.Errorf("%s is a network drive. The program would stop working whenever the network is unavailable", root)
+	}
+	var fsName [windows.MAX_PATH + 1]uint16
+	if err := windows.GetVolumeInformation(p, nil, 0, nil, nil, nil, &fsName[0], uint32(len(fsName))); err != nil {
+		return fmt.Errorf("couldn't read drive %s: %w", root, err)
+	}
+	if fs := windows.UTF16ToString(fsName[:]); !strings.EqualFold(fs, "NTFS") && !strings.EqualFold(fs, "ReFS") {
+		return fmt.Errorf("%s is formatted as %s, which can't keep the program's file permissions. Use an NTFS drive", root, fs)
+	}
+	return nil
+}
+
 func robocopy(src, dst string, total uint64, progress func(float64)) error {
-	cmd := exec.Command("robocopy", src, dst, "/E", "/COPY:DAT", "/DCOPY:DAT", "/XJ",
+	cmd := exec.Command("robocopy", src, dst, "/E", "/COPY:DATSO", "/DCOPY:DAT", "/XJ",
 		"/R:1", "/W:1", "/MT:8", "/NFL", "/NDL", "/NJH", "/NJS", "/NP")
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 

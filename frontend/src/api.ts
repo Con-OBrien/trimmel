@@ -111,6 +111,7 @@ interface AppBindings {
   CancelLogin(): Promise<void>
   Logout(): Promise<void>
   IsAdmin(): Promise<boolean>
+  OtherAccount(): Promise<string>
   GetOverview(): Promise<Overview>
   ListProcesses(): Promise<Process[] | null>
   KillProcess(pid: number): Promise<void>
@@ -145,6 +146,7 @@ export interface Install {
   movable: boolean
   reason: string
   movedTo: string
+  broken: boolean
 }
 
 export interface MoveProgress {

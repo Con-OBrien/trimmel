@@ -1,11 +1,12 @@
 import { api, StartupItem } from "../api"
-import { errMsg, esc, toast, View } from "../ui"
+import { accountWarning, errMsg, esc, toast, View } from "../ui"
 
 export const startupView: View = root => {
   root.innerHTML = `
     <header class="view-head"><h1>Startup</h1><span class="muted" id="st-count"></span></header>
     <p class="muted small">Disabling works like Task Manager: the entry stays, Windows just skips it at sign-in.
       You can turn it back on any time.</p>
+    <div id="st-account"></div>
     <div id="st-body" class="panel list"><p class="muted">Loading…</p></div>`
 
   const body = root.querySelector<HTMLElement>("#st-body")!
@@ -55,5 +56,6 @@ export const startupView: View = root => {
     }
   })
 
+  accountWarning().then(h => { root.querySelector("#st-account")!.innerHTML = h })
   load()
 }

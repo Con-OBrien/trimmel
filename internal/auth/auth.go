@@ -94,12 +94,13 @@ type Status struct {
 }
 
 type Manager struct {
-	mu     sync.Mutex
-	cfg    Config
-	cfgErr error
-	user   *User
-	cancel context.CancelFunc // in-flight login
-	open   func(url string)   // opens the system browser
+	mu         sync.Mutex
+	cfg        Config
+	cfgErr     error
+	user       *User
+	restoreErr string             // set when a silent sign-in failed for a non-credential reason
+	cancel     context.CancelFunc // in-flight login
+	open       func(url string)   // opens the system browser
 }
 
 func NewManager(openBrowser func(url string)) *Manager {
@@ -113,6 +114,8 @@ func (m *Manager) Status() Status {
 	s := Status{Configured: m.cfg.Enabled(), User: m.user, ConfigPath: ConfigPath()}
 	if m.cfgErr != nil {
 		s.Error = m.cfgErr.Error()
+	} else if m.restoreErr != "" {
+		s.Error = m.restoreErr
 	}
 	return s
 }
@@ -147,13 +150,21 @@ func (m *Manager) isGoogle() bool {
 // rejected token is not an error: the user just has to sign in again.
 func (m *Manager) Restore(ctx context.Context) Status {
 	if m.cfg.Enabled() {
-		if u, err := m.restore(ctx); err == nil {
-			m.mu.Lock()
+		u, err := m.restore(ctx)
+		m.mu.Lock()
+		m.restoreErr = ""
+		switch {
+		case err == nil:
 			m.user = u
-			m.mu.Unlock()
-		} else if !errors.Is(err, keyring.ErrNotFound) {
-			_ = keyring.Delete(keyringService, keyringUser) // stale or revoked
+		case errors.Is(err, keyring.ErrNotFound):
+		case rejectedByProvider(err):
+			_ = keyring.Delete(keyringService, keyringUser) // revoked or expired
+		default:
+			// Offline or provider unreachable: keep the token so the next
+			// launch with a connection signs in silently.
+			m.restoreErr = "Couldn't reach the sign-in service. Check your internet connection and try again."
 		}
+		m.mu.Unlock()
 	}
 	return m.Status()
 }
@@ -163,7 +174,7 @@ func (m *Manager) restore(ctx context.Context) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	provider, err := oidc.NewProvider(ctx, m.cfg.Issuer)
 	if err != nil {
@@ -319,6 +330,16 @@ func (m *Manager) Logout() {
 	m.mu.Lock()
 	m.user = nil
 	m.mu.Unlock()
+}
+
+// rejectedByProvider reports whether err means the provider refused the stored
+// credentials (as opposed to a network or server problem).
+func rejectedByProvider(err error) bool {
+	var re *oauth2.RetrieveError
+	if !errors.As(err, &re) {
+		return false
+	}
+	return re.ErrorCode == "invalid_grant" || re.ErrorCode == "invalid_client" || re.ErrorCode == "unauthorized_client"
 }
 
 func userFrom(idt *oidc.IDToken) (*User, error) {

@@ -82,7 +82,9 @@ export const moveView: View = root => {
       <tbody>${list.map(i => {
         const idx = installs.indexOf(i)
         let action: string
-        if (i.movedTo) {
+        if (i.broken) {
+          action = `<span class="muted small">Drive ${esc(i.movedTo.slice(0, 2))} is missing. Reconnect it to use or move back.</span>`
+        } else if (i.movedTo) {
           action = `<button class="btn small" data-back="${idx}" ${working ? "disabled" : ""}>Move back</button>`
         } else if (!i.movable) {
           action = `<span class="muted small">${esc(i.reason)}</span>`
@@ -93,7 +95,7 @@ export const moveView: View = root => {
         }
         return `
         <tr>
-          <td class="name">${esc(i.name)}${i.movedTo ? ` <span class="tag">moved to ${esc(i.movedTo.slice(0, 2))}</span>` : ""}
+          <td class="name">${esc(i.name)}${i.movedTo ? ` <span class="tag">${i.broken ? "target missing" : "moved to " + esc(i.movedTo.slice(0, 2))}</span>` : ""}
             <div class="muted small related" title="${esc(i.path)}">${esc(i.publisher ? i.publisher + " · " : "")}${esc(i.path)}</div></td>
           <td class="muted">${esc(i.drive)}</td>
           <td class="num">${fmtBytes(i.size)}</td>
@@ -156,7 +158,7 @@ export const moveView: View = root => {
     if (mv) {
       const i = installs[Number(mv.dataset.move)]
       const dest = destEl.value
-      if (!confirm(`Move ${i.name} (${fmtBytes(i.size)}) to ${dest}?\n\nMake sure it is closed. This can take several minutes, and you can move it back later.`)) return
+      if (!confirm(`Move ${i.name} (${fmtBytes(i.size)}) to ${dest}?\n\nMake sure it is closed. Keep the destination drive connected while you use it. This can take several minutes, and you can move it back later.`)) return
       run(`Moved ${i.name}`, () => api.MoveInstall(i.path, dest))
     } else if (back) {
       const i = installs[Number(back.dataset.back)]

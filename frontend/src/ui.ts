@@ -1,3 +1,4 @@
+import { api } from "./api"
 export const esc = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!)
 
@@ -63,4 +64,12 @@ export function fmtAgo(ms: number): string {
   if (s < 3600) return `${Math.floor(s / 60)} min ago`
   if (s < 86400) return `${Math.floor(s / 3600)} h ago`
   return `${Math.floor(s / 86400)} d ago`
+}
+
+/** Warns when the app runs as a different Windows user than the one at the desktop. */
+export async function accountWarning(): Promise<string> {
+  const name = await api.OtherAccount().catch(() => "")
+  return name
+    ? `<div class="hint warn">Running as <strong>${esc(name)}</strong>, not the account you are signed in to Windows with. This list is that account's, not yours.</div>`
+    : ""
 }

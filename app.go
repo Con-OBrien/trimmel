@@ -74,6 +74,16 @@ func (a *App) IsAdmin() bool {
 	return elevation.IsAdmin()
 }
 
+// OtherAccount returns the account the app runs as when that differs from the
+// user signed in to Windows (a standard user who approved the admin prompt
+// with an administrator's credentials), or "" when they match.
+func (a *App) OtherAccount() string {
+	if other, name := elevation.OtherAccount(); other {
+		return name
+	}
+	return ""
+}
+
 // ---- Overview ----
 
 type OverviewResult struct {
@@ -120,6 +130,9 @@ func (a *App) hints(s overview.Snapshot) []Hint {
 	}
 	if s.UptimeSeconds > 7*24*3600 {
 		hs = append(hs, Hint{"info", "No restart in over a week. A reboot clears leaked memory and finishes pending updates."})
+	}
+	if name := a.OtherAccount(); name != "" {
+		hs = append(hs, Hint{"warn", fmt.Sprintf("PC Optimizer is running as %s, not as the account you are signed in to Windows with. Cleanup, Startup and the Recycle Bin affect that account's files, not yours. To tidy your own PC, sign in to Windows with an administrator account, or ask an administrator to make yours one.", name)})
 	}
 	if !elevation.IsAdmin() {
 		hs = append(hs, Hint{"info", "Not running with admin rights: system-wide cleanup, machine startup items and driver installs are limited. Start the app with “Run as administrator”."})

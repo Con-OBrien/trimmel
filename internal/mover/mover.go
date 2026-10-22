@@ -21,6 +21,7 @@ type Install struct {
 	Movable   bool   `json:"movable"`
 	Reason    string `json:"reason"`  // why it can't be moved
 	MovedTo   string `json:"movedTo"` // set when Path is already a junction
+	Broken    bool   `json:"broken"`  // junction whose target drive is missing
 }
 
 type Progress struct {
