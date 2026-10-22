@@ -34,7 +34,7 @@ jobs:
         run: npm run build
       - name: Unused code and dependencies
         run: npx --yes knip@5 --no-progress
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
@@ -91,7 +91,7 @@ jobs:
           "Total coverage: $total%"
           if ($total -lt [double]$env:COVERAGE_FLOOR) { throw "coverage $total% is below the floor of $env:COVERAGE_FLOOR%" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: |
