@@ -18,13 +18,16 @@ var assets embed.FS
 var version = "0.1.0"
 
 func main() {
-	uninstall := false
+	mode := "install"
 	for _, a := range os.Args[1:] {
-		if a == "--uninstall" {
-			uninstall = true
+		switch a {
+		case "--uninstall":
+			mode = "uninstall"
+		case "--modify":
+			mode = "modify"
 		}
 	}
-	app := NewApp(uninstall)
+	app := NewApp(mode)
 
 	err := wails.Run(&options.App{
 		Title:     "PC Optimizer Setup",

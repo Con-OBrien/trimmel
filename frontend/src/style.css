@@ -245,3 +245,11 @@ button.link:hover { text-decoration: underline; }
 .skip-link:focus { left: 12px; }
 #view:focus { outline: none; }
 .nav-item[aria-current="page"] { font-weight: 800; }
+
+/* Settings */
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 26px 4px 8px; }
+.section-title:first-child { margin-top: 0; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.btn.danger { color: var(--crit); border-color: var(--line); }
+.btn.danger:hover:not(:disabled) { border-color: var(--crit); }
+.list-row .mono { word-break: break-all; }

@@ -22,9 +22,9 @@ $version = (Get-Content wails.json | ConvertFrom-Json).info.productVersion
 $id = $env:PCOPT_GOOGLE_CLIENT_ID
 $secret = $env:PCOPT_GOOGLE_CLIENT_SECRET
 
-$ldflags = ""
+$ldflags = "-X main.version=$version"
 if ($id) {
-  $ldflags = "-X pcoptimizer/internal/auth.GoogleClientID=$id"
+  $ldflags += " -X pcoptimizer/internal/auth.GoogleClientID=$id"
   if ($secret) { $ldflags += " -X pcoptimizer/internal/auth.GoogleClientSecret=$secret" }
 } else {
   if ($Publish) { throw "PCOPT_GOOGLE_CLIENT_ID is not set (add it to .env.local). Refusing to publish a build with no sign-in." }
@@ -32,7 +32,7 @@ if ($id) {
 }
 
 Write-Host "1/3 Building the app..."
-if ($ldflags) { wails build -clean -trimpath -webview2 embed -ldflags $ldflags } else { wails build -clean -trimpath -webview2 embed }
+wails build -clean -trimpath -webview2 embed -ldflags $ldflags
 if ($LASTEXITCODE) { throw "app build failed" }
 Copy-Item build\bin\pcoptimizer.exe installer\payload\pcoptimizer.exe -Force
 

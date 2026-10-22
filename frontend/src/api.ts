@@ -161,6 +161,20 @@ export interface InstalledApp {
   shared: boolean
 }
 
+export interface AppInfo {
+  version: string
+  admin: boolean
+  install: { installed: boolean; dir: string; exe: string; hasUninstall: boolean; settingsDir: string }
+}
+
+export interface UpdateInfo {
+  current: string
+  latest: string
+  available: boolean
+  date: string
+  url: string
+}
+
 interface AppBindings {
   GetHealth(): Promise<HealthReport>
   GetPrefs(): Promise<Prefs>
@@ -185,6 +199,12 @@ interface AppBindings {
   Logout(): Promise<void>
   IsAdmin(): Promise<boolean>
   OtherAccount(): Promise<string>
+  AppInfo(): Promise<AppInfo>
+  CheckUpdate(): Promise<UpdateInfo>
+  OpenDownloadPage(): Promise<void>
+  OpenFolder(kind: "install" | "settings"): Promise<void>
+  RunSetup(mode: "modify" | "uninstall"): Promise<void>
+  DeleteSettings(): Promise<void>
   GetOverview(): Promise<Overview>
   ListProcesses(): Promise<Process[] | null>
   KillProcess(pid: number, name: string): Promise<void>

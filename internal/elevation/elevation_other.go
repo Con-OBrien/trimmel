@@ -8,5 +8,4 @@ import (
 
 func IsAdmin() bool { return os.Geteuid() == 0 }
 
-
 func OtherAccount() (bool, string) { return false, "" }

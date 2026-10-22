@@ -57,10 +57,11 @@ function welcome() {
 }
 
 function options() {
+  const modify = info.mode === "modify"
   setSteps(INSTALL_STEPS, 1)
   show(`
-    <h1>Make it yours</h1>
-    <p class="lead">Defaults suit most people. Change them if you like.</p>
+    <h1>${modify ? "Change install location" : "Make it yours"}</h1>
+    <p class="lead">${modify ? "Pick a new folder. Setup moves PC Optimizer there and removes the old copy. Your settings stay." : "Defaults suit most people. Change them if you like."}</p>
     <div class="section">
       <div class="label">Install location</div>
       <div class="panel"><div class="field">
@@ -79,8 +80,8 @@ function options() {
     </div>
     <div class="err" id="err"></div>
     <div class="foot">
-      <button class="btn ghost" id="back">Back</button>
-      <div class="right"><button class="btn primary big" id="go">${info.existing ? "Update" : "Install"}</button></div>
+      <button class="btn ghost" id="back">${modify ? "Cancel" : "Back"}</button>
+      <div class="right"><button class="btn primary big" id="go">${modify ? "Move" : info.existing ? "Update" : "Install"}</button></div>
     </div>`, () => {
     const dir = document.getElementById("dir")
     dir.oninput = () => (opts.dir = dir.value)
@@ -90,7 +91,7 @@ function options() {
       const p = await go().PickDir(dir.value).catch(() => "")
       if (p) { opts.dir = p.replace(/[\\/]+$/, "") + (/pc optimizer$/i.test(p) ? "" : "\\PC Optimizer"); dir.value = opts.dir }
     }
-    document.getElementById("back").onclick = welcome
+    document.getElementById("back").onclick = modify ? () => go().Close() : welcome
     document.getElementById("go").onclick = runInstall
   })
 }
@@ -119,7 +120,7 @@ async function runInstall() {
   const err = document.getElementById("err")
   if (!opts.dir.trim()) { err.textContent = "Choose an install folder."; return }
   setSteps(INSTALL_STEPS, 2)
-  progressScreen(info.existing ? "Updating…" : "Installing…", "This only takes a moment. Please keep this window open.")
+  progressScreen(info.mode === "modify" ? "Moving…" : info.existing ? "Updating…" : "Installing…", "This only takes a moment. Please keep this window open.")
   try {
     await go().Install({ dir: opts.dir.trim(), desktopLink: opts.desktopLink, removeConfig: false })
     await new Promise(r => setTimeout(r, 500))
@@ -213,5 +214,5 @@ go().Info().then(i => {
   info = i
   opts.dir = i.defaultDir
   document.getElementById("ver").textContent = "Version " + i.version
-  i.mode === "uninstall" ? confirmRemove() : welcome()
+  i.mode === "uninstall" ? confirmRemove() : i.mode === "modify" ? options() : welcome()
 })
