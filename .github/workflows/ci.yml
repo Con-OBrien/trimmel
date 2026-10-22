@@ -14,7 +14,7 @@ concurrency:
 
 env:
   # Lowest total statement coverage that still passes. Raise it as tests are added.
-  COVERAGE_FLOOR: "44"
+  COVERAGE_FLOOR: "48"
 
 jobs:
   frontend:
