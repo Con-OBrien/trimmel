@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trimmel changelog: what changed in each version</title>
+  <meta name="description" content="What changed in each Trimmel release.">
+  <link rel="canonical" href="https://www.trimmel.app/changelog.html">
+  <meta name="theme-color" content="#3b2a3f">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Trimmel">
+  <meta property="og:title" content="Trimmel changelog: what changed in each version">
+  <meta property="og:description" content="What changed in each Trimmel release.">
+  <meta property="og:url" content="https://www.trimmel.app/changelog.html">
+  <meta property="og:image" content="https://www.trimmel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Changelog", "description": "What changed in each Trimmel release.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "mainEntityOfPage": "https://www.trimmel.app/changelog.html", "image": "https://www.trimmel.app/og.png", "author": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}, "publisher": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Trimmel", "item": "https://www.trimmel.app/"}, {"@type": "ListItem", "position": 2, "name": "Changelog", "item": "https://www.trimmel.app/changelog.html"}]}</script>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="guides.css">
+  <script defer src="analytics.js"></script>
+</head>
+<body>
+  <nav><div class="in"><a class="brand" href="./">trimmel</a><a class="l" href="guides/">Guides</a><a class="l" href="./#download">Download</a></div></nav>
+  <main>
+    <h1>Changelog</h1>
+    <p class="meta">Last reviewed 22 October 2026 &middot; Windows 10 and 11</p>
+    <div class="answer"><p>Each release, newest first. Everything that existed before stays free.</p></div>
+
+    <h2>0.2.1 <span class="meta">22 October 2026</span></h2>
+    <ul>
+      <li>Startup now lists Microsoft Store app startup tasks and lets you switch them on and off.</li>
+      <li>Installing drivers shows each step (restore point, download, install) and warns you on a metered connection.</li>
+      <li>If setup fails part-way, it removes what it added instead of leaving a half install.</li>
+      <li>Uninstalling with "delete settings" now also removes the saved sign-in token from Windows Credential Manager.</li>
+      <li>Behind the scenes: the project is renamed throughout, and build settings use <code>TRIMMEL_</code> names (the old <code>PCOPT_</code> names still work).</li>
+    </ul>
+
+    <h2>0.2.0 <span class="meta">22 October 2026</span></h2>
+    <ul>
+      <li><b>PC Optimizer is now Trimmel.</b> Your settings and sign-in move across on first start, and setup replaces the old version.</li>
+      <li>New Settings page, an update check, and a modify mode in the installer.</li>
+      <li>Startup lists scheduled tasks too, with an impact rating and a plain-English note on each item.</li>
+      <li>New Storage page with suggestions, an Apps list, a health score on the Overview and a welcome guide.</li>
+      <li>Safety fixes from the first QA round: moves keep file permissions and refuse removable or network drives, an offline start keeps you signed in, Windows Update downloads are not cleared while a restart is pending, and cleanup keeps Office lock files.</li>
+    </ul>
+
+    <h2>0.1.0 <span class="meta">first release, as PC Optimizer</span></h2>
+    <ul>
+      <li>Overview, Processes, Cleanup, Startup, Move apps, Old versions and Drivers.</li>
+    </ul>
+
+    <div class="cta">
+      <h2>Get the latest version</h2>
+      <p>Free for Windows 10 and 11.</p>
+      <a class="btn" href="./#download" data-umami-event="guide-download" data-umami-event-guide="changelog">Get Trimmel, free</a>
+    </div>
+  </main>
+  <footer><a href="./">Trimmel</a> &middot; <a href="guides/">All guides</a> &middot; <a href="privacy.html">Privacy policy</a></footer>
+</body>
+</html>

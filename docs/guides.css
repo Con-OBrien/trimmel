@@ -30,3 +30,9 @@ ul.cards li { background:var(--white); border:1px solid var(--line); border-radi
 ul.cards a { font:800 20px var(--display); text-decoration:none; }
 ul.cards p { margin:4px 0 0; color:var(--muted); font-size:16px; }
 footer { text-align:center; color:var(--muted); font-size:14px; padding:0 20px 40px; }
+table { width:100%; border-collapse:collapse; margin:14px 0; font-size:16px; background:var(--white); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:block; overflow-x:auto; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { background:#fbeede; font-weight:700; }
+h2 .meta { font:500 15px var(--body); letter-spacing:0; margin-left:8px; }
+ol, ul { padding-left:1.3em; }
+kbd { font-family:Consolas,monospace; background:#fff; border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:0 6px; font-size:.9em; }

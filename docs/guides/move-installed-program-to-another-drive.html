@@ -15,6 +15,7 @@
   <meta property="og:image" content="https://www.trimmel.app/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How to move an installed program to another drive on Windows", "description": "Move a big program from C: to another drive without reinstalling. Step by step with robocopy and a junction, plus how to undo it and what can go wrong.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "mainEntityOfPage": "https://www.trimmel.app/guides/move-installed-program-to-another-drive.html", "image": "https://www.trimmel.app/og.png", "author": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}, "publisher": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Trimmel", "item": "https://www.trimmel.app/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://www.trimmel.app/guides/"}, {"@type": "ListItem", "position": 3, "name": "How to move an installed program to another drive on Windows", "item": "https://www.trimmel.app/guides/move-installed-program-to-another-drive.html"}]}</script>
   <link rel="icon" href="../logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +64,15 @@ robocopy "D:\Moved Programs\Foo" "C:\Program Files\Foo" /E /COPY:DATSO /DCOPY:DA
 
     <h2>The same thing in Trimmel</h2>
     <p>Trimmel's <b>Move apps</b> page does these steps for you. It lists the programs Windows reports as installed with their size, copies with permissions kept (<code>/COPY:DATSO</code>), creates the junction, and marks each moved program so <b>Move back</b> undoes it in one click. It refuses removable and network drives and shows a warning if a destination goes missing.</p>
+
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="free-up-disk-space-windows-11.html">How to free up disk space on Windows 11 (and what is safe to delete)</a></li>
+      <li><a href="which-startup-programs-to-disable-windows.html">Which startup programs can you safely disable on Windows?</a></li>
+      <li><a href="is-it-safe-to-delete-temp-and-softwaredistribution-files.html">Is it safe to delete Temp, SoftwareDistribution and Windows.old files?</a></li>
+      <li><a href="update-drivers-safely-windows.html">How to update drivers safely on Windows (without a driver updater)</a></li>
+      <li><a href="trimmel-vs-microsoft-pc-manager-vs-bleachbit.html">Trimmel vs Microsoft PC Manager vs BleachBit</a></li>
+    </ul>
 
     <div class="cta">
       <h2>Rather not type commands?</h2>

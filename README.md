@@ -7,7 +7,7 @@
   <img alt="Go" src="https://img.shields.io/badge/Go-1.26-3b2a3f?style=flat-square&logo=go&logoColor=ffc25a">
   <img alt="Wails v2" src="https://img.shields.io/badge/Wails-v2-3b2a3f?style=flat-square&logoColor=ffc25a">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-frontend-3b2a3f?style=flat-square&logo=typescript&logoColor=ffc25a">
-  <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-ffc25a?style=flat-square&labelColor=3b2a3f">
+  <img alt="Version 0.2.1" src="https://img.shields.io/badge/version-0.2.1-ffc25a?style=flat-square&labelColor=3b2a3f">
 </p>
 
 <p align="center">
@@ -15,13 +15,29 @@
   One small desktop app, with plain-English explanations and nothing deleted behind your back.
 </p>
 
+<p align="center">
+  <a href="https://www.trimmel.app/#download"><b>Download for Windows</b></a> &middot;
+  <a href="https://www.trimmel.app">Website</a> &middot;
+  <a href="https://www.trimmel.app/guides/">Guides</a> &middot;
+  <a href="https://www.trimmel.app/changelog.html">Changelog</a> &middot;
+  <a href="https://github.com/Con-OBrien/trimmel/discussions">Discussions</a>
+</p>
+
 ---
+
+## 📥 Install
+
+1. Download `Trimmel-Setup.exe` (or the portable zip) from [trimmel.app](https://www.trimmel.app/#download), for Windows 10 and 11 (64-bit).
+2. Run it. Trimmel asks for administrator rights once, so it can clean system folders and install drivers.
+3. The installer is not code signed yet, so Windows SmartScreen may warn. The download page explains how to continue and shows the SHA-256 so you can check the file.
+
+Trimmel is free and open source under the MIT licence. The sections below are for developers.
 
 ## 👀 See it in action
 
 No download needed. Here is how each main screen looks.
 
-> These are illustrations drawn in the app's own palette, with sample data. Real screens match the layout and colours.
+> Screenshots of the real interface, filled with sample data.
 
 <table>
   <tr>
@@ -45,7 +61,7 @@ No download needed. Here is how each main screen looks.
 | **Processes** | Live CPU and memory per process, refreshed every 2 seconds, with a plain-English note on what each one belongs to. End a task in one click. Critical Windows processes are protected. |
 | **Cleanup** | Scans temp folders, Windows Update downloads, Chrome, Edge and Firefox caches, crash dumps and the Recycle Bin. Shows what each takes up, then deletes only what you tick. Also graphics shader caches, Windows error reports and the Delivery Optimization cache. |
 | **Storage** | Shows which folders and files take the most space on a drive, with drill-down and "Show in Explorer". Read-only: nothing is deleted from this page. |
-| **Startup** | Lists everything that launches at sign-in, including scheduled tasks, with a rough impact rating and a plain-English note on each. Switch items off and on; it uses the same flag as Task Manager, so it is fully reversible. |
+| **Startup** | Lists everything that launches at sign-in, including scheduled tasks and Microsoft Store apps, with a rough impact rating and a plain-English note on each. Switch items off and on; it uses the same flag as Task Manager, so it is fully reversible. |
 | **Apps** | Every installed program with size and install date. Uninstall opens the program's own uninstaller so you confirm what is removed. |
 | **Move apps** | Moves a big program to another drive and leaves a link behind so it keeps working. Copies and verifies first, and can move it back. Cleans up leftovers from interrupted moves. |
 | **Old versions** | Finds older duplicate installs and opens each program's own uninstaller, so you see and confirm what is removed. |

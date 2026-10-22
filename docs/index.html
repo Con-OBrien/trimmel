@@ -20,6 +20,7 @@
   <meta name="twitter:title" content="Trimmel: free Windows disk cleanup, startup manager and app mover">
   <meta name="twitter:description" content="Trimmel is a free Windows tune-up. Clear junk, see what fills your drive, move big apps to another drive, trim startup and update drivers. Undo anything.">
   <meta name="twitter:image" content="https://www.trimmel.app/og.png">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Trimmel", "alternateName": "Trimmel for Windows", "url": "https://www.trimmel.app/"}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Trimmel", "operatingSystem": "Windows 10, Windows 11", "applicationCategory": "UtilitiesApplication", "description": "Trimmel is a free Windows tune-up. Clear junk, see what fills your drive, move big apps to another drive, trim startup and update drivers. Undo anything.", "url": "https://www.trimmel.app/", "downloadUrl": "https://www.trimmel.app/downloads/Trimmel-Setup.exe", "softwareVersion": "0.2.1", "license": "https://opensource.org/license/mit", "image": "https://www.trimmel.app/og.png", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does it need administrator rights?", "acceptedAnswer": {"@type": "Answer", "text": "Cleaning system folders and installing drivers are protected actions in Windows. It asks once, at launch."}}, {"@type": "Question", "name": "Is it safe?", "acceptedAnswer": {"@type": "Answer", "text": "It lists every item with its size first and removes only what you tick. Startup changes and app moves can be reversed."}}, {"@type": "Question", "name": "How do I uninstall it?", "acceptedAnswer": {"@type": "Answer", "text": "Settings, Apps, Installed apps, then choose Uninstall. The uninstaller can also remove saved settings. Already have PC Optimizer 0.1? Run the new setup: it replaces the old version and keeps your settings."}}, {"@type": "Question", "name": "How much does it cost?", "acceptedAnswer": {"@type": "Answer", "text": "Nothing. It is free and open source under the MIT licence."}}]}</script>
   <link rel="icon" href="logo.svg" type="image/svg+xml">
@@ -89,6 +90,7 @@
     .tab[aria-selected="true"] { background:var(--plum); border-color:var(--plum); color:#fff; }
     .tool { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr); gap:28px; align-items:center; background:var(--white); border:1px solid var(--line); border-radius:24px; padding:26px; }
     .tool[hidden] { display:none; }
+    .tool .more { margin:12px 0 0; font-size:15px; }
     .tool h3 { font-size:28px; font-weight:800; margin-bottom:10px; }
     .tool ul { margin:0; padding:0; list-style:none; }
     .tool li { padding:7px 0 7px 26px; position:relative; }
@@ -188,15 +190,15 @@
         <picture><source srcset="screens/overview.webp" type="image/webp"><img src="screens/overview.png" alt="Overview screen" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="cleanup" hidden>
-        <div><h3>Cleanup</h3><ul><li>Temp files, update downloads, browser and shader caches</li><li>Sizes shown before anything goes</li><li>Tick what you want gone</li><li>Recent files are always kept</li></ul></div>
+        <div><h3>Cleanup</h3><ul><li>Temp files, update downloads, browser and shader caches</li><li>Sizes shown before anything goes</li><li>Tick what you want gone</li><li>Recent files are always kept</li></ul><p class="more"><a href="guides/is-it-safe-to-delete-temp-and-softwaredistribution-files.html">What is safe to delete? &rarr;</a></p></div>
         <picture><source srcset="screens/cleanup.webp" type="image/webp"><img src="screens/cleanup.png" alt="Cleanup screen" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="storage" hidden>
-        <div><h3>Storage</h3><ul><li>Folder sizes, drill down in a click</li><li>Suggestions: clean, move or review</li><li>Biggest files, one click to Explorer</li><li>Looks only. Deletes nothing</li></ul></div>
+        <div><h3>Storage</h3><ul><li>Folder sizes, drill down in a click</li><li>Suggestions: clean, move or review</li><li>Biggest files, one click to Explorer</li><li>Looks only. Deletes nothing</li></ul><p class="more"><a href="guides/free-up-disk-space-windows-11.html">How to free up disk space by hand &rarr;</a></p></div>
         <picture><source srcset="screens/storage.webp" type="image/webp"><img src="screens/storage.png" alt="Storage screen with suggestions" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="startup" hidden>
-        <div><h3>Startup</h3><ul><li>Everything that launches at sign-in, tasks included</li><li>Impact rating on each one</li><li>Suggestions for what to switch off</li><li>Flip it back on any time</li></ul></div>
+        <div><h3>Startup</h3><ul><li>Everything that launches at sign-in, tasks included</li><li>Impact rating on each one</li><li>Suggestions for what to switch off</li><li>Flip it back on any time</li></ul><p class="more"><a href="guides/which-startup-programs-to-disable-windows.html">Which startup programs to disable &rarr;</a></p></div>
         <picture><source srcset="screens/startup.webp" type="image/webp"><img src="screens/startup.png" alt="Startup screen" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="apps" hidden>
@@ -204,11 +206,11 @@
         <picture><source srcset="screens/apps.webp" type="image/webp"><img src="screens/apps.png" alt="Apps screen" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="move" hidden>
-        <div><h3>Move apps</h3><ul><li>Send big programs to another drive</li><li>They keep working, shortcuts and all</li><li>Copy checked before anything changes</li><li>Move back whenever you like</li></ul></div>
+        <div><h3>Move apps</h3><ul><li>Send big programs to another drive</li><li>They keep working, shortcuts and all</li><li>Copy checked before anything changes</li><li>Move back whenever you like</li></ul><p class="more"><a href="guides/move-installed-program-to-another-drive.html">How moving a program works &rarr;</a></p></div>
         <picture><source srcset="screens/move.webp" type="image/webp"><img src="screens/move.png" alt="Move apps screen" loading="lazy" width="1200" height="780"></picture>
       </div>
       <div class="tool" data-p="drivers" hidden>
-        <div><h3>Drivers</h3><ul><li>Updates straight from Windows Update</li><li>No third-party driver sites</li><li>A restore point is made first</li><li>Installed drivers listed by type</li></ul></div>
+        <div><h3>Drivers</h3><ul><li>Updates straight from Windows Update</li><li>No third-party driver sites</li><li>A restore point is made first</li><li>Installed drivers listed by type</li></ul><p class="more"><a href="guides/update-drivers-safely-windows.html">Updating drivers safely &rarr;</a></p></div>
         <picture><source srcset="screens/drivers.webp" type="image/webp"><img src="screens/drivers.png" alt="Drivers screen" loading="lazy" width="1200" height="780"></picture>
       </div>
     </section>
@@ -277,7 +279,7 @@
     </section>
   </main>
 
-  <footer>Trimmel &middot; <a href="guides/">Guides</a> &middot; <a href="https://github.com/Con-OBrien/trimmel">Source on GitHub</a> &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="#download">Download</a></footer>
+  <footer>Trimmel &middot; <a href="guides/">Guides</a> &middot; <a href="changelog.html">Changelog</a> &middot; <a href="https://github.com/Con-OBrien/trimmel">Source on GitHub</a> &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="#download">Download</a></footer>
 
   <script>
     // Feature tabs

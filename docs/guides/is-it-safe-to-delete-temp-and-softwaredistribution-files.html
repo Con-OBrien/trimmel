@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Is it safe to delete Temp and SoftwareDistribution files? | Trimmel</title>
+  <meta name="description" content="Which Windows junk folders are safe to clear, which are not, and the exact steps for the Windows Update download folder. Plus what can go wrong with temp files.">
+  <link rel="canonical" href="https://www.trimmel.app/guides/is-it-safe-to-delete-temp-and-softwaredistribution-files.html">
+  <meta name="theme-color" content="#3b2a3f">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Trimmel">
+  <meta property="og:title" content="Is it safe to delete Temp and SoftwareDistribution files? | Trimmel">
+  <meta property="og:description" content="Which Windows junk folders are safe to clear, which are not, and the exact steps for the Windows Update download folder. Plus what can go wrong with temp files.">
+  <meta property="og:url" content="https://www.trimmel.app/guides/is-it-safe-to-delete-temp-and-softwaredistribution-files.html">
+  <meta property="og:image" content="https://www.trimmel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Is it safe to delete Temp, SoftwareDistribution and Windows.old files?", "description": "Which Windows junk folders are safe to clear, which are not, and the exact steps for the Windows Update download folder. Plus what can go wrong with temp files.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "mainEntityOfPage": "https://www.trimmel.app/guides/is-it-safe-to-delete-temp-and-softwaredistribution-files.html", "image": "https://www.trimmel.app/og.png", "author": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}, "publisher": {"@type": "Organization", "name": "Trimmel", "url": "https://www.trimmel.app/"}}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Trimmel", "item": "https://www.trimmel.app/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://www.trimmel.app/guides/"}, {"@type": "ListItem", "position": 3, "name": "Is it safe to delete Temp, SoftwareDistribution and Windows.old files?", "item": "https://www.trimmel.app/guides/is-it-safe-to-delete-temp-and-softwaredistribution-files.html"}]}</script>
+  <link rel="icon" href="../logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../guides.css">
+  <script defer src="../analytics.js"></script>
+</head>
+<body>
+  <nav><div class="in"><a class="brand" href="../">trimmel</a><a class="l" href="./">Guides</a><a class="l" href="../#download">Download</a></div></nav>
+  <main>
+    <h1>Is it safe to delete Temp, SoftwareDistribution and Windows.old files?</h1>
+    <p class="meta">Last reviewed 22 October 2026 &middot; Windows 10 and 11</p>
+    <div class="answer"><p>Yes for Temp, the Recycle Bin and caches. Yes for <code>SoftwareDistribution\Download</code> when no update is pending. Never delete <code>WinSxS</code> or <code>Installer</code> by hand.</p></div>
+
+    <h2>The short list</h2>
+    <table>
+      <thead><tr><th>Folder or item</th><th>Safe to clear?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>%TEMP%</code> (your temp folder)</td><td>Yes</td><td>Skip files that are in use. Windows refuses to delete locked ones. Close Office and installers first.</td></tr>
+        <tr><td><code>C:\Windows\Temp</code></td><td>Yes</td><td>Needs admin rights. Same rule for files in use.</td></tr>
+        <tr><td><code>C:\Windows\SoftwareDistribution\Download</code></td><td>Yes, with care</td><td>Only when no update is downloading or waiting for a restart. See below.</td></tr>
+        <tr><td>Recycle Bin</td><td>Yes</td><td>Look first. Emptying it is permanent.</td></tr>
+        <tr><td>Thumbnail cache, shader caches, crash dumps</td><td>Yes</td><td>Windows and games rebuild them.</td></tr>
+        <tr><td><code>C:\Windows\Windows.old</code></td><td>Yes, if you will not roll back</td><td>Remove it with Disk Cleanup, "Previous Windows installation(s)". After that you cannot go back to the old Windows version.</td></tr>
+        <tr><td><code>C:\Windows\WinSxS</code>, <code>C:\Windows\Installer</code>, <code>System32</code></td><td><b>No</b></td><td>Never delete by hand. Programs and Windows need them.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Clearing the Windows Update download folder</h2>
+    <p>The <code>Download</code> folder holds update files Windows has already fetched. If an update is half-downloaded or installed but waiting for a restart, deleting them can make the update fail and start again. Restart first, then run this in an admin terminal:</p>
+<pre><code>net stop wuauserv
+net stop bits
+del /q /f /s "C:\Windows\SoftwareDistribution\Download\*"
+net start bits
+net start wuauserv</code></pre>
+    <p>Windows downloads any update it still needs again. Leave the neighbouring <code>DataStore</code> folder alone unless you are fixing a broken Windows Update, because it holds your update history.</p>
+
+    <h2>Temp files: what could go wrong</h2>
+    <ul>
+      <li><b>Open documents.</b> Word and Excel keep files that start with <code>~$</code> while a document is open. Delete them and you can lose autosave data.</li>
+      <li><b>Installers in progress.</b> Setup programs unpack into temp. Clear it only when nothing is installing.</li>
+      <li><b>Very new files.</b> Only clear files older than a day. Anything fresher may belong to a running program.</li>
+    </ul>
+
+    <h2>The same thing in Trimmel</h2>
+    <p>Trimmel lists each target with its size, then deletes only what you tick. It skips Office lock files, protects very recent files, refuses to clear update downloads when a restart is pending, and will not clean a root that looks like a drive or system folder.</p>
+
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="move-installed-program-to-another-drive.html">How to move an installed program to another drive on Windows</a></li>
+      <li><a href="free-up-disk-space-windows-11.html">How to free up disk space on Windows 11 (and what is safe to delete)</a></li>
+      <li><a href="which-startup-programs-to-disable-windows.html">Which startup programs can you safely disable on Windows?</a></li>
+      <li><a href="update-drivers-safely-windows.html">How to update drivers safely on Windows (without a driver updater)</a></li>
+      <li><a href="trimmel-vs-microsoft-pc-manager-vs-bleachbit.html">Trimmel vs Microsoft PC Manager vs BleachBit</a></li>
+    </ul>
+
+    <div class="cta">
+      <h2>Clear junk without the guesswork</h2>
+      <p>Trimmel lists each target with its size and removes only what you tick.</p>
+      <a class="btn" href="../#download" data-umami-event="guide-download" data-umami-event-guide="is-it-safe-to-delete-temp-and-softwaredistribution-files">Get Trimmel, free</a>
+    </div>
+  </main>
+  <footer><a href="../">Trimmel</a> &middot; <a href="./">All guides</a> &middot; <a href="../privacy.html">Privacy policy</a></footer>
+</body>
+</html>

@@ -133,3 +133,12 @@ All absolute URLs use `https://trimmel.vercel.app`. When the custom domain is li
 - GitHub: description, homepage (`https://www.trimmel.app`), topics and Discussions set. Discussion #1 asks about Trimmel Plus and is linked from the home page.
 - Analytics: `docs/analytics.js` loads Umami (cookie-free) once an ID is set; it is inert now. Download buttons already carry `data-umami-event` attributes. Before enabling, add a "Website analytics" section to `privacy.html`.
 - Directory copy and checklist: `planning/directory-submissions.md`.
+
+### Progress (2026-10-22, evening)
+
+- Guides now six: added "Is it safe to delete Temp and SoftwareDistribution files", "Update drivers safely", and "Trimmel vs Microsoft PC Manager vs BleachBit" (honest, includes where Trimmel is weaker; competitor facts from public descriptions, not tested). Each guide has Article and BreadcrumbList JSON-LD and a "Related guides" list.
+- Added `/changelog.html` (0.1.0, 0.2.0, 0.2.1), a `WebSite` JSON-LD block on the home page, "by hand" guide links in the feature panels, and Changelog / GitHub links in the footer. Sitemap lists all pages.
+- README: install section, link row (site, guides, changelog, Discussions), version badge 0.2.1.
+- Bing Webmaster Tools and Search Console added by the owner; indexing takes days.
+- Search appearance notes: Google builds site links (the sub-links under a result) itself. We cannot force them; clear navigation, distinct pages and a strong brand query help. FAQ rich results are limited to government and health sites since 2023, so the FAQ markup will not show expandable answers. Breadcrumb markup can show a trail in results.
+- The generator for the guide pages is not in the repo (the HTML in `docs/guides/` is the source now).
