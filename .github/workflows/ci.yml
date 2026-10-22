@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload to Codecov (optional)
         if: ${{ env.CODECOV_TOKEN != '' }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: coverage.out
           fail_ci_if_error: false
