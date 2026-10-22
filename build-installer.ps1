@@ -6,6 +6,7 @@
 #   PCOPT_GOOGLE_CLIENT_ID=...
 #   PCOPT_GOOGLE_CLIENT_SECRET=...
 # They are compiled into the app so users only click "Sign in with Google".
+param([switch]$Publish)
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
@@ -43,3 +44,15 @@ try {
 } finally { Pop-Location }
 
 Write-Host "3/3 Done: installer\build\bin\PC-Optimizer-Setup.exe"
+
+# -Publish copies the installer into docs\downloads so Vercel serves it, and
+# writes version.json for the download section of the site.
+if ($Publish) {
+  New-Item -ItemType Directory -Force docs\downloads | Out-Null
+  Copy-Item installer\build\bin\PC-Optimizer-Setup.exe docs\downloads\PC-Optimizer-Setup.exe -Force
+  $f = Get-Item docs\downloads\PC-Optimizer-Setup.exe
+  @{ version = $version; bytes = $f.Length; date = (Get-Date -Format "d MMM yyyy");
+     sha256 = (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLower() } |
+    ConvertTo-Json | Set-Content docs\downloads\version.json -Encoding utf8
+  Write-Host "Published to docs\downloads. Commit and push to release."
+}

@@ -4,40 +4,252 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PC Optimizer</title>
-  <meta name="description" content="A friendly Windows tool to free up space, trim slow startups and keep drivers current.">
+  <meta name="description" content="A friendly Windows tool to free up space, trim slow startups, move apps between drives and keep drivers current.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
   <style>
-    :root { --bg:#fff8f1; --panel:#fff; --line:#f0e0cf; --text:#3a2b3d; --muted:#86768a; --accent:#178f86; --side:#3b2a3f; --honey:#ffc25a; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
-    header { background:linear-gradient(135deg,#3b2a3f,#4b3850); color:#f3e6ef; padding:64px 20px; text-align:center; }
-    header img { width:84px; height:84px; border-radius:20px; }
-    h1 { margin:16px 0 8px; font-size:40px; letter-spacing:-.02em; }
-    header p { margin:0 auto; max-width:520px; color:#d9c6d6; font-size:18px; }
-    main { max-width:760px; margin:0 auto; padding:36px 20px 64px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
-    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; }
-    .card b { display:block; margin-bottom:4px; }
-    .card span { color:var(--muted); font-size:14px; }
+    :root {
+      --bg:#fff8f1; --panel:#fff; --line:#f0e0cf; --text:#3a2b3d; --muted:#86768a;
+      --accent:#178f86; --side:#3b2a3f; --side2:#4b3850; --honey:#ffc25a; --coral:#ff9d6c;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font-family:"Segoe UI Variable","Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
     a { color:var(--accent); font-weight:600; }
-    .btn { display:inline-block; margin-top:20px; background:var(--honey); color:#3b2a3f; padding:12px 26px; border-radius:999px; text-decoration:none; font-weight:800; }
-    footer { text-align:center; color:var(--muted); font-size:14px; padding-bottom:40px; }
+    .wrap { max-width:1000px; margin:0 auto; padding:0 20px; }
+
+    nav { position:sticky; top:0; z-index:10; background:rgba(59,42,63,.94); backdrop-filter:blur(8px); }
+    nav .wrap { display:flex; align-items:center; gap:22px; height:58px; }
+    nav .brand { display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none; font-weight:800; margin-right:auto; }
+    nav .brand img { width:30px; height:30px; border-radius:8px; }
+    nav a.link { color:#d9c6d6; text-decoration:none; font-weight:600; font-size:15px; }
+    nav a.link:hover { color:#fff; }
+    @media (max-width:640px) { nav a.link { display:none; } }
+
+    .btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--honey),var(--coral)); color:#3b2a3f; padding:13px 28px; border-radius:999px; text-decoration:none; font-weight:800; border:0; font-size:16px; cursor:pointer; box-shadow:0 6px 18px rgba(255,157,108,.35); transition:transform .15s, box-shadow .15s; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(255,157,108,.45); }
+    .btn.small { padding:8px 18px; font-size:14px; box-shadow:none; }
+    .btn.ghost { background:transparent; color:#f3e6ef; border:2px solid rgba(243,230,239,.35); box-shadow:none; }
+    .btn.ghost:hover { border-color:#fff; }
+
+    header.hero { background:linear-gradient(135deg,var(--side),var(--side2)); color:#f3e6ef; padding:72px 0 0; overflow:hidden; text-align:center; }
+    .hero img.logo { width:88px; height:88px; border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+    .hero h1 { margin:18px 0 10px; font-size:clamp(32px,6vw,52px); letter-spacing:-.02em; line-height:1.1; }
+    .hero h1 em { font-style:normal; background:linear-gradient(90deg,var(--honey),var(--coral)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .hero p.lead { margin:0 auto; max-width:560px; color:#d9c6d6; font-size:18px; }
+    .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:28px 0 8px; }
+    .hero .meta { font-size:13px; color:#b9a3b7; min-height:20px; }
+    .shot { max-width:820px; margin:34px auto 0; border-radius:16px 16px 0 0; box-shadow:0 -4px 50px rgba(0,0,0,.35); display:block; width:100%; height:auto; }
+
+    section { padding:64px 0 0; }
+    h2 { font-size:30px; letter-spacing:-.02em; margin:0 0 6px; }
+    .sub { color:var(--muted); margin:0 0 26px; }
+
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-top:32px; }
+    .stat { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:center; box-shadow:0 8px 24px rgba(59,42,63,.08); }
+    .stat b { display:block; font-size:26px; color:var(--accent); }
+    .stat span { color:var(--muted); font-size:13px; }
+
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+    .tab { border:1px solid var(--line); background:var(--panel); color:var(--text); border-radius:999px; padding:9px 18px; font:inherit; font-weight:700; cursor:pointer; transition:all .15s; }
+    .tab:hover { border-color:var(--honey); }
+    .tab[aria-selected="true"] { background:var(--side); border-color:var(--side); color:#fff; }
+    .panel { display:grid; grid-template-columns:1fr 1.5fr; gap:26px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:24px; }
+    .panel[hidden] { display:none; }
+    .panel h3 { margin:0 0 8px; font-size:22px; }
+    .panel p { margin:0 0 12px; color:var(--muted); }
+    .panel ul { margin:0; padding-left:20px; }
+    .panel li { margin-bottom:5px; }
+    .panel img { width:100%; height:auto; border-radius:12px; border:1px solid var(--line); }
+    @media (max-width:760px) { .panel { grid-template-columns:1fr; } }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px; transition:transform .2s, box-shadow .2s; }
+    .card:hover { transform:translateY(-4px); box-shadow:0 12px 26px rgba(59,42,63,.1); }
+    .card .ic { font-size:26px; }
+    .card b { display:block; margin:6px 0 4px; }
+    .card span { color:var(--muted); font-size:14px; }
+
+    .steps { counter-reset:s; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+    .step { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 18px 64px; position:relative; }
+    .step::before { counter-increment:s; content:counter(s); position:absolute; left:16px; top:16px; width:34px; height:34px; border-radius:50%; background:var(--honey); color:var(--side); font-weight:800; display:grid; place-items:center; }
+
+    .dl { background:linear-gradient(135deg,var(--side),var(--side2)); color:#f3e6ef; border-radius:24px; padding:38px; display:grid; grid-template-columns:1.2fr 1fr; gap:28px; align-items:center; }
+    .dl h2 { color:#fff; }
+    .dl p { color:#d9c6d6; margin:0 0 14px; }
+    .dl dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+    .dl dt { color:#b9a3b7; }
+    .dl dd { margin:0; word-break:break-all; }
+    .dl code { font-size:12px; }
+    .dl .note { font-size:13px; color:#b9a3b7; margin-top:12px; }
+    .copy { background:none; border:1px solid rgba(243,230,239,.35); color:#f3e6ef; border-radius:8px; padding:2px 8px; font:inherit; font-size:12px; cursor:pointer; margin-left:6px; }
+    @media (max-width:760px) { .dl { grid-template-columns:1fr; padding:26px; } }
+
+    details { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-bottom:10px; }
+    summary { cursor:pointer; font-weight:700; }
+    details p { margin:10px 0 0; color:var(--muted); }
+
+    footer { text-align:center; color:var(--muted); font-size:14px; padding:56px 20px 40px; }
+
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .6s, transform .6s; }
+    .reveal.in { opacity:1; transform:none; }
+    @media (prefers-reduced-motion:reduce) { .reveal { opacity:1; transform:none; transition:none; } html { scroll-behavior:auto; } .btn, .card { transition:none; } }
   </style>
 </head>
 <body>
-  <header>
-    <h1>PC Optimizer</h1>
-    <p>Free up space. Trim slow startups. Keep drivers current. Plain-English explanations and nothing deleted behind your back.</p>
-    <a class="btn" href="https://github.com/Con-OBrien/pcoptimizer">View on GitHub</a>
-  </header>
-  <main>
-    <div class="grid">
-      <div class="card"><b>Cleanup</b><span>See what temp files and caches take up, then tick what goes.</span></div>
-      <div class="card"><b>Startup</b><span>Switch slow launchers off. Fully reversible.</span></div>
-      <div class="card"><b>Move apps</b><span>Shift big programs to another drive and keep them working.</span></div>
-      <div class="card"><b>Drivers</b><span>Signed updates straight from Windows Update.</span></div>
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="#top"><img src="logo.svg" alt="">PC Optimizer</a>
+      <a class="link" href="#features">Features</a>
+      <a class="link" href="#how">How it works</a>
+      <a class="link" href="#faq">FAQ</a>
+      <a class="btn small" href="#download">Download</a>
     </div>
-    <p style="margin-top:32px">PC Optimizer is free, open source software for Windows 10 and 11. Everything runs on your own PC. See the <a href="privacy.html">privacy policy</a> for exactly what is, and is not, collected.</p>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="wrap">
+      <img class="logo" src="logo.svg" alt="PC Optimizer logo">
+      <h1>A faster PC, <em>explained</em><br>in plain English.</h1>
+      <p class="lead">Free up space, trim slow startups, move big programs to another drive and keep drivers current. Nothing is deleted behind your back.</p>
+      <div class="cta">
+        <a class="btn" id="hero-dl" href="downloads/PC-Optimizer-Setup.exe" download>Download for Windows</a>
+        <a class="btn ghost" href="#features">See what it does</a>
+      </div>
+      <div class="meta" id="hero-meta">Free &middot; Windows 10 and 11</div>
+      <img class="shot" src="screens/overview.svg" alt="PC Optimizer overview screen">
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><b>4</b><span>tools in one app</span></div>
+      <div class="stat"><b>0</b><span>servers or tracking</span></div>
+      <div class="stat"><b>100%</b><span>runs on your PC</span></div>
+      <div class="stat"><b>Free</b><span>open source, MIT</span></div>
+    </div>
+
+    <section id="features" class="reveal">
+      <h2>What it does</h2>
+      <p class="sub">Pick a tool to see how it looks.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-t="cleanup">Cleanup</button>
+        <button class="tab" role="tab" aria-selected="false" data-t="startup">Startup</button>
+        <button class="tab" role="tab" aria-selected="false" data-t="move">Move apps</button>
+        <button class="tab" role="tab" aria-selected="false" data-t="drivers">Drivers</button>
+      </div>
+      <div class="panel" data-p="cleanup">
+        <div><h3>Cleanup</h3><p>See exactly what temp files and caches take up, then tick what goes.</p>
+          <ul><li>Sizes shown before anything is removed</li><li>Only files older than 24 hours in temp and update folders</li><li>You choose each item</li></ul></div>
+        <img src="screens/cleanup.svg" alt="Cleanup screen" loading="lazy">
+      </div>
+      <div class="panel" data-p="startup" hidden>
+        <div><h3>Startup</h3><p>Switch slow launchers off so Windows boots faster.</p>
+          <ul><li>Plain-English description of each entry</li><li>Fully reversible with one click</li><li>Impact badge on each program</li></ul></div>
+        <img src="screens/startup.svg" alt="Startup screen" loading="lazy">
+      </div>
+      <div class="panel" data-p="move" hidden>
+        <div><h3>Move apps</h3><p>Shift big programs to another drive and keep them working.</p>
+          <ul><li>Lists installed programs by size</li><li>Leaves a junction so the old path still works</li><li>Frees your system drive</li></ul></div>
+        <img src="screens/move.svg" alt="Move apps screen" loading="lazy">
+      </div>
+      <div class="panel" data-p="drivers" hidden>
+        <div><h3>Drivers</h3><p>Signed updates straight from Windows Update.</p>
+          <ul><li>Updates come from Windows Update</li><li>No third-party driver sites</li><li>Needs administrator rights</li></ul></div>
+        <img src="screens/drivers.svg" alt="Drivers screen" loading="lazy">
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>Built to be trusted</h2>
+      <p class="sub">Small, honest and open.</p>
+      <div class="grid">
+        <div class="card"><div class="ic">🔒</div><b>Private by design</b><span>No servers, analytics or ads. Your data never leaves your PC.</span></div>
+        <div class="card"><div class="ic">👀</div><b>Nothing hidden</b><span>Every change is listed first. You decide what happens.</span></div>
+        <div class="card"><div class="ic">↩️</div><b>Reversible</b><span>Startup changes can be switched back on at any time.</span></div>
+        <div class="card"><div class="ic">📖</div><b>Open source</b><span>MIT licensed. Read the code and see what it does.</span></div>
+      </div>
+    </section>
+
+    <section id="how" class="reveal">
+      <h2>How it works</h2>
+      <p class="sub">Three steps.</p>
+      <div class="steps">
+        <div class="step"><b>Install</b><br><span class="sub">Run the setup and pick a folder. It takes a few seconds.</span></div>
+        <div class="step"><b>Sign in</b><br><span class="sub">Use your Google account once. The app remembers you.</span></div>
+        <div class="step"><b>Optimise</b><br><span class="sub">Scan, review the list and apply only what you want.</span></div>
+      </div>
+    </section>
+
+    <section id="download" class="reveal">
+      <div class="dl">
+        <div>
+          <h2>Get PC Optimizer</h2>
+          <p>Free for Windows 10 and 11 (64-bit). The app asks for administrator rights when it starts, so it can clean system folders and install drivers.</p>
+          <a class="btn" id="dl-btn" href="downloads/PC-Optimizer-Setup.exe" download>Download installer</a>
+          <div class="note">Windows may warn that the publisher is unknown, because the installer is not code signed yet. Choose <b>More info</b> then <b>Run anyway</b>.</div>
+        </div>
+        <dl>
+          <dt>Version</dt><dd id="dl-version">latest</dd>
+          <dt>Size</dt><dd id="dl-size">&ndash;</dd>
+          <dt>Released</dt><dd id="dl-date">&ndash;</dd>
+          <dt>SHA-256</dt><dd><code id="dl-sha">&ndash;</code><button class="copy" id="copy" hidden>Copy</button></dd>
+        </dl>
+      </div>
+    </section>
+
+    <section id="faq" class="reveal">
+      <h2>Questions</h2>
+      <p class="sub">&nbsp;</p>
+      <details><summary>Why does it need administrator rights?</summary><p>Cleaning system folders and installing drivers are protected actions in Windows. The app asks once at launch.</p></details>
+      <details><summary>Why do I have to sign in with Google?</summary><p>It only shows your name in the app and keeps you signed in. It cannot read your email, Drive or any other Google data. See the <a href="privacy.html">privacy policy</a>.</p></details>
+      <details><summary>Is it safe to delete these files?</summary><p>The app lists every item with its size first and only removes what you tick.</p></details>
+      <details><summary>How do I uninstall it?</summary><p>Use Settings, Apps, Installed apps, or run the uninstaller from the Start menu. You can also remove saved settings.</p></details>
+      <details><summary>How much does it cost?</summary><p>Nothing. It is free and open source under the MIT licence.</p></details>
+    </section>
   </main>
-  <footer>PC Optimizer &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="https://github.com/Con-OBrien/pcoptimizer/issues">Support</a></footer>
+
+  <footer>PC Optimizer &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="#download">Download</a></footer>
+
+  <script>
+    // Feature tabs
+    var tabs = document.querySelectorAll('.tab'), panels = document.querySelectorAll('.panel');
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        tabs.forEach(function (x) { x.setAttribute('aria-selected', x === t); });
+        panels.forEach(function (p) { p.hidden = p.dataset.p !== t.dataset.t; });
+      });
+    });
+
+    // Scroll reveal
+    var items = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: .12 });
+      items.forEach(function (i) { io.observe(i); });
+    } else { items.forEach(function (i) { i.classList.add('in'); }); }
+
+    // Windows only note
+    if (!/Windows/i.test(navigator.userAgent)) {
+      document.getElementById('hero-meta').textContent = 'PC Optimizer is for Windows 10 and 11. Open this page on a Windows PC to install.';
+    }
+
+    // Release info written by build-installer.ps1 -Publish
+    fetch('downloads/version.json', { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw 0; return r.json();
+    }).then(function (v) {
+      document.getElementById('dl-version').textContent = 'v' + v.version;
+      document.getElementById('dl-size').textContent = (v.bytes / 1048576).toFixed(1) + ' MB';
+      document.getElementById('dl-date').textContent = v.date;
+      document.getElementById('dl-sha').textContent = v.sha256;
+      document.getElementById('hero-meta').textContent = 'v' + v.version + ' · ' + (v.bytes / 1048576).toFixed(0) + ' MB · Windows 10 and 11';
+      var c = document.getElementById('copy'); c.hidden = false;
+      c.addEventListener('click', function () {
+        navigator.clipboard.writeText(v.sha256).then(function () { c.textContent = 'Copied'; setTimeout(function () { c.textContent = 'Copy'; }, 1500); });
+      });
+    }).catch(function () {
+      document.getElementById('dl-version').textContent = 'coming soon';
+    });
+  </script>
 </body>
 </html>
