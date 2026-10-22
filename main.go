@@ -9,6 +9,9 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
+// version is set at build time: -ldflags "-X main.version=1.2.3".
+var version = "dev"
+
 //go:embed all:frontend/dist
 var assets embed.FS
 

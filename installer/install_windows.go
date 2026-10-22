@@ -198,8 +198,9 @@ func install(o Options, emit emitFn) error {
 		return fmt.Errorf("pick a dedicated folder, not %s", dir)
 	}
 
+	old := existingInstallDir()
 	emit("Closing PC Optimizer if it is running…", 4)
-	killApp(dir, existingInstallDir())
+	killApp(dir, old)
 
 	emit("Creating the install folder…", 10)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -257,6 +258,12 @@ func install(o Options, emit emitFn) error {
 	_ = k.SetDWordValue("NoRepair", 1)
 	_ = k.SetDWordValue("EstimatedSize", uint32(len(payload)/1024*2))
 
+	// Moving to a new folder: clear the old copy now that the new one works.
+	if old != "" && !strings.EqualFold(filepath.Clean(old), dir) {
+		emit("Removing the old copy…", 96)
+		removeInstallFiles(old)
+	}
+
 	emit("All done", 100)
 	return nil
 }
@@ -284,10 +291,16 @@ func uninstall(o Options, emit emitFn) error {
 	}
 
 	emit("Deleting program files…", 85)
+	removeInstallFiles(dir)
+	emit("All done", 100)
+	return nil
+}
+
+// removeInstallFiles deletes what setup put in dir. The running uninstaller and
+// the folder go at the next restart if they are still in use. Files the user
+// added to the folder are kept.
+func removeInstallFiles(dir string) {
 	_ = os.Remove(filepath.Join(dir, appExe))
-	// This running exe can't delete itself, so Windows removes it, and then the
-	// now-empty folder, at the next restart. Only known files are removed, so
-	// anything else the user put in the folder is kept.
 	un := filepath.Join(dir, uninstallExe)
 	if err := os.Remove(un); err != nil && !os.IsNotExist(err) {
 		removeAtReboot(un)
@@ -295,6 +308,4 @@ func uninstall(o Options, emit emitFn) error {
 	if err := os.Remove(dir); err != nil && !os.IsNotExist(err) {
 		removeAtReboot(dir)
 	}
-	emit("All done", 100)
-	return nil
 }

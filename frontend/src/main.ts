@@ -10,6 +10,7 @@ import { moveView } from "./views/move"
 import { oldVersionsView } from "./views/oldversions"
 import { storageView } from "./views/storage"
 import { appsView } from "./views/apps"
+import { settingsView } from "./views/settings"
 
 const views: Record<string, View> = {
   overview: overviewView,
@@ -21,6 +22,7 @@ const views: Record<string, View> = {
   oldversions: oldVersionsView,
   storage: storageView,
   apps: appsView,
+  settings: settingsView,
 }
 
 const main = document.getElementById("view")!

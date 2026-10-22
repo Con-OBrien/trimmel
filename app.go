@@ -12,6 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"pcoptimizer/internal/advisor"
+	"pcoptimizer/internal/appinfo"
 	"pcoptimizer/internal/auth"
 	"pcoptimizer/internal/cleanup"
 	"pcoptimizer/internal/drivers"
@@ -158,6 +159,8 @@ func (a *App) ListProcesses() ([]procs.Process, error) {
 	return a.procs.List()
 }
 
+// KillProcess ends a process; name is what the list showed for pid and guards
+// against the PID having been reused.
 func (a *App) KillProcess(pid int32, name string) error {
 	if err := a.guard(); err != nil {
 		return err
@@ -409,6 +412,85 @@ func (a *App) UninstallApp(id string) error {
 		return err
 	}
 	return oldver.UninstallApp(id)
+}
+
+// ---- Settings ----
+
+type AppInfo struct {
+	Version string          `json:"version"`
+	Admin   bool            `json:"admin"`
+	Install appinfo.Install `json:"install"`
+}
+
+func (a *App) AppInfo() (AppInfo, error) {
+	in, err := appinfo.Current()
+	if err != nil {
+		return AppInfo{}, err
+	}
+	return AppInfo{Version: version, Admin: elevation.IsAdmin(), Install: in}, nil
+}
+
+// CheckUpdate asks the project site for the latest release.
+func (a *App) CheckUpdate() (appinfo.Update, error) {
+	return appinfo.CheckUpdate(a.ctx, version)
+}
+
+func (a *App) OpenDownloadPage() {
+	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/#download")
+}
+
+// OpenFolder shows the install or settings folder in Explorer. Only those two
+// are allowed, never a path from the UI.
+func (a *App) OpenFolder(kind string) error {
+	in, err := appinfo.Current()
+	if err != nil {
+		return err
+	}
+	dir := in.Dir
+	if kind == "settings" {
+		dir = in.SettingsDir
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			return err
+		}
+	} else if kind != "install" {
+		return fmt.Errorf("unknown folder %q", kind)
+	}
+	return exec.Command("explorer.exe", dir).Start()
+}
+
+// RunSetup hands over to setup's own window to move or remove the install,
+// then closes the app so its files are free.
+func (a *App) RunSetup(mode string) error {
+	if err := a.guard(); err != nil {
+		return err
+	}
+	flag := map[string]string{"modify": "--modify", "uninstall": "--uninstall"}[mode]
+	if flag == "" {
+		return fmt.Errorf("unknown setup action %q", mode)
+	}
+	in, err := appinfo.Current()
+	if err != nil {
+		return err
+	}
+	if !in.Installed || !in.HasUninstall {
+		return errors.New("this copy was not installed with setup, so there is nothing to change here")
+	}
+	cmd := exec.Command(appinfo.UninstallerPath(in.Dir), flag)
+	cmd.Dir = in.Dir
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	runtime.Quit(a.ctx)
+	return nil
+}
+
+// DeleteSettings signs out and removes everything the app stored for this user.
+func (a *App) DeleteSettings() error {
+	if err := a.guard(); err != nil {
+		return err
+	}
+	a.auth.Logout()
+	return os.RemoveAll(appinfo.SettingsDir())
 }
 
 // GetStorageSuggestions looks at one drive (for example "C:") and returns

@@ -12,35 +12,31 @@ import (
 
 // App is bound to the setup UI.
 type App struct {
-	ctx       context.Context
-	uninstall bool
-	busy      bool
+	ctx  context.Context
+	mode string // "install", "modify" (change location) or "uninstall"
+	busy bool
 }
 
-func NewApp(uninstall bool) *App { return &App{uninstall: uninstall} }
+func NewApp(mode string) *App { return &App{mode: mode} }
 
 func (a *App) startup(ctx context.Context) { a.ctx = ctx }
 
 // Info describes what the UI should show.
 type Info struct {
 	Version    string `json:"version"`
-	Mode       string `json:"mode"` // "install" or "uninstall"
+	Mode       string `json:"mode"` // "install", "modify" or "uninstall"
 	DefaultDir string `json:"defaultDir"`
 	Existing   string `json:"existing"` // install dir of a current install, or ""
 	SizeMB     int    `json:"sizeMB"`
 }
 
 func (a *App) Info() Info {
-	mode := "install"
-	if a.uninstall {
-		mode = "uninstall"
-	}
 	existing := existingInstallDir()
 	dir := defaultInstallDir()
 	if existing != "" {
 		dir = existing
 	}
-	return Info{Version: version, Mode: mode, DefaultDir: dir, Existing: existing, SizeMB: payloadSizeMB()}
+	return Info{Version: version, Mode: a.mode, DefaultDir: dir, Existing: existing, SizeMB: payloadSizeMB()}
 }
 
 // Options chosen on the options screen.
