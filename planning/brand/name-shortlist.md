@@ -1,5 +1,7 @@
 # Name shortlist, round 2
 
+**Decision (2026-10-22): Trimmel.** Official trademark checks are still open; see the last section.
+
 Date: 2026-10-22. Fettle is out: a live FETTLE trademark record exists in US Class 42 (software design and development services), and the main domains are taken.
 
 ## What I can and cannot promise

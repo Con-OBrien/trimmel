@@ -1,6 +1,6 @@
 # Brand plan: from "PC Optimizer" to a name and identity we can own
 
-Status: direction agreed 2026-10-22 (Fettle as working name, shaving-on-a-board mark, keep teal and honey). Nothing in the app has been renamed or restyled yet.
+Status: direction agreed 2026-10-22 (Trimmel as the name, shaving-on-a-board mark, keep teal and honey). Nothing in the app has been renamed or restyled yet.
 Open `brand-board.html` in a browser to see the identity. Assets are in this folder.
 
 ## 1. Why change
@@ -11,7 +11,7 @@ Open `brand-board.html` in a browser to see the identity. Assets are in this fol
 
 ## 2. Positioning
 
-> For people who own a Windows PC and are not sure what is safe to remove, Fettle is a calm, plain-spoken tidy-up tool that shows you everything first and lets you undo anything. Unlike the cleaners that scare you into clicking, it only does what you choose.
+> For people who own a Windows PC and are not sure what is safe to remove, Trimmel is a calm tidy-up tool that shows you everything first and lets you undo anything. Unlike the cleaners that scare you into clicking, it only does what you choose.
 
 Three pillars, used everywhere from the website to error messages:
 
@@ -23,36 +23,23 @@ Personality: a capable friend who has seen this before. Calm, concrete, a little
 
 ## 3. The name
 
-**Working name: Fettle.** To fettle is to trim the rough edges off a casting until it is finished (a foundry and pottery word). "In fine fettle" means in good condition. Short, easy to say and spell, specific in meaning, and it sounds nothing like "optimizer" or "booster".
+**Trimmel.** "Trim" for tidy and fast, plus "mel", the Latin for honey, our brand colour. A coined word: short, easy to say (TRIM-el) and spell, no "PC" or "optimizer", and easy to find in search.
 
-### Clearance status: not cleared
+How we got here: Fettle was the first choice and failed (a live US Class 42 record, taken domains). `name-shortlist.md` has the second round: what was checked, what was eliminated and why, and the finalists. Trimmel won on legal risk; Roomier was the runner-up for meaning.
 
-What I found (quick checks only, not legal advice):
+### Clearance status: candidate, not cleared
 
-| Check | Result |
-| --- | --- |
-| Software search for "Fettle" PC cleaner | No Windows cleaner by that name turned up. |
-| US trademark | A live **FETTLE** record exists in Class 42 (software design and development services) and another in Class 44 (health and beauty). Class 42 is close enough to software that this needs a proper look before we commit. |
-| Domains | fettle.com, fettle.app, getfettle.com and usefettle.com are registered by others. **fettlepc.com, fettle.pc and fettlewin.com looked unregistered** (a DNS check; confirm with a registrar). |
-| UK/EU marks | Not checked. |
+Quick checks only, not legal advice:
 
-So Fettle is a strong candidate with one real risk. Before spending money on a logo roll-out: run an official search (USPTO, UKIPO, EUIPO) in Classes 9 and 42, and ask a trademark attorney for a one-hour opinion. If Fettle fails, the mark and palette do not change (see section 4), only the wordmark.
+- No active trademark found for TRIMMEL. A TRIMEL CORPORATION record (filed 1990) was cancelled in 2001.
+- `trimmel.com` and `trimmel.app` looked unregistered (DNS test only).
+- Trimmel is also a surname, so expect other people and small firms in search results.
 
-### Alternatives to test if Fettle fails
-
-| Name | Idea | Notes |
-| --- | --- | --- |
-| Kempt | "Unkempt" turned around: neat and tidy | Clever but easy to misread; all main domains taken |
-| Pared | Pared down, trimmed | Calm and clear; probably crowded |
-| Tend | To look after | Very generic, hard to own |
-| Burnish | To polish and finish | A little too shiny for a tool about safety |
-| A coined word | Built for ownership | Easiest to trademark, needs the most explaining |
-
-Whatever we choose must pass three tests: it can be said on the phone and spelled back, it does not contain "PC", "optimizer", "cleaner" or "booster", and it passes the clearance above.
+Before spending money on rollout: official searches (USPTO, EUIPO TMview, WIPO Global Brand Database, UK IPO) in Classes 9, 42 and 35, a platform and handle check, and a one-hour attorney opinion. The steps are listed at the end of `name-shortlist.md`. If Trimmel fails, the mark and palette do not change, only the wordmark.
 
 ## 4. The mark
 
-**A honey shaving curling off a clean board.** The board is your drive or your PC; the curl is the rough stuff coming away. It is the visual form of "fettling".
+**A honey shaving curling off a clean board.** The board is your drive or your PC; the curl is the rough stuff coming away. It is the visual form of trimming.
 
 - It does not depend on a letter, so a name change does not mean a new logo.
 - It is two shapes (a slab and one stroke), so it holds up at 16 px in the taskbar.
@@ -109,7 +96,7 @@ Say what happened and what to do next. One idea per sentence. Plain verbs. No ap
 | Freed 2.1 GB | Freed 2.1 GB. Nothing else was touched. |
 | Memory is 88% used. Check Processes for heavy apps. | Memory is nearly full, so Windows is leaning on the slower disk. These three apps use the most. |
 
-Taglines to test: **Keep your PC in fine fettle.** (warm, teaches the word), **Tidy up. Speed up. Undo anything.** (literal, for the first line of the site), **Nothing deleted behind your back.** (the trust line, already true).
+Taglines to test: **Trim the clutter. Keep the speed.** (short, ownable), **Tidy up. Speed up. Undo anything.** (literal, for the first line of the site), **Nothing deleted behind your back.** (the trust line, already true).
 
 ## 8. What a rename touches in the product
 
@@ -128,7 +115,7 @@ Do this only after the name is cleared. It is a contained change but has more pl
 
 ## 9. Rollout
 
-1. **Clear the name** (1 to 2 weeks): official searches, a short attorney opinion, secure domain and handles. Decide among Fettle or an alternative.
+1. **Clear the name** (1 to 2 weeks): official searches, a short attorney opinion, secure domain and handles. Confirm Trimmel or fall back to Roomier from the shortlist.
 2. **Polish the identity** (about 1 week): have a designer review the mark, produce the 16 px and favicon variants and outlined wordmark, and finish the website art.
 3. **Restyle the app** (about 1 week): tokens, fonts, icon, copy pass on all strings in the voice above. Reversible and can ship as a normal update.
 4. **Rename** (about 1 week): installer, data migration, site, repository, with a clear "formerly PC Optimizer" note on the site and in the update notes for existing users.
@@ -138,7 +125,7 @@ Do this only after the name is cleared. It is a contained change but has more pl
 
 Agreed:
 
-1. Go ahead with **Fettle** as the working name while clearance runs.
+1. Go ahead with **Trimmel** as the name while clearance runs.
 2. The **shaving on a board** mark is the right feeling.
 3. **Keep today's teal and honey.**
 

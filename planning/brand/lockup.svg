@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-label="Fettle">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-label="Trimmel">
   <g transform="translate(0 0)">
     <rect width="64" height="64" rx="15" fill="#3B2A3F"/>
     <rect x="10" y="38" width="44" height="12" rx="3.5" fill="#FFF8F1"/>
@@ -6,5 +6,5 @@
           fill="none" stroke="#FFC25A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
   <!-- Live text: needs Bricolage Grotesque ExtraBold. Convert to outlines before print or sending to others. -->
-  <text x="82" y="46" font-family="'Bricolage Grotesque','Segoe UI',system-ui,sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#3B2A3F">fettle</text>
+  <text x="82" y="46" font-family="'Bricolage Grotesque','Segoe UI',system-ui,sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#3B2A3F">trimmel</text>
 </svg>
