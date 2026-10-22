@@ -1,12 +1,17 @@
 # Builds the app, embeds it in the custom installer, and writes
-# installer\build\bin\PC-Optimizer-Setup.exe
+# installer\build\bin\Trimmel-Setup.exe
 #
-# Google sign-in: put your OAuth "Desktop app" credentials in .env.local
-# (git-ignored), or set the same names as environment variables:
+#   .\build-installer.ps1                 build only
+#   .\build-installer.ps1 -Publish        also copy the installer and a portable zip to docs\downloads
+#
+# Sign-in: Google sign-in is optional. To include it, put your OAuth "Desktop app"
+# credentials in .env.local (git-ignored), or set the same names as environment variables:
 #   PCOPT_GOOGLE_CLIENT_ID=...
 #   PCOPT_GOOGLE_CLIENT_SECRET=...
-# They are compiled into the app so users only click "Sign in with Google".
-param([switch]$Publish)
+# They are compiled into the app. Without them the build has no sign-in and opens straight
+# into the app. -Publish refuses to publish such a build unless you pass -NoSignIn, so a
+# missing .env.local can never silently ship a build without sign-in.
+param([switch]$Publish, [switch]$NoSignIn)
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
@@ -27,16 +32,16 @@ if ($id) {
   $ldflags += " -X pcoptimizer/internal/auth.GoogleClientID=$id"
   if ($secret) { $ldflags += " -X pcoptimizer/internal/auth.GoogleClientSecret=$secret" }
 } else {
-  if ($Publish) { throw "PCOPT_GOOGLE_CLIENT_ID is not set (add it to .env.local). Refusing to publish a build with no sign-in." }
-  Write-Warning "PCOPT_GOOGLE_CLIENT_ID is not set. This build has NO sign-in and opens straight into the app."
+  if ($Publish -and -not $NoSignIn) { throw "PCOPT_GOOGLE_CLIENT_ID is not set (add it to .env.local), so this build has no sign-in. Pass -NoSignIn to publish it anyway." }
+  Write-Warning "No Google client ID: this build has NO sign-in and opens straight into the app."
 }
 
-Write-Host "1/3 Building the app..."
+Write-Host "1/3 Building the app (v$version)..."
 wails build -clean -trimpath -webview2 embed -ldflags $ldflags
 if ($LASTEXITCODE) { throw "app build failed" }
-Copy-Item build\bin\pcoptimizer.exe installer\payload\pcoptimizer.exe -Force
+Copy-Item build\bin\trimmel.exe installer\payload\trimmel.exe -Force
 
-Write-Host "2/3 Building the installer (v$version)..."
+Write-Host "2/3 Building the installer..."
 Push-Location installer
 try {
   go mod tidy
@@ -44,18 +49,18 @@ try {
   if ($LASTEXITCODE) { throw "installer build failed" }
 } finally { Pop-Location }
 
-Write-Host "3/3 Done: installer\build\bin\PC-Optimizer-Setup.exe"
+Write-Host "3/3 Done: installer\build\bin\Trimmel-Setup.exe"
 
 # -Publish copies the installer into docs\downloads so Vercel serves it, and
-# writes version.json for the download section of the site.
+# writes version.json for the download section of the site and the in-app update check.
 if ($Publish) {
   New-Item -ItemType Directory -Force docs\downloads | Out-Null
-  Copy-Item installer\build\bin\PC-Optimizer-Setup.exe docs\downloads\PC-Optimizer-Setup.exe -Force
-  $f = Get-Item docs\downloads\PC-Optimizer-Setup.exe
+  Copy-Item installer\build\bin\Trimmel-Setup.exe docs\downloads\Trimmel-Setup.exe -Force
+  $f = Get-Item docs\downloads\Trimmel-Setup.exe
   # Portable build: just the app exe in a zip, no installer behaviour.
-  $zip = "docs\downloads\PC-Optimizer-Portable.zip"
+  $zip = "docs\downloads\Trimmel-Portable.zip"
   Remove-Item $zip -ErrorAction SilentlyContinue
-  Compress-Archive -Path build\bin\pcoptimizer.exe -DestinationPath $zip
+  Compress-Archive -Path build\bin\trimmel.exe -DestinationPath $zip
   $z = Get-Item $zip
   @{ version = $version; bytes = $f.Length; date = (Get-Date -Format "d MMM yyyy");
      sha256 = (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLower();

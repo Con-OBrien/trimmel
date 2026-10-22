@@ -38,7 +38,7 @@ function welcome() {
   setSteps(INSTALL_STEPS, 0)
   const upd = !!info.existing
   show(`
-    <h1>${upd ? "Update PC Optimizer" : "Welcome to PC Optimizer"}</h1>
+    <h1>${upd ? "Update Trimmel" : "Welcome to Trimmel"}</h1>
     <p class="lead">${upd
       ? `A copy is already installed. Setup will replace it with version ${esc(info.version)} and keep your settings.`
       : "Free up space, trim slow startups and keep drivers current, with plain-English explanations and nothing deleted behind your back."}</p>
@@ -61,7 +61,7 @@ function options() {
   setSteps(INSTALL_STEPS, 1)
   show(`
     <h1>${modify ? "Change install location" : "Make it yours"}</h1>
-    <p class="lead">${modify ? "Pick a new folder. Setup moves PC Optimizer there and removes the old copy. Your settings stay." : "Defaults suit most people. Change them if you like."}</p>
+    <p class="lead">${modify ? "Pick a new folder. Setup moves Trimmel there and removes the old copy. Your settings stay." : "Defaults suit most people. Change them if you like."}</p>
     <div class="section">
       <div class="label">Install location</div>
       <div class="panel"><div class="field">
@@ -75,7 +75,7 @@ function options() {
       <div class="panel">
         ${toggleRow("t-start", "Start Menu", "Always added so you can find the app.", true, true)}
         ${toggleRow("t-desk", "Desktop", "A shortcut on your desktop.", opts.desktopLink)}
-        ${toggleRow("t-launch", "Start PC Optimizer when setup finishes", "Windows will ask for admin permission.", opts.launch)}
+        ${toggleRow("t-launch", "Start Trimmel when setup finishes", "Windows will ask for admin permission.", opts.launch)}
       </div>
     </div>
     <div class="err" id="err"></div>
@@ -89,7 +89,7 @@ function options() {
     document.getElementById("t-launch").onchange = e => (opts.launch = e.target.checked)
     document.getElementById("browse").onclick = async () => {
       const p = await go().PickDir(dir.value).catch(() => "")
-      if (p) { opts.dir = p.replace(/[\\/]+$/, "") + (/pc optimizer$/i.test(p) ? "" : "\\PC Optimizer"); dir.value = opts.dir }
+      if (p) { opts.dir = p.replace(/[\\/]+$/, "") + (/trimmel$/i.test(p) ? "" : "\\Trimmel"); dir.value = opts.dir }
     }
     document.getElementById("back").onclick = modify ? () => go().Close() : welcome
     document.getElementById("go").onclick = runInstall
@@ -147,13 +147,13 @@ function finished() {
   show(`
     <div class="center">
       ${CHECK}
-      <h1>PC Optimizer is ready</h1>
+      <h1>Trimmel is ready</h1>
       <p class="lead">It's installed${opts.desktopLink ? ", with a shortcut on your desktop and in the Start Menu" : " and in your Start Menu"}.</p>
     </div>
     <div class="foot"><span></span>
       <div class="right">
         <button class="btn" id="quit">Close</button>
-        <button class="btn primary big" id="launch">Start PC Optimizer</button>
+        <button class="btn primary big" id="launch">Start Trimmel</button>
       </div></div>`, () => {
     document.getElementById("quit").onclick = () => go().Close()
     document.getElementById("launch").onclick = () => go().Launch(opts.dir.trim()).catch(e => alert(errMsg(e)))
@@ -168,8 +168,8 @@ const UN_STEPS = ["Confirm", "Removing", "Finished"]
 function confirmRemove() {
   setSteps(UN_STEPS, 0)
   show(`
-    <h1>Remove PC Optimizer</h1>
-    <p class="lead">This takes PC Optimizer off your computer. Files your cleanup already removed stay removed, and apps you moved to another drive keep working.</p>
+    <h1>Remove Trimmel</h1>
+    <p class="lead">This takes Trimmel off your computer. Files your cleanup already removed stay removed, and apps you moved to another drive keep working.</p>
     <div class="panel">
       ${toggleRow("t-cfg", "Also delete my settings", "Sign-in details and preferences stored for this user.", opts.removeConfig)}
     </div>
@@ -191,13 +191,13 @@ async function runUninstall() {
     await new Promise(r => setTimeout(r, 500))
     setSteps(UN_STEPS, 3)
     show(`
-      <div class="center">${CHECK}<h1>PC Optimizer was removed</h1>
+      <div class="center">${CHECK}<h1>Trimmel was removed</h1>
         <p class="lead">Thanks for trying it. You can reinstall any time.</p></div>
       <div class="foot"><span></span><div class="right"><button class="btn primary big" id="quit">Close</button></div></div>`, () => {
       document.getElementById("quit").onclick = () => go().Close()
     })
   } catch (e) {
-    show(`<div class="center"><h1>Couldn't finish removing</h1><p class="lead">Close PC Optimizer and try again.</p>
+    show(`<div class="center"><h1>Couldn't finish removing</h1><p class="lead">Close Trimmel and try again.</p>
       <div class="hint warn" style="color:var(--text)">${esc(errMsg(e))}</div></div>
       <div class="foot"><span></span><div class="right"><button class="btn" id="quit">Close</button></div></div>`, () => {
       document.getElementById("quit").onclick = () => go().Close()

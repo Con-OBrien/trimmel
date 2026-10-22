@@ -54,5 +54,6 @@ var known = map[string]string{
 	"steam.exe":                   "Steam game launcher",
 	"steamwebhelper.exe":          "Steam interface (embedded browser)",
 	"code.exe":                    "Visual Studio Code",
-	"pcoptimizer.exe":             "This app",
+	"trimmel.exe":                 "This app",
+	"pcoptimizer.exe":             "This app (old name)",
 }

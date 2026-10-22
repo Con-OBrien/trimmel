@@ -19,14 +19,20 @@ import (
 )
 
 const (
-	appExe       = "pcoptimizer.exe"
+	appExe       = "trimmel.exe"
 	uninstallExe = "uninstall.exe"
-	appName      = "PC Optimizer"
-	publisher    = "PC Optimizer"
-	uninstallKey = `Software\Microsoft\Windows\CurrentVersion\Uninstall\PCOptimizer`
+	appName      = "Trimmel"
+	publisher    = "Trimmel"
+	uninstallKey = `Software\Microsoft\Windows\CurrentVersion\Uninstall\Trimmel`
+
+	// PC Optimizer 0.1.x, the app's name before Trimmel. Setup finds and
+	// replaces it: same app, new name.
+	legacyExe          = "pcoptimizer.exe"
+	legacyAppName      = "PC Optimizer"
+	legacyUninstallKey = `Software\Microsoft\Windows\CurrentVersion\Uninstall\PCOptimizer`
 )
 
-//go:embed payload/pcoptimizer.exe
+//go:embed payload/trimmel.exe
 var payload []byte
 
 type emitFn func(stage string, percent float64)
@@ -41,9 +47,10 @@ func defaultInstallDir() string {
 	return filepath.Join(pf, appName)
 }
 
-// existingInstallDir returns the folder of a current install, or "".
-func existingInstallDir() string {
-	k, err := registry.OpenKey(registry.LOCAL_MACHINE, uninstallKey, registry.QUERY_VALUE)
+// registeredDir reads the install folder from an uninstall key, but only if
+// the named exe is really there.
+func registeredDir(key, exe string) string {
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, key, registry.QUERY_VALUE)
 	if err != nil {
 		return ""
 	}
@@ -52,23 +59,38 @@ func existingInstallDir() string {
 	if err != nil {
 		return ""
 	}
-	if _, err := os.Stat(filepath.Join(dir, appExe)); err != nil {
+	if _, err := os.Stat(filepath.Join(dir, exe)); err != nil {
 		return ""
 	}
 	return dir
 }
 
-func startMenuLink() string {
-	return filepath.Join(os.Getenv("ProgramData"), `Microsoft\Windows\Start Menu\Programs`, appName+".lnk")
+// existingInstallDir returns the folder of a current install, or "". A
+// PC Optimizer 0.1.x install counts: setup upgrades it in place of a fresh install.
+func existingInstallDir() string {
+	if d := registeredDir(uninstallKey, appExe); d != "" {
+		return d
+	}
+	return registeredDir(legacyUninstallKey, legacyExe)
 }
 
-func desktopLink() string {
+// legacyInstallDir returns the folder of an old PC Optimizer install, or "".
+func legacyInstallDir() string { return registeredDir(legacyUninstallKey, legacyExe) }
+
+func startMenuLinkFor(name string) string {
+	return filepath.Join(os.Getenv("ProgramData"), `Microsoft\Windows\Start Menu\Programs`, name+".lnk")
+}
+
+func desktopLinkFor(name string) string {
 	pub := os.Getenv("PUBLIC")
 	if pub == "" {
 		pub = `C:\Users\Public`
 	}
-	return filepath.Join(pub, "Desktop", appName+".lnk")
+	return filepath.Join(pub, "Desktop", name+".lnk")
 }
+
+func startMenuLink() string { return startMenuLinkFor(appName) }
+func desktopLink() string   { return desktopLinkFor(appName) }
 
 // killApp ends any running copy of the app that lives in one of dirs, so its
 // exe can be replaced or removed. Other programs with the same name are left alone.
@@ -83,6 +105,7 @@ func killApp(dirs ...string) {
 	for _, d := range dirs {
 		if d != "" {
 			want[strings.ToLower(filepath.Join(d, appExe))] = true
+			want[strings.ToLower(filepath.Join(d, legacyExe))] = true
 		}
 	}
 
@@ -90,7 +113,7 @@ func killApp(dirs ...string) {
 	var e windows.ProcessEntry32
 	e.Size = uint32(unsafe.Sizeof(e))
 	for err = windows.Process32First(snap, &e); err == nil; err = windows.Process32Next(snap, &e) {
-		if !strings.EqualFold(windows.UTF16ToString(e.ExeFile[:]), appExe) {
+		if name := windows.UTF16ToString(e.ExeFile[:]); !strings.EqualFold(name, appExe) && !strings.EqualFold(name, legacyExe) {
 			continue
 		}
 		h, err := windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION|windows.PROCESS_TERMINATE|windows.SYNCHRONIZE, false, e.ProcessID)
@@ -199,7 +222,7 @@ func install(o Options, emit emitFn) error {
 	}
 
 	old := existingInstallDir()
-	emit("Closing PC Optimizer if it is running…", 4)
+	emit("Closing Trimmel if it is running…", 4)
 	killApp(dir, old)
 
 	emit("Creating the install folder…", 10)
@@ -207,7 +230,7 @@ func install(o Options, emit emitFn) error {
 		return fmt.Errorf("couldn't create %s: %w", dir, err)
 	}
 
-	emit("Copying PC Optimizer…", 25)
+	emit("Copying Trimmel…", 25)
 	if err := writeFile(filepath.Join(dir, appExe), payload); err != nil {
 		return fmt.Errorf("couldn't write the app (is it still open?): %w", err)
 	}
@@ -263,6 +286,8 @@ func install(o Options, emit emitFn) error {
 		emit("Removing the old copy…", 96)
 		removeInstallFiles(old)
 	}
+	// Upgrading from PC Optimizer 0.1.x: remove its entry, shortcuts and exe.
+	removeLegacy(dir)
 
 	emit("All done", 100)
 	return nil
@@ -275,18 +300,20 @@ func uninstall(o Options, emit emitFn) error {
 		dir = filepath.Dir(self)
 	}
 
-	emit("Closing PC Optimizer…", 10)
+	emit("Closing Trimmel…", 10)
 	killApp(dir)
 
 	emit("Removing shortcuts…", 35)
 	_ = os.Remove(startMenuLink())
 	_ = os.Remove(desktopLink())
 
-	emit("Removing PC Optimizer from Windows…", 55)
+	emit("Removing Trimmel from Windows…", 55)
 	_ = registry.DeleteKey(registry.LOCAL_MACHINE, uninstallKey)
+	removeLegacy("")
 
 	if o.RemoveConfig {
 		emit("Deleting your settings…", 70)
+		_ = os.RemoveAll(filepath.Join(os.Getenv("APPDATA"), "trimmel"))
 		_ = os.RemoveAll(filepath.Join(os.Getenv("APPDATA"), "pcoptimizer"))
 	}
 
@@ -301,6 +328,7 @@ func uninstall(o Options, emit emitFn) error {
 // added to the folder are kept.
 func removeInstallFiles(dir string) {
 	_ = os.Remove(filepath.Join(dir, appExe))
+	_ = os.Remove(filepath.Join(dir, legacyExe))
 	un := filepath.Join(dir, uninstallExe)
 	if err := os.Remove(un); err != nil && !os.IsNotExist(err) {
 		removeAtReboot(un)
@@ -308,4 +336,24 @@ func removeInstallFiles(dir string) {
 	if err := os.Remove(dir); err != nil && !os.IsNotExist(err) {
 		removeAtReboot(dir)
 	}
+}
+
+// removeLegacy takes PC Optimizer 0.1.x off the machine: its Add/Remove entry,
+// shortcuts, exe and folder. keep is the folder of the new install; if the old
+// one is the same folder, only the old exe is removed. Settings are not
+// touched here: the app copies them to the new folder on first start.
+func removeLegacy(keep string) {
+	old := legacyInstallDir()
+	_ = os.Remove(startMenuLinkFor(legacyAppName))
+	_ = os.Remove(desktopLinkFor(legacyAppName))
+	_ = registry.DeleteKey(registry.LOCAL_MACHINE, legacyUninstallKey)
+	if old == "" {
+		return
+	}
+	if keep != "" && strings.EqualFold(filepath.Clean(old), filepath.Clean(keep)) {
+		_ = os.Remove(filepath.Join(old, legacyExe))
+		return
+	}
+	killApp(old)
+	removeInstallFiles(old)
 }

@@ -157,7 +157,7 @@ func (m *Monitor) Kill(pid int32, expectName string) error {
 		return fmt.Errorf("refusing to end %s: Windows depends on it", name)
 	}
 	if ownChild(p, name, self) {
-		return fmt.Errorf("refusing to end %s: PC Optimizer's own window depends on it", name)
+		return fmt.Errorf("refusing to end %s: Trimmel's own window depends on it", name)
 	}
 	if err := p.Kill(); err != nil {
 		return fmt.Errorf("could not end process %d: %w (it may need admin rights)", pid, err)

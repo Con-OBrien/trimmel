@@ -142,7 +142,7 @@ func (a *App) hints(s overview.Snapshot) []Hint {
 		hs = append(hs, Hint{"info", "No restart in over a week. A reboot clears leaked memory and finishes pending updates."})
 	}
 	if name := a.OtherAccount(); name != "" {
-		hs = append(hs, Hint{"warn", fmt.Sprintf("PC Optimizer is running as %s, not as the account you are signed in to Windows with. Cleanup, Startup and the Recycle Bin affect that account's files, not yours. To tidy your own PC, sign in to Windows with an administrator account, or ask an administrator to make yours one.", name)})
+		hs = append(hs, Hint{"warn", fmt.Sprintf("Trimmel is running as %s, not as the account you are signed in to Windows with. Cleanup, Startup and the Recycle Bin affect that account's files, not yours. To tidy your own PC, sign in to Windows with an administrator account, or ask an administrator to make yours one.", name)})
 	}
 	if !elevation.IsAdmin() {
 		hs = append(hs, Hint{"info", "Not running with admin rights: system-wide cleanup, machine startup items and driver installs are limited. Start the app with “Run as administrator”."})
@@ -490,7 +490,9 @@ func (a *App) DeleteSettings() error {
 		return err
 	}
 	a.auth.Logout()
-	return os.RemoveAll(appinfo.SettingsDir())
+	err := os.RemoveAll(appinfo.SettingsDir())
+	_ = os.RemoveAll(appinfo.LegacySettingsDir())
+	return err
 }
 
 // GetStorageSuggestions looks at one drive (for example "C:") and returns

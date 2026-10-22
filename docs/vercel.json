@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/downloads/PC-Optimizer-Setup.exe",
+      "destination": "/downloads/Trimmel-Setup.exe",
+      "permanent": true
+    },
+    {
+      "source": "/downloads/PC-Optimizer-Portable.zip",
+      "destination": "/downloads/Trimmel-Portable.zip",
+      "permanent": true
+    }
+  ]
+}

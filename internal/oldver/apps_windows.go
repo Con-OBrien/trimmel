@@ -18,7 +18,7 @@ func ListApps() []App {
 	var apps []App
 	locs := map[string]string{}
 	for _, e := range entries {
-		if e.hasParent || e.uninstall == "" || strings.EqualFold(e.name, "PC Optimizer") || isUpdateName(e.name) {
+		if e.hasParent || e.uninstall == "" || strings.EqualFold(e.name, "Trimmel") || strings.EqualFold(e.name, "PC Optimizer") || isUpdateName(e.name) {
 			continue
 		}
 		apps = append(apps, App{

@@ -71,7 +71,7 @@ func (a *App) Uninstall(o Options) error {
 // PickDir opens a folder chooser and returns the chosen folder ("" if cancelled).
 func (a *App) PickDir(start string) (string, error) {
 	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
-		Title:            "Choose where to install PC Optimizer",
+		Title:            "Choose where to install Trimmel",
 		DefaultDirectory: start,
 	})
 }

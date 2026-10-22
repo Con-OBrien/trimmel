@@ -19,7 +19,7 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:     "PC Optimizer",
+		Title:     "Trimmel",
 		Width:     1100,
 		Height:    720,
 		MinWidth:  900,

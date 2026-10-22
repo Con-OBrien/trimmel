@@ -1,10 +1,10 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "pcoptimizer-setup",
-  "outputfilename": "PC-Optimizer-Setup",
+  "name": "trimmel-setup",
+  "outputfilename": "Trimmel-Setup",
   "info": {
-    "companyName": "PC Optimizer",
-    "productName": "PC Optimizer Setup",
-    "productVersion": "0.1.0"
+    "companyName": "Trimmel",
+    "productName": "Trimmel Setup",
+    "productVersion": "0.2.0"
   }
 }

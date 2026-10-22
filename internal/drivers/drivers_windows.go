@@ -361,7 +361,7 @@ func getInt(d *ole.IDispatch, prop string) int {
 // System Protection may be off, so a failure here is reported, not fatal.
 func createRestorePoint() bool {
 	cmd := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
-		`Checkpoint-Computer -Description 'PC Optimizer: before driver update' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop`)
+		`Checkpoint-Computer -Description 'Trimmel: before driver update' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop`)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	done := make(chan error, 1)
 	if err := cmd.Start(); err != nil {
@@ -386,7 +386,7 @@ func friendlyWUError(what string, err error) error {
 		strings.Contains(low, "80072ee"), strings.Contains(low, "80072ef"):
 		return fmt.Errorf("%s: couldn't reach Windows Update. Check your internet connection (%s)", what, msg)
 	case strings.Contains(low, "80240fff"), strings.Contains(low, "8024500c"), strings.Contains(low, "80240037"):
-		return fmt.Errorf("%s: this PC's updates seem to be managed by your organisation or a policy, so PC Optimizer can't use Windows Update here (%s)", what, msg)
+		return fmt.Errorf("%s: this PC's updates seem to be managed by your organisation or a policy, so Trimmel can't use Windows Update here (%s)", what, msg)
 	case strings.Contains(low, "80240016"), strings.Contains(low, "8024001e"):
 		return fmt.Errorf("%s: Windows Update is busy or a restart is pending. Restart the PC and try again (%s)", what, msg)
 	}

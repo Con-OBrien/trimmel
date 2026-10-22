@@ -158,7 +158,7 @@ func blockReason(path, publisher string, systemComponent bool) string {
 		return "Folder shared by many programs"
 	}
 	if exe, err := os.Executable(); err == nil && under(path) && strings.HasPrefix(strings.ToLower(exe), lp+`\`) {
-		return "This is the running PC Optimizer"
+		return "This is the running Trimmel"
 	}
 	return ""
 }

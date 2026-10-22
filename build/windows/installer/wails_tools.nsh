@@ -5,16 +5,16 @@
 !include "FileFunc.nsh"
 
 !ifndef INFO_PROJECTNAME
-    !define INFO_PROJECTNAME "pcoptimizer"
+    !define INFO_PROJECTNAME "trimmel"
 !endif
 !ifndef INFO_COMPANYNAME
-    !define INFO_COMPANYNAME "PC Optimizer"
+    !define INFO_COMPANYNAME "Trimmel"
 !endif
 !ifndef INFO_PRODUCTNAME
-    !define INFO_PRODUCTNAME "PC Optimizer"
+    !define INFO_PRODUCTNAME "Trimmel"
 !endif
 !ifndef INFO_PRODUCTVERSION
-    !define INFO_PRODUCTVERSION "0.1.0"
+    !define INFO_PRODUCTVERSION "0.2.0"
 !endif
 !ifndef INFO_COPYRIGHT
     !define INFO_COPYRIGHT "Copyright........."

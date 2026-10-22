@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="PC Optimizer: a friendly way to tidy up and speed up your PC" width="100%">
+  <img src="docs/banner.svg" alt="Trimmel: free up space, speed up startup, undo anything" width="100%">
 </p>
 
 <p align="center">
@@ -7,7 +7,7 @@
   <img alt="Go" src="https://img.shields.io/badge/Go-1.26-3b2a3f?style=flat-square&logo=go&logoColor=ffc25a">
   <img alt="Wails v2" src="https://img.shields.io/badge/Wails-v2-3b2a3f?style=flat-square&logoColor=ffc25a">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-frontend-3b2a3f?style=flat-square&logo=typescript&logoColor=ffc25a">
-  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-ffc25a?style=flat-square&labelColor=3b2a3f">
+  <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-ffc25a?style=flat-square&labelColor=3b2a3f">
 </p>
 
 <p align="center">
@@ -69,7 +69,7 @@ No download needed. Here is how each main screen looks.
 
 ## 🛡️ Safety first
 
-PC Optimizer is built to be cautious. Tools that delete or change things follow these rules:
+Trimmel is built to be cautious. Tools that delete or change things follow these rules:
 
 - **Cleanup** only removes files older than 24 hours in temp and update folders. It never follows symlinks or junctions and never removes the target folder itself. Locked files are skipped and counted. The Recycle Bin is opt-in.
 - **Startup** writes a flag instead of deleting the entry. Switch it back on at any time, in the app or in Task Manager.
@@ -96,7 +96,7 @@ git clone https://github.com/<your-username>/pcoptimizer.git
 cd pcoptimizer
 go mod tidy
 wails dev          # hot-reloading dev build
-wails build        # release build -> build\bin\pcoptimizer.exe
+wails build        # release build -> build\bin\trimmel.exe
 ```
 
 `frontend/dist` is not committed. `wails dev` and `wails build` create it. If you only want `go build` or `go test ./...` to compile the root package, run `npm install && npm run build` in `frontend` first.
@@ -104,14 +104,14 @@ wails build        # release build -> build\bin\pcoptimizer.exe
 ### Build the installer
 
 ```powershell
-.uild-installer.ps1     # -> installeruildin\PC-Optimizer-Setup.exe
+.uild-installer.ps1     # -> installeruildin\Trimmel-Setup.exe
 ```
 
-The installer is its own small Wails app in `installer/`, themed to match PC Optimizer. It embeds the built app, installs to Program Files, adds Start Menu and optional desktop shortcuts, and registers an uninstaller under **Settings > Apps**. Running the same file again updates in place. Bump `productVersion` in `wails.json` for each release.
+The installer is its own small Wails app in `installer/`, themed to match Trimmel. It embeds the built app, installs to Program Files, adds Start Menu and optional desktop shortcuts, and registers an uninstaller under **Settings > Apps**. Running the same file again updates in place. Bump `productVersion` in `wails.json` for each release.
 
 ### Admin rights
 
-PC Optimizer asks for administrator rights at launch (a UAC prompt). It needs them for Windows temp and Windows Update cleanup, startup items for all users, driver installs, and moving apps out of Program Files. Standard accounts need an admin password to start it.
+Trimmel asks for administrator rights at launch (a UAC prompt). It needs them for Windows temp and Windows Update cleanup, startup items for all users, driver installs, and moving apps out of Program Files. Standard accounts need an admin password to start it.
 
 ## 🔑 Sign in with Google
 
@@ -129,7 +129,7 @@ Users just click **Sign in with Google** the first time. After that the app reme
 
 Google issues a secret for desktop apps but does not treat it as confidential, because PKCE protects the flow. Still, keep it out of git.
 
-It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Other OpenID Connect providers work through `%APPDATA%\pcoptimizer\auth.json` (`issuer`, `clientId`, optional `clientSecret`) or the `PCOPT_OIDC_ISSUER`, `PCOPT_OIDC_CLIENT_ID` and `PCOPT_OIDC_CLIENT_SECRET` environment variables.
+It uses the authorization code flow with PKCE and a loopback redirect, verifies ID tokens, and stores only the refresh token in the Windows credential store. Other OpenID Connect providers work through `%APPDATA%\trimmel\auth.json` (`issuer`, `clientId`, optional `clientSecret`) or the `PCOPT_OIDC_ISSUER`, `PCOPT_OIDC_CLIENT_ID` and `PCOPT_OIDC_CLIENT_SECRET` environment variables.
 
 > Sign-in is a convenience gate, not a security boundary against someone with access to your user account.
 
@@ -179,4 +179,4 @@ Issues and pull requests are welcome. Please run `go test ./...` and `npm run bu
 
 ---
 
-<p align="center">PC Optimizer</p>
+<p align="center">Trimmel</p>

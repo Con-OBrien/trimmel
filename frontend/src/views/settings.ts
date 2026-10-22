@@ -22,7 +22,7 @@ export const settingsView: View = root => {
     body.innerHTML = `
       <h2 class="section-title">About</h2>
       <div class="panel list">
-        ${row("PC Optimizer", `Version ${esc(info.version)} · ${info.admin ? "running as administrator" : "not running as administrator"}`,
+        ${row("Trimmel", `Version ${esc(info.version)} · ${info.admin ? "running as administrator" : "not running as administrator"}`,
           `<button class="btn" id="se-update">Check for updates</button>`)}
         <div id="se-update-msg" class="list-row" hidden></div>
       </div>
@@ -67,10 +67,10 @@ export const settingsView: View = root => {
     on("#se-open-install", () => safe(() => api.OpenFolder("install")))
     on("#se-open-settings", () => safe(() => api.OpenFolder("settings")))
     on("#se-change", () => safe(async () => {
-      if (confirm("PC Optimizer will close and Setup will open so you can choose a new folder. Continue?")) await api.RunSetup("modify")
+      if (confirm("Trimmel will close and Setup will open so you can choose a new folder. Continue?")) await api.RunSetup("modify")
     }))
     on("#se-uninstall", () => safe(async () => {
-      if (confirm("PC Optimizer will close and Setup will open to remove it. Continue?")) await api.RunSetup("uninstall")
+      if (confirm("Trimmel will close and Setup will open to remove it. Continue?")) await api.RunSetup("uninstall")
     }))
     on("#se-signout", () => safe(async () => { await api.Logout(); location.reload() }))
     on("#se-delete", () => safe(async () => {

@@ -30,7 +30,7 @@ func main() {
 	app := NewApp(mode)
 
 	err := wails.Run(&options.App{
-		Title:     "PC Optimizer Setup",
+		Title:     "Trimmel Setup",
 		Width:     880,
 		Height:    620,
 		MinWidth:  880,
@@ -45,7 +45,7 @@ func main() {
 		OnStartup:        app.startup,
 		Bind:             []interface{}{app},
 		Windows: &windows.Options{
-			WebviewUserDataPath: os.TempDir() + `\pcoptimizer-setup`,
+			WebviewUserDataPath: os.TempDir() + `\trimmel-setup`,
 		},
 	})
 	if err != nil {

@@ -58,13 +58,13 @@ ManifestDPIAware true
 !define MUI_HEADERIMAGE_BITMAP "resources\header.bmp"
 !define MUI_HEADERIMAGE_UNBITMAP "resources\header.bmp"
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_WELCOMEPAGE_TITLE "Welcome to PC Optimizer"
-!define MUI_WELCOMEPAGE_TEXT "This will install PC Optimizer on your computer.$\r$\n$\r$\nIt frees up space, trims slow startups and keeps drivers current. Nothing is deleted without your say-so.$\r$\n$\r$\nPC Optimizer needs administrator rights to do its job."
+!define MUI_WELCOMEPAGE_TITLE "Welcome to Trimmel"
+!define MUI_WELCOMEPAGE_TEXT "This will install Trimmel on your computer.$\r$\n$\r$\nIt frees up space, trims slow startups and keeps drivers current. Nothing is deleted without your say-so.$\r$\n$\r$\nTrimmel needs administrator rights to do its job."
 !define MUI_COMPONENTSPAGE_SMALLDESC
-!define MUI_FINISHPAGE_TITLE "PC Optimizer is ready"
-!define MUI_FINISHPAGE_TEXT "Setup has installed PC Optimizer on your computer.$\r$\n$\r$\nClick Finish to close setup."
+!define MUI_FINISHPAGE_TITLE "Trimmel is ready"
+!define MUI_FINISHPAGE_TEXT "Setup has installed Trimmel on your computer.$\r$\n$\r$\nClick Finish to close setup."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_EXECUTABLE}"
-!define MUI_FINISHPAGE_RUN_TEXT "Start PC Optimizer now"
+!define MUI_FINISHPAGE_RUN_TEXT "Start Trimmel now"
 !define MUI_FINISHPAGE_NOAUTOCLOSE # Wait on the INSTFILES page so the user can take a look into the details of the installation steps
 !define MUI_ABORTWARNING # This will warn the user if they exit from the installer.
 
@@ -101,7 +101,7 @@ Function .onInit
    !insertmacro wails.checkArchitecture
 FunctionEnd
 
-Section "PC Optimizer" SecMain
+Section "Trimmel" SecMain
     SectionIn RO
     !insertmacro wails.setShellContext
 
@@ -125,8 +125,8 @@ Section "Desktop shortcut" SecDesktop
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecMain} "The PC Optimizer app and a Start Menu shortcut."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktop} "Add a PC Optimizer shortcut to your desktop."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecMain} "The Trimmel app and a Start Menu shortcut."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktop} "Add a Trimmel shortcut to your desktop."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section "uninstall"

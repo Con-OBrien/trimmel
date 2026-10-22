@@ -27,15 +27,18 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
+
+	"pcoptimizer/internal/appdir"
 )
 
 const (
-	keyringService = "pcoptimizer"
-	keyringUser    = "oidc-refresh-token"
-	loginTimeout   = 5 * time.Minute
+	keyringService       = "trimmel"
+	legacyKeyringService = "pcoptimizer" // PC Optimizer 0.1.x; read once, then moved
+	keyringUser          = "oidc-refresh-token"
+	loginTimeout         = 5 * time.Minute
 )
 
-// Config is read from %APPDATA%\pcoptimizer\auth.json, with PCOPT_OIDC_*
+// Config is read from %APPDATA%\trimmel\auth.json, with PCOPT_OIDC_*
 // environment variables taking precedence.
 type Config struct {
 	Issuer       string   `json:"issuer"`
@@ -47,11 +50,7 @@ type Config struct {
 func (c Config) Enabled() bool { return c.Issuer != "" && c.ClientID != "" }
 
 func ConfigPath() string {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		dir = "."
-	}
-	return filepath.Join(dir, "pcoptimizer", "auth.json")
+	return filepath.Join(appdir.Dir(), "auth.json")
 }
 
 func LoadConfig() (Config, error) {
@@ -170,7 +169,7 @@ func (m *Manager) Restore(ctx context.Context) Status {
 }
 
 func (m *Manager) restore(ctx context.Context) (*User, error) {
-	rt, err := keyring.Get(keyringService, keyringUser)
+	rt, fromLegacy, err := getToken()
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +186,11 @@ func (m *Manager) restore(ctx context.Context) (*User, error) {
 	}
 	if tok.RefreshToken != "" && tok.RefreshToken != rt { // rotated
 		_ = keyring.Set(keyringService, keyringUser, tok.RefreshToken)
+	} else if fromLegacy { // signed in under the old name: move the token to the new entry
+		_ = keyring.Set(keyringService, keyringUser, rt)
+	}
+	if fromLegacy {
+		_ = keyring.Delete(legacyKeyringService, keyringUser)
 	}
 	raw, _ := tok.Extra("id_token").(string)
 	if raw == "" {
@@ -267,7 +271,7 @@ func (m *Manager) Login(ctx context.Context) (*User, error) {
 		if res.err != nil {
 			fmt.Fprint(w, page("Sign-in failed", html.EscapeString(res.err.Error())))
 		} else {
-			fmt.Fprint(w, page("Signed in", "You can close this tab and return to PC Optimizer."))
+			fmt.Fprint(w, page("Signed in", "You can close this tab and return to Trimmel."))
 		}
 		select {
 		case done <- res:
@@ -331,6 +335,7 @@ func (m *Manager) CancelLogin() {
 
 func (m *Manager) Logout() {
 	_ = keyring.Delete(keyringService, keyringUser)
+	_ = keyring.Delete(legacyKeyringService, keyringUser)
 	m.mu.Lock()
 	m.user = nil
 	m.mu.Unlock()
@@ -344,6 +349,18 @@ func rejectedByProvider(err error) bool {
 		return false
 	}
 	return re.ErrorCode == "invalid_grant" || re.ErrorCode == "invalid_client" || re.ErrorCode == "unauthorized_client"
+}
+
+// getToken reads the stored refresh token, falling back to the entry written
+// by PC Optimizer 0.1.x so existing users stay signed in after the rename.
+func getToken() (token string, fromLegacy bool, err error) {
+	token, err = keyring.Get(keyringService, keyringUser)
+	if errors.Is(err, keyring.ErrNotFound) {
+		if lt, lerr := keyring.Get(legacyKeyringService, keyringUser); lerr == nil {
+			return lt, true, nil
+		}
+	}
+	return token, false, err
 }
 
 func userFrom(idt *oidc.IDToken) (*User, error) {

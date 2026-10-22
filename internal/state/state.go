@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"pcoptimizer/internal/appdir"
 )
 
 const DefaultReminderDays = 14
@@ -27,11 +29,7 @@ type Store struct {
 }
 
 func Path() string {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		dir = "."
-	}
-	return filepath.Join(dir, "pcoptimizer", "state.json")
+	return filepath.Join(appdir.Dir(), "state.json")
 }
 
 // Open loads the file at path (Path() if empty). A missing or unreadable file

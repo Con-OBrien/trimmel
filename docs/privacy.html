@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PC Optimizer privacy policy</title>
+  <title>Trimmel privacy policy</title>
   <style>
     :root { --bg:#fff8f1; --text:#3a2b3d; --muted:#86768a; --accent:#178f86; --line:#f0e0cf; }
     body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
@@ -20,15 +20,16 @@
 </head>
 <body>
 <main>
-  <p><a href="index.html">&larr; PC Optimizer</a></p>
+  <p><a href="index.html">&larr; Trimmel</a></p>
   <h1>Privacy policy</h1>
-  <p class="muted">Last updated: 21 October 2026</p>
+  <p class="muted">Last updated: 22 October 2026</p>
 
-  <p>PC Optimizer ("the app") is a free, open source desktop application for Windows that helps you free up disk space, manage startup programs, move installed programs between drives and update drivers. This policy explains what information the app handles, why, where it is stored, and the choices you have.</p>
+  <p>Trimmel ("the app", called PC Optimizer before version 0.2.0) is a free, open source desktop application for Windows that helps you free up disk space, manage startup programs, move installed programs between drives and update drivers. This policy explains what information the app handles, why, where it is stored, and the choices you have.</p>
   <p><b>In short:</b> the app runs entirely on your own computer. The developer operates no servers, receives no data from the app, and does not sell, share or transfer your information to anyone.</p>
 
   <h2>1. Information the app accesses</h2>
   <h3>Google account information (only if you sign in with Google)</h3>
+  <p><b>Note:</b> Google sign-in is optional and is not included in version 0.2.0. This section applies to any version that includes it.</p>
   <p>When you click "Sign in with Google", the app requests the standard OpenID Connect scopes <code>openid</code>, <code>email</code> and <code>profile</code>. Google then gives the app:</p>
   <table>
     <tr><th>Data</th><th>Why the app needs it</th></tr>
@@ -51,21 +52,22 @@
   <h2>3. Storage and security</h2>
   <ul>
     <li>Your name and email are held in the app's memory while it is running and are not written to disk.</li>
+    <li>The app keeps a small settings file on your PC, in <code>%APPDATA%\trimmel</code>: your reminder preference, the date of your last cleanup and whether you have seen the welcome guide. It is never uploaded.</li>
     <li>To keep you signed in, the app stores a Google refresh token in the Windows Credential Manager, protected by your Windows account. It is not stored anywhere else.</li>
     <li>Sign-in uses the OAuth 2.0 authorization code flow with PKCE, and the app verifies the signature and contents of the ID token Google returns.</li>
     <li>No Google information is sent to the developer or to any server operated by the developer.</li>
   </ul>
 
   <h2>4. Sharing and disclosure</h2>
-  <p>The app does not share, sell, rent or transfer Google user data or any other personal information to third parties. The only network connections the app makes are to Google (to sign you in) and, when you ask it to check for drivers, to Microsoft Windows Update. The app contains no analytics, advertising or tracking code.</p>
+  <p>The app does not share, sell, rent or transfer Google user data or any other personal information to third parties. The only network connections the app makes are to Google (to sign you in, in versions that include sign-in), to Microsoft Windows Update (when you ask it to check for drivers), and to this project's website (when you choose &ldquo;Check for updates&rdquo; in Settings, which downloads a small public file listing the latest version number; the app sends no personal information with that request). The app contains no analytics, advertising or tracking code.</p>
 
   <h2>5. Google API Services User Data Policy</h2>
-  <p>PC Optimizer's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+  <p>Trimmel's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
 
   <h2>6. Retention and deletion</h2>
   <ul>
     <li>Choose <b>Sign out</b> in the app to delete the stored token immediately.</li>
-    <li>Choose <b>Also delete my settings</b> when uninstalling, or uninstall the app, to remove everything it stored. You can also delete the "pcoptimizer" entry in Windows Credential Manager.</li>
+    <li>Choose <b>Also delete my settings</b> when uninstalling, or uninstall the app, to remove everything it stored. You can also delete the "trimmel" entry (or "pcoptimizer", if you used an earlier version) in Windows Credential Manager.</li>
     <li>You can revoke the app's access to your Google account at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
   </ul>
   <p>Because the developer holds none of your data, there is nothing on any server to delete.</p>

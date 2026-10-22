@@ -1,10 +1,10 @@
 # Third-party notices
 
-PC Optimizer is MIT licensed (see `LICENSE`). It bundles the following third-party material.
+Trimmel is MIT licensed (see `LICENSE`). It bundles the following third-party material.
 
 ## Nunito font
 
-Used in the app and the installer. Licensed under the SIL Open Font License 1.1.
+Used in the installer. Licensed under the SIL Open Font License 1.1.
 
 Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) Nunito-Italic[wght].ttf: Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)
 
@@ -12,6 +12,18 @@ This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
 
+
+## Bricolage Grotesque font
+
+Used for headings and the name in the app and on the website. Licensed under the SIL Open Font License 1.1 (full text below).
+
+Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)
+
+## Atkinson Hyperlegible Next font
+
+Used for body text in the app and on the website. Licensed under the SIL Open Font License 1.1 (full text below).
+
+Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors (https://github.com/googlefonts/atkinson-hyperlegible-next)
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007

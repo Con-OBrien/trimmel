@@ -1,4 +1,4 @@
-// Package appinfo reports where PC Optimizer is installed and whether a newer
+// Package appinfo reports where Trimmel is installed and whether a newer
 // release exists. It backs the Settings tab.
 package appinfo
 
@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"pcoptimizer/internal/appdir"
 )
 
 const (
@@ -41,13 +43,11 @@ type Update struct {
 }
 
 // SettingsDir is the per-user folder where the app keeps its settings.
-func SettingsDir() string {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		dir = "."
-	}
-	return filepath.Join(dir, "pcoptimizer")
-}
+func SettingsDir() string { return appdir.Dir() }
+
+// LegacySettingsDir is the folder PC Optimizer 0.1.x used. It is kept after
+// migration, so "delete my settings" has to remove it too.
+func LegacySettingsDir() string { return appdir.LegacyDir() }
 
 // Current describes the running copy.
 func Current() (Install, error) {

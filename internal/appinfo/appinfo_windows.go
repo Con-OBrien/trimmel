@@ -4,7 +4,7 @@ package appinfo
 
 import "golang.org/x/sys/windows/registry"
 
-const uninstallKey = `Software\Microsoft\Windows\CurrentVersion\Uninstall\PCOptimizer`
+const uninstallKey = `Software\Microsoft\Windows\CurrentVersion\Uninstall\Trimmel`
 
 // registeredDir is the install folder written by setup, or "".
 func registeredDir() string {
