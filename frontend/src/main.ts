@@ -8,6 +8,8 @@ import { startupView } from "./views/startup"
 import { driversView } from "./views/drivers"
 import { moveView } from "./views/move"
 import { oldVersionsView } from "./views/oldversions"
+import { storageView } from "./views/storage"
+import { appsView } from "./views/apps"
 
 const views: Record<string, View> = {
   overview: overviewView,
@@ -17,6 +19,8 @@ const views: Record<string, View> = {
   drivers: driversView,
   move: moveView,
   oldversions: oldVersionsView,
+  storage: storageView,
+  apps: appsView,
 }
 
 const main = document.getElementById("view")!
@@ -25,8 +29,11 @@ let teardown: (() => void) | void
 function show(name: string, params?: ViewParams) {
   const swap = () => {
     teardown?.()
-    document.querySelectorAll<HTMLElement>(".nav-item").forEach(b =>
-      b.classList.toggle("active", b.dataset.view === name))
+    document.querySelectorAll<HTMLElement>(".nav-item").forEach(b => {
+      const on = b.dataset.view === name
+      b.classList.toggle("active", on)
+      if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current")
+    })
     main.innerHTML = ""
     main.scrollTop = 0
     teardown = views[name](main, params)
@@ -105,10 +112,32 @@ loginBtn.addEventListener("click", async () => {
 })
 loginCancel.addEventListener("click", () => { api.CancelLogin() })
 
+// ---- First-run guide ----
+
+async function maybeWelcome() {
+  const prefs = await api.GetPrefs().catch(() => null)
+  if (!prefs || prefs.welcomed) return
+  const el = document.getElementById("welcome")!
+  const app = document.getElementById("app")!
+  const close = (go?: string) => {
+    el.hidden = true
+    app.inert = false
+    api.MarkWelcomed().catch(() => {})
+    if (go) show(go)
+  }
+  el.hidden = false
+  app.inert = true // keep keyboard focus inside the dialog
+  document.getElementById("welcome-close")!.onclick = () => close()
+  document.getElementById("welcome-go")!.onclick = () => close("cleanup")
+  el.onkeydown = e => { if (e.key === "Escape") close() }
+  document.getElementById("welcome-go")!.focus()
+}
+
 function start(status: AuthStatus) {
   renderUser(status)
   renderAdminStatus()
   show("overview")
+  maybeWelcome()
 }
 
 async function boot() {

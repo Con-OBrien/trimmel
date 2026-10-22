@@ -61,7 +61,7 @@ export const processesView: View = (root, params) => {
         <td class="num ${cpu}">${p.cpuPercent.toFixed(1)}%</td>
         <td class="num ${mem}">${fmtBytes(p.memoryRss)}</td>
         <td class="num">${p.protected ? '<span class="muted small">system</span>'
-          : `<button class="btn ghost small" data-kill="${p.pid}" data-name="${esc(p.name)}">End task</button>`}</td>
+          : `<button class="btn ghost small" data-kill="${p.pid}" data-name="${esc(p.name)}" aria-label="End task ${esc(p.name)}">End task</button>`}</td>
       </tr>`
     }).join("")
   }

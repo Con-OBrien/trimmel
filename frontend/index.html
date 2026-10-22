@@ -7,8 +7,9 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233b2a3f'/%3E%3Cpath d='M6 22a10 10 0 0 1 15.5-8.3' fill='none' stroke='%23ffc25a' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z' fill='%23ff9d6c'/%3E%3C/svg%3E" />
   </head>
   <body>
+    <a class="skip-link" href="#view">Skip to content</a>
     <div id="app">
-      <nav class="sidebar">
+      <nav class="sidebar" aria-label="Main">
         <div class="brand">
           <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
             <defs>
@@ -27,13 +28,15 @@
         <button class="nav-item active" data-view="overview">Overview</button>
         <button class="nav-item" data-view="processes">Processes</button>
         <button class="nav-item" data-view="cleanup">Cleanup</button>
+        <button class="nav-item" data-view="storage">Storage</button>
         <button class="nav-item" data-view="startup">Startup</button>
+        <button class="nav-item" data-view="apps">Apps</button>
         <button class="nav-item" data-view="move">Move apps</button>
         <button class="nav-item" data-view="oldversions">Old versions</button>
         <button class="nav-item" data-view="drivers">Drivers</button>
         <div class="sidebar-foot"><div id="user-status"></div><div id="admin-status"></div></div>
       </nav>
-      <main id="view"></main>
+      <main id="view" tabindex="-1"></main>
     </div>
     <div id="login" class="login" hidden>
       <div class="login-card">
@@ -50,7 +53,23 @@
         <p class="error small" id="login-err"></p>
       </div>
     </div>
-    <div id="toast" class="toast" hidden></div>
+    <div id="welcome" class="login" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>
+      <div class="login-card welcome-card">
+        <h1 id="welcome-title">Welcome to PC Optimizer</h1>
+        <p class="muted" style="text-align:center">A quick look at what you can do here. Nothing changes until you choose it.</p>
+        <ol class="welcome-steps">
+          <li><span class="n">1</span><div><strong>Overview</strong><div class="muted small">Your PC's health score and what to do about it.</div></div></li>
+          <li><span class="n">2</span><div><strong>Cleanup</strong><div class="muted small">See how much space temporary files take, then tick what to remove. Start here.</div></div></li>
+          <li><span class="n">3</span><div><strong>Startup</strong><div class="muted small">Turn off programs that slow down sign-in. You can turn them back on.</div></div></li>
+          <li><span class="n">4</span><div><strong>Storage and Apps</strong><div class="muted small">Find what fills your drive, and uninstall what you no longer use.</div></div></li>
+        </ol>
+        <div class="welcome-actions">
+          <button class="btn" id="welcome-close">Look around</button>
+          <button class="btn primary" id="welcome-go">Start with Cleanup</button>
+        </div>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

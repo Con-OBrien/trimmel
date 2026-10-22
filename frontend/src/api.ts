@@ -102,7 +102,62 @@ export interface AuthStatus {
   error?: string
 }
 
+export interface HealthIssue {
+  level: "warn" | "info"
+  title: string
+  detail: string
+  view: string
+  action: string
+}
+
+export interface HealthReport {
+  score: number
+  label: string
+  issues: HealthIssue[] | null
+}
+
+export interface Prefs {
+  welcomed: boolean
+  reminderDays: number
+  daysSinceTidy: number
+}
+
+export interface StorageEntry {
+  name: string
+  path: string
+  size: number
+  files: number
+  isDir: boolean
+}
+
+export interface StorageResult {
+  path: string
+  total: number
+  entries: StorageEntry[] | null
+  partial: boolean
+  skipped: number
+}
+
+export interface InstalledApp {
+  id: string
+  name: string
+  version: string
+  publisher: string
+  size: number
+  installDate: string
+  shared: boolean
+}
+
 interface AppBindings {
+  GetHealth(): Promise<HealthReport>
+  GetPrefs(): Promise<Prefs>
+  SetReminderDays(n: number): Promise<void>
+  MarkWelcomed(): Promise<void>
+  AnalyzeFolder(path: string): Promise<StorageResult>
+  LargestFiles(path: string): Promise<{ files: StorageEntry[] | null, partial: boolean }>
+  RevealInExplorer(path: string): Promise<void>
+  ListApps(): Promise<InstalledApp[] | null>
+  UninstallApp(id: string): Promise<void>
   ScanInstalls(): Promise<Install[] | null>
   MoveInstall(path: string, destDrive: string): Promise<MoveResult>
   MoveInstallBack(path: string): Promise<MoveResult>

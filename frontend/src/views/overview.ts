@@ -1,4 +1,4 @@
-import { api, DriverScanState, Overview, Process } from "../api"
+import { api, DriverScanState, HealthReport, Overview, Prefs, Process } from "../api"
 import { bar, errMsg, esc, fmtBytes, fmtUptime, nav, relatedLine, toast, View } from "../ui"
 
 type Detail = "cpu" | "mem" | "uptime"
@@ -13,6 +13,9 @@ export const overviewView: View = root => {
   let last: Overview | null = null
   let procs: Process[] = []
   let drv: DriverScanState | null = null
+  let health: HealthReport | null = null
+  let prefs: Prefs | null = null
+  let healthAt = 0
   const body = root.querySelector<HTMLElement>("#ov-body")!
 
   const load = async () => {
@@ -23,6 +26,11 @@ export const overviewView: View = root => {
       // Starts a background Windows Update check once per session (then every 6 h).
       drv = await (drv ? api.DriverScanState() : api.StartDriverScan(false)).catch(() => drv)
       if (detail) await loadProcs()
+      // The health check reads startup entries, so refresh it once a minute, not every tick.
+      if (Date.now() - healthAt > 60_000) {
+        healthAt = Date.now()
+        ;[health, prefs] = await Promise.all([api.GetHealth().catch(() => health), api.GetPrefs().catch(() => prefs)])
+      }
       render()
     } catch (e) {
       if (!stopped) body.innerHTML = `<p class="error">${esc(errMsg(e))}</p>`
@@ -35,6 +43,8 @@ export const overviewView: View = root => {
 
   const render = () => {
     if (!last) return
+    // Do not rebuild the page under an open drop-down.
+    if (document.activeElement instanceof HTMLSelectElement && body.contains(document.activeElement)) return
     root.querySelector("#ov-host")!.textContent = `${last.system.hostname} · ${last.system.os}`
     body.innerHTML = detail ? renderDetail(last, detail) : renderMain(last)
   }
@@ -48,6 +58,7 @@ export const overviewView: View = root => {
       </div>`).join("")
 
     return `
+      ${healthCard()}
       <div class="cards">
         <div class="card clickable" role="button" tabindex="0" data-detail="cpu">
           <div class="card-label">CPU</div>
@@ -79,6 +90,32 @@ export const overviewView: View = root => {
         : '<p class="muted">Nothing to flag. Your PC looks healthy.</p>'}</div>`
   }
 
+  const healthCard = () => {
+    if (!health) return ""
+    const level = health.score >= 85 ? "" : health.score >= 65 ? "warn" : "crit"
+    const issues = health.issues ?? []
+    const days = prefs?.reminderDays ?? 14
+    const opt = (v: number, label: string) => `<option value="${v}" ${days === v ? "selected" : ""}>${label}</option>`
+    return `
+      <section class="panel health" aria-labelledby="health-title">
+        <div class="health-score" role="img" aria-label="Health score ${health.score} out of 100">
+          <div class="score-num ${level}">${health.score}</div><div class="muted small">out of 100</div>
+        </div>
+        <div class="grow">
+          <h2 id="health-title" style="margin:0 0 4px">${esc(health.label)}</h2>
+          ${issues.length
+            ? `<ul class="issues">${issues.map(i => `
+                <li class="${i.level}"><div><strong>${esc(i.title)}</strong><div class="muted small">${esc(i.detail)}</div></div>
+                  ${i.view ? `<button class="btn small" data-go="${esc(i.view)}">${esc(i.action || "Open")}</button>` : ""}</li>`).join("")}</ul>`
+            : '<p class="muted">Nothing needs doing. Your PC looks good.</p>'}
+          <label class="muted small remind">Remind me to tidy up
+            <select id="ov-remind" aria-label="How often to remind you to run Cleanup">
+              ${opt(7, "every week")}${opt(14, "every 2 weeks")}${opt(30, "every month")}${opt(0, "never")}
+            </select></label>
+        </div>
+      </section>`
+  }
+
   const driverCard = () => {
     const n = drv?.updates?.length ?? 0
     let value: string, note: string, cls = ""
@@ -104,7 +141,7 @@ export const overviewView: View = root => {
         <td class="num"><strong>${value}</strong></td>
         <td class="num muted">${other}</td>
         <td class="num">${p.protected ? '<span class="muted small">system</span>'
-          : `<button class="btn ghost small" data-kill="${p.pid}" data-name="${esc(p.name)}">End task</button>`}</td>
+          : `<button class="btn ghost small" data-kill="${p.pid}" data-name="${esc(p.name)}" aria-label="End task ${esc(p.name)}">End task</button>`}</td>
       </tr>`
   }).join("")
 
@@ -205,6 +242,16 @@ export const overviewView: View = root => {
       await loadProcs(); render()
       window.setTimeout(async () => { if (detail && !stopped) { await loadProcs(); render() } }, 1500)
     }
+  })
+  body.addEventListener("change", async e => {
+    const sel = e.target as HTMLSelectElement
+    if (sel.id !== "ov-remind") return
+    try {
+      await api.SetReminderDays(Number(sel.value))
+      healthAt = 0
+      toast(sel.value === "0" ? "Reminders are off" : "Reminder saved")
+    } catch (err) { toast(errMsg(err), "err") }
+    sel.blur()
   })
   body.addEventListener("keydown", e => {
     if ((e.key === "Enter" || e.key === " ") && (e.target as HTMLElement).matches(".clickable")) {
