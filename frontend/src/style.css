@@ -220,6 +220,13 @@ select { background: var(--panel); border: 1px solid var(--line); color: var(--t
 .issues li.warn { background: #fff1d6; }
 .remind select { margin-left: 6px; }
 
+/* Storage suggestions */
+.suggest { margin-bottom: 16px; }
+.suggest-row { align-items: flex-start; }
+.suggest-icon { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; padding-top: 2px; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: 260px; }
+.hint-line { color: var(--muted); }
+
 /* Plain link-style button used for folder names */
 button.link { background: none; border: 0; padding: 0; font: inherit; font-weight: 700; color: var(--accent-2); cursor: pointer; text-align: left; }
 button.link:hover { text-decoration: underline; }

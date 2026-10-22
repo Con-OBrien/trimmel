@@ -32,6 +32,7 @@ type App struct {
 	Publisher   string `json:"publisher"`
 	Size        uint64 `json:"size"`        // installer estimate, else measured; 0 = unknown
 	InstallDate string `json:"installDate"` // YYYY-MM-DD, "" if unknown
+	Drive       string `json:"drive"`       // e.g. "C:", "" if the install folder is unknown
 	Shared      bool   `json:"shared"`      // other programs may depend on it (runtimes, Microsoft components)
 }
 

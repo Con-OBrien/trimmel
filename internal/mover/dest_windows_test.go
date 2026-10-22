@@ -50,3 +50,14 @@ func TestCheckDestVolumeAcceptsSystemDrive(t *testing.T) {
 		t.Fatalf("system drive should be an acceptable destination: %v", err)
 	}
 }
+
+func TestIntegratedReason(t *testing.T) {
+	for name, want := range map[string]bool{
+		"Avast One": true, "NVIDIA GeForce Experience": true, "Proton VPN": true,
+		"IntelliJ IDEA 2026.2.2": false, "Docker Desktop": false, "Steam": false,
+	} {
+		if got := integratedReason(name, "") != ""; got != want {
+			t.Errorf("%s: got %v want %v", name, got, want)
+		}
+	}
+}

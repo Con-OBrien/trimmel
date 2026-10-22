@@ -128,6 +128,19 @@ export interface StorageEntry {
   size: number
   files: number
   isDir: boolean
+  hint: string
+}
+
+export interface StorageSuggestion {
+  id: string
+  title: string
+  detail: string
+  size: number
+  action: "cleanup" | "move" | "uninstall" | "review" | "manual"
+  view: string
+  path: string
+  dest: string
+  safety: "safe" | "review" | "careful"
 }
 
 export interface StorageResult {
@@ -154,6 +167,7 @@ interface AppBindings {
   SetReminderDays(n: number): Promise<void>
   MarkWelcomed(): Promise<void>
   AnalyzeFolder(path: string): Promise<StorageResult>
+  GetStorageSuggestions(drive: string): Promise<StorageSuggestion[] | null>
   LargestFiles(path: string): Promise<{ files: StorageEntry[] | null, partial: boolean }>
   RevealInExplorer(path: string): Promise<void>
   ListApps(): Promise<InstalledApp[] | null>

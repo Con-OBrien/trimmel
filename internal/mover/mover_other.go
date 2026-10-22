@@ -18,3 +18,5 @@ func MoveBack(src string, emit func(Progress)) (Result, error) {
 
 func Leftovers() ([]Leftover, error)   { return nil, errUnsupported }
 func DeleteLeftover(path string) error { return errUnsupported }
+
+func CheckDest(root string) error { return errUnsupported }

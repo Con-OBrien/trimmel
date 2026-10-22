@@ -86,6 +86,8 @@ func enumerate() []Install {
 				}
 			} else if reason := blockReason(loc, pub, sysComp != 0); reason != "" {
 				in.Movable, in.Reason = false, reason
+			} else if reason := integratedReason(name, pub); reason != "" {
+				in.Movable, in.Reason = false, reason
 			}
 			found = append(found, in)
 		}
@@ -157,6 +159,25 @@ func blockReason(path, publisher string, systemComponent bool) string {
 	}
 	if exe, err := os.Executable(); err == nil && under(path) && strings.HasPrefix(strings.ToLower(exe), lp+`\`) {
 		return "This is the running PC Optimizer"
+	}
+	return ""
+}
+
+// integratedWords mark programs that install drivers, services or kernel
+// components tied to their install path. Moving them can break protection or
+// hardware, so they are never offered.
+var integratedWords = []string{
+	"antivirus", "avast", "avg ", "norton", "mcafee", "kaspersky", "bitdefender", "malwarebytes", "eset ",
+	"windows defender", "vanguard", "easyanticheat", "battleye", "vpn", "wireguard", "openvpn",
+	"nvidia", "geforce", "radeon", "intel(r) graphics", "driver", "vmware", "virtualbox", "hyper-v",
+}
+
+func integratedReason(name, publisher string) string {
+	hay := strings.ToLower(name + " " + publisher)
+	for _, w := range integratedWords {
+		if strings.Contains(hay, w) {
+			return "Security, VPN or driver software. Moving it can break protection or hardware"
+		}
 	}
 	return ""
 }
@@ -328,6 +349,9 @@ func MoveBack(src string, emit func(Progress)) (Result, error) {
 }
 
 // ---- helpers ----
+
+// CheckDest reports why a drive can't hold a moved program, or nil if it can.
+func CheckDest(root string) error { return checkDestVolume(root) }
 
 // checkDestVolume refuses drives a moved program can't safely live on: ones
 // that can disappear (removable, network) and ones that can't hold the

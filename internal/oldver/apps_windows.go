@@ -4,6 +4,7 @@ package oldver
 
 import (
 	"errors"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -25,6 +26,7 @@ func ListApps() []App {
 			InstallDate: formatDate(e.date), Shared: isShared(e),
 		})
 		locs[e.id] = e.location
+		apps[len(apps)-1].Drive = filepath.VolumeName(e.location)
 	}
 
 	var wg sync.WaitGroup

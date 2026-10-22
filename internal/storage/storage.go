@@ -25,6 +25,7 @@ type Entry struct {
 	Size  uint64 `json:"size"`
 	Files int64  `json:"files"`
 	IsDir bool   `json:"isDir"`
+	Hint  string `json:"hint"` // plain-English note for well-known folders, may be empty
 }
 
 type Result struct {
@@ -33,6 +34,10 @@ type Result struct {
 	Entries []Entry `json:"entries"` // largest first
 	Partial bool    `json:"partial"` // the time budget ran out
 	Skipped int     `json:"skipped"` // folders that could not be read
+}
+
+func contextWithBudget(d time.Duration) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), d)
 }
 
 // isLink reports symlinks and junctions. They are never followed: a link can
@@ -67,6 +72,7 @@ func Analyze(dir string) (Result, error) {
 			continue
 		}
 		e := Entry{Name: de.Name(), Path: filepath.Join(dir, de.Name()), IsDir: de.IsDir()}
+		e.Hint = Describe(e.Path)
 		if !de.IsDir() {
 			if info, err := de.Info(); err == nil {
 				e.Size, e.Files = uint64(info.Size()), 1

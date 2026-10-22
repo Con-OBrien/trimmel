@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"pcoptimizer/internal/advisor"
 	"pcoptimizer/internal/auth"
 	"pcoptimizer/internal/cleanup"
 	"pcoptimizer/internal/drivers"
@@ -407,4 +409,23 @@ func (a *App) UninstallApp(id string) error {
 		return err
 	}
 	return oldver.UninstallApp(id)
+}
+
+// GetStorageSuggestions looks at one drive (for example "C:") and returns
+// concrete things the user could do to free space on it, biggest first.
+func (a *App) GetStorageSuggestions(drive string) ([]advisor.Suggestion, error) {
+	if err := a.guard(); err != nil {
+		return nil, err
+	}
+	snap, err := overview.Collect()
+	if err != nil {
+		return nil, err
+	}
+	var others []advisor.Drive
+	for _, d := range snap.Disks {
+		if !strings.EqualFold(d.Mount, drive) {
+			others = append(others, advisor.Drive{Mount: d.Mount, Free: d.Free})
+		}
+	}
+	return advisor.Suggest(advisor.Options{Drive: drive, Others: others, IsAdmin: elevation.IsAdmin()}), nil
 }
