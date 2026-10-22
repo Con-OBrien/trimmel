@@ -13,6 +13,7 @@
     "vite": "^5.4.11"
   },
   "dependencies": {
-    "@fontsource-variable/nunito": "^5.3.0"
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0"
   }
 }

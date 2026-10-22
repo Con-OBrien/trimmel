@@ -1,4 +1,5 @@
-@import "@fontsource-variable/nunito";
+@import "@fontsource-variable/atkinson-hyperlegible-next";
+@import "@fontsource-variable/bricolage-grotesque";
 
 :root {
   --bg: #fff8f1;
@@ -21,7 +22,8 @@
   --radius: 16px;
   --shadow: 0 1px 2px rgba(92, 56, 40, .06), 0 6px 18px rgba(92, 56, 40, .07);
   --ease: cubic-bezier(.22, .8, .3, 1);
-  font-family: "Nunito Variable", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --display: "Bricolage Grotesque Variable", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  font-family: "Atkinson Hyperlegible Next Variable", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   font-size: 14.5px;
   line-height: 1.45;
   color: var(--text);
@@ -30,7 +32,8 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; overflow: hidden; }
-h1 { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -.01em; }
+h1, h2, .brand, .card-value, .score-num { font-family: var(--display); }
+h1 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -.02em; }
 h2 { font-size: 16px; font-weight: 700; margin: 28px 0 10px; color: var(--text); }
 p { margin: 0 0 8px; }
 :focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, white); outline-offset: 2px; }
@@ -39,7 +42,7 @@ p { margin: 0 0 8px; }
 
 /* Sidebar */
 .sidebar { background: var(--side); color: var(--side-text); display: flex; flex-direction: column; padding: 20px 12px; gap: 4px; border-radius: 0 24px 24px 0; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; padding: 4px 10px 22px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 22px; letter-spacing: -.02em; padding: 4px 10px 22px; }
 .logo { width: 32px; height: 32px; flex-shrink: 0; }
 .nav-item { background: none; border: 0; color: var(--side-muted); text-align: left; padding: 10px 14px; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease); }
 .nav-item:hover { background: var(--side-2); color: var(--side-text); transform: translateX(2px); }

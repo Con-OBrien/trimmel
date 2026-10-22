@@ -3,27 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PC Optimizer</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233b2a3f'/%3E%3Cpath d='M6 22a10 10 0 0 1 15.5-8.3' fill='none' stroke='%23ffc25a' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z' fill='%23ff9d6c'/%3E%3C/svg%3E" />
+    <title>Fettle</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2215%22%20fill=%22%233B2A3F%22/%3E%3Crect%20x=%2210%22%20y=%2238%22%20width=%2244%22%20height=%2212%22%20rx=%223.5%22%20fill=%22%23FFF8F1%22/%3E%3Cpath%20d=%22M15%2038%20C15%2027%2025%2020%2034%2020%20C44%2020%2049.5%2027.5%2045.5%2033%20C42.2%2037.2%2036%2034.5%2038.5%2029.8%22%20fill=%22none%22%20stroke=%22%23FFC25A%22%20stroke-width=%226%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E" />
   </head>
   <body>
     <a class="skip-link" href="#view">Skip to content</a>
     <div id="app">
       <nav class="sidebar" aria-label="Main">
         <div class="brand">
-          <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
-            <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#ffc25a" />
-                <stop offset="1" stop-color="#ff9d6c" />
-              </linearGradient>
-            </defs>
-            <rect width="32" height="32" rx="8" fill="#3b2a3f" />
-            <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#5a4560" stroke-width="3" stroke-linecap="round" />
-            <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" />
-            <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)" />
-          </svg>
-          <span>PC Optimizer</span>
+          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#3B2A3F"/><rect x="10" y="38" width="44" height="12" rx="3.5" fill="#FFF8F1"/><path d="M15 38 C15 27 25 20 34 20 C44 20 49.5 27.5 45.5 33 C42.2 37.2 36 34.5 38.5 29.8" fill="none" stroke="#FFC25A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>fettle</span>
         </div>
         <button class="nav-item active" data-view="overview">Overview</button>
         <button class="nav-item" data-view="processes">Processes</button>
@@ -40,13 +29,8 @@
     </div>
     <div id="login" class="login" hidden>
       <div class="login-card">
-        <svg class="logo logo-lg" viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="8" fill="#3b2a3f" />
-          <path d="M6 17a10 10 0 0 1 20 0" fill="none" stroke="#5a4560" stroke-width="3" stroke-linecap="round" />
-          <path d="M6 17a10 10 0 0 1 15 -8.66" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" />
-          <path d="M17.5 8.5 12.5 18h4l-1.5 6 6-9.5h-4z" fill="url(#lg)" transform="translate(16 20) scale(.62) translate(-16.75 -16.25)" />
-        </svg>
-        <h1>PC Optimizer</h1>
+        <svg class="logo logo-lg" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#3B2A3F"/><rect x="10" y="38" width="44" height="12" rx="3.5" fill="#FFF8F1"/><path d="M15 38 C15 27 25 20 34 20 C44 20 49.5 27.5 45.5 33 C42.2 37.2 36 34.5 38.5 29.8" fill="none" stroke="#FFC25A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h1>fettle</h1>
         <p class="muted" id="login-msg">Sign in with your Google account to get started.</p>
         <button class="btn primary" id="login-btn">Sign in with Google</button>
         <button class="btn ghost small" id="login-cancel" hidden>Cancel</button>
@@ -55,7 +39,7 @@
     </div>
     <div id="welcome" class="login" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>
       <div class="login-card welcome-card">
-        <h1 id="welcome-title">Welcome to PC Optimizer</h1>
+        <h1 id="welcome-title">Welcome to Fettle</h1>
         <p class="muted" style="text-align:center">A quick look at what you can do here. Nothing changes until you choose it.</p>
         <ol class="welcome-steps">
           <li><span class="n">1</span><div><strong>Overview</strong><div class="muted small">Your PC's health score and what to do about it.</div></div></li>
