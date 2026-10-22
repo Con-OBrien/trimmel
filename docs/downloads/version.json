@@ -1,8 +1,8 @@
 ﻿{
-    "zipBytes":  7340521,
-    "version":  "0.2.0",
-    "bytes":  27928576,
-    "sha256":  "d5e36c2001e2278d2f8332b26a1fc8884bd6bdc567ee2f67fca6216fe9c21557",
+    "zipBytes":  7344895,
+    "version":  "0.2.1",
+    "bytes":  27940352,
+    "sha256":  "b82652fa2bad724c4d0f5fa07d177677f8df38d056dd18fd9c99444669631ed3",
     "date":  "22 Oct 2026",
-    "zipSha256":  "1deedab7ac34738a215ebd1d4b96b64242a46ed83abc1521c858519204fe4e8a"
+    "zipSha256":  "3aafae57465529321354de9b12818331213f77dea2081097b28e4eccf01262e1"
 }

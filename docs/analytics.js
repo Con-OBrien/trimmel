@@ -1,8 +1,6 @@
-// Cookie-free site analytics (Umami). Inactive until an ID is set below.
-// Create a free website at https://cloud.umami.is, copy its Website ID here, and
-// update the "Website analytics" section of privacy.html before publishing.
+// Cookie-free site analytics (Umami). Does nothing if the ID below is empty.
 (function () {
-  var id = "";
+  var id = "2214789b-0b5e-4bfa-adf1-86422daa9fa8";
   if (!id) return;
   var s = document.createElement("script");
   s.defer = true;
