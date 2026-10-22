@@ -5,10 +5,21 @@
       "has": [
         {
           "type": "host",
+          "value": "www.trimmel.app"
+        }
+      ],
+      "destination": "https://trimmel.app/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
           "value": "trimmel.vercel.app"
         }
       ],
-      "destination": "https://www.trimmel.app/$1",
+      "destination": "https://trimmel.app/$1",
       "permanent": true
     },
     {

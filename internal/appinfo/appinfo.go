@@ -20,7 +20,7 @@ import (
 const (
 	// SiteURL is the public download page; releases are described by
 	// <SiteURL>/downloads/version.json.
-	SiteURL    = "https://www.trimmel.app"
+	SiteURL    = "https://trimmel.app"
 	versionURL = SiteURL + "/downloads/version.json"
 )
 

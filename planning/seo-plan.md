@@ -125,12 +125,12 @@ All absolute URLs use `https://trimmel.vercel.app`. When the custom domain is li
 
 ### Domain (2026-10-22)
 
-`trimmel.app` bought on Cloudflare, DNS only, pointed at Vercel. `www.trimmel.app` works. The apex `trimmel.app` returned no DNS answer when last checked (Cloudflare nameservers had no apex record), so the canonical host is **`https://www.trimmel.app`** for now. The old `trimmel.vercel.app` host redirects (301) to it through `docs/vercel.json`. Once the apex resolves and Vercel serves it directly, switch the canonical URLs to `https://trimmel.app` (same files as the earlier swap plus `internal/appinfo/appinfo.go`) and make `www` redirect to the apex.
+`trimmel.app` bought on Cloudflare, DNS only, pointed at Vercel. `www.trimmel.app` works. The apex `trimmel.app` returned no DNS answer when last checked (Cloudflare nameservers had no apex record), so the canonical host is **`https://trimmel.app`** for now. The old `trimmel.vercel.app` host redirects (301) to it through `docs/vercel.json`. Once the apex resolves and Vercel serves it directly, switch the canonical URLs to `https://trimmel.app` (same files as the earlier swap plus `internal/appinfo/appinfo.go`) and make `www` redirect to the apex.
 
 ### Progress (2026-10-22, later)
 
 - Phase 1 started: three guides and a guides index in `docs/guides/` (move a program, free disk space, startup programs), with Article JSON-LD, added to the sitemap and linked from the home page nav and footer. The `robocopy` / `mklink /J` recipe was run once on a temp folder to check it works.
-- GitHub: description, homepage (`https://www.trimmel.app`), topics and Discussions set. Discussion #1 asks about Trimmel Plus and is linked from the home page.
+- GitHub: description, homepage (`https://trimmel.app`), topics and Discussions set. Discussion #1 asks about Trimmel Plus and is linked from the home page.
 - Analytics: `docs/analytics.js` loads Umami (cookie-free) once an ID is set; it is inert now. Download buttons already carry `data-umami-event` attributes. Before enabling, add a "Website analytics" section to `privacy.html`.
 - Directory copy and checklist: `planning/directory-submissions.md`.
 
@@ -142,3 +142,7 @@ All absolute URLs use `https://trimmel.vercel.app`. When the custom domain is li
 - Bing Webmaster Tools and Search Console added by the owner; indexing takes days.
 - Search appearance notes: Google builds site links (the sub-links under a result) itself. We cannot force them; clear navigation, distinct pages and a strong brand query help. FAQ rich results are limited to government and health sites since 2023, so the FAQ markup will not show expandable answers. Breadcrumb markup can show a trail in results.
 - The generator for the guide pages is not in the repo (the HTML in `docs/guides/` is the source now).
+
+### Apex domain (2026-10-22, night)
+
+`trimmel.app` now resolves and serves the site. Canonical host is `https://trimmel.app`. `docs/vercel.json` redirects `www.trimmel.app` and `trimmel.vercel.app` to it (308). Site URLs, README, sitemap, JSON-LD and `appinfo.SiteURL` use the apex. Still to do by the owner: add `https://trimmel.app/` (or a Domain property for `trimmel.app`) in Search Console and Bing, submit the sitemap there, and update the OAuth consent screen home and privacy URLs to the apex.

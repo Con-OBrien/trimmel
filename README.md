@@ -16,10 +16,10 @@
 </p>
 
 <p align="center">
-  <a href="https://www.trimmel.app/#download"><b>Download for Windows</b></a> &middot;
-  <a href="https://www.trimmel.app">Website</a> &middot;
-  <a href="https://www.trimmel.app/guides/">Guides</a> &middot;
-  <a href="https://www.trimmel.app/changelog.html">Changelog</a> &middot;
+  <a href="https://trimmel.app/#download"><b>Download for Windows</b></a> &middot;
+  <a href="https://trimmel.app">Website</a> &middot;
+  <a href="https://trimmel.app/guides/">Guides</a> &middot;
+  <a href="https://trimmel.app/changelog.html">Changelog</a> &middot;
   <a href="https://github.com/Con-OBrien/trimmel/discussions">Discussions</a>
 </p>
 
@@ -27,7 +27,7 @@
 
 ## 📥 Install
 
-1. Download `Trimmel-Setup.exe` (or the portable zip) from [trimmel.app](https://www.trimmel.app/#download), for Windows 10 and 11 (64-bit).
+1. Download `Trimmel-Setup.exe` (or the portable zip) from [trimmel.app](https://trimmel.app/#download), for Windows 10 and 11 (64-bit).
 2. Run it. Trimmel asks for administrator rights once, so it can clean system folders and install drivers.
 3. The installer is not code signed yet, so Windows SmartScreen may warn. The download page explains how to continue and shows the SHA-256 so you can check the file.
 

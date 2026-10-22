@@ -9,7 +9,7 @@ Free listings that give backlinks and discovery. Submit after the 0.2.1 release 
 - **Short description (160 characters):** Free, open source Windows tune-up. Clear junk, see what fills your drive, move big apps to another drive, trim startup, update drivers. Undo anything.
 - **Long description:** Trimmel is a free, open source (MIT) Windows 10 and 11 tune-up. It shows every item and its size before it changes anything. Cleanup clears temp files, update downloads and caches. Storage shows what fills each drive. Startup lists everything that launches at sign-in, including scheduled tasks and Store apps, with a note on each. Move apps relocates large programs to another drive and moves them back in one click. Drivers checks Windows Update for signed updates. No scare scans, no upsells, no bundled software.
 - **Categories:** System utilities, Disk cleaners, Startup managers
-- **Website:** https://www.trimmel.app
+- **Website:** https://trimmel.app
 - **Source:** https://github.com/Con-OBrien/trimmel
 - **Licence:** MIT
 - **Platform:** Windows 10 and 11 (64-bit)

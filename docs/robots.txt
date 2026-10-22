@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.trimmel.app/sitemap.xml
+Sitemap: https://trimmel.app/sitemap.xml
