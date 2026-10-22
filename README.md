@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Con-OBrien/trimmel/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Con-OBrien/trimmel/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Platform: Windows 10/11" src="https://img.shields.io/badge/platform-Windows%2010%2F11-3b2a3f?style=flat-square&labelColor=3b2a3f&color=178f86">
   <img alt="Go" src="https://img.shields.io/badge/Go-1.26-3b2a3f?style=flat-square&logo=go&logoColor=ffc25a">
   <img alt="Wails v2" src="https://img.shields.io/badge/Wails-v2-3b2a3f?style=flat-square&logoColor=ffc25a">
@@ -171,8 +172,12 @@ Each Windows-specific package has an `_other.go` stub, so `go vet` and `go test`
 ## ✅ Tests
 
 ```powershell
-go test ./...
+go test ./...                                   # run the tests
+go test ./... -coverprofile=coverage.out        # with coverage
+go tool cover -html=coverage.out                # browse it
 ```
+
+GitHub Actions runs the same checks on every push and pull request (`.github/workflows/ci.yml`): frontend type check and build, `go vet`, `staticcheck`, unreachable code (`deadcode`), vulnerable dependencies (`govulncheck`), the tests with a coverage floor, and unused frontend code (`knip`). The coverage report is a build artifact and appears in the run summary.
 
 ## 🎨 Design
 

@@ -58,8 +58,6 @@ func (a *App) guard() error {
 	return nil
 }
 
-// ---- Sign-in (OpenID Connect) ----
-
 // AuthStatus restores a previous session from the credential store if there
 // is one, then reports whether the app is unlocked.
 func (a *App) AuthStatus() auth.Status {
@@ -69,7 +67,6 @@ func (a *App) AuthStatus() auth.Status {
 	return a.auth.Status()
 }
 
-// Login opens the system browser and blocks until sign-in finishes.
 func (a *App) Login() (*auth.User, error) {
 	return a.auth.Login(a.ctx)
 }
@@ -77,8 +74,6 @@ func (a *App) Login() (*auth.User, error) {
 func (a *App) CancelLogin() { a.auth.CancelLogin() }
 
 func (a *App) Logout() { a.auth.Logout() }
-
-// ---- Elevation ----
 
 func (a *App) IsAdmin() bool {
 	return elevation.IsAdmin()
@@ -93,8 +88,6 @@ func (a *App) OtherAccount() string {
 	}
 	return ""
 }
-
-// ---- Overview ----
 
 type OverviewResult struct {
 	System overview.Snapshot `json:"system"`
@@ -150,8 +143,6 @@ func (a *App) hints(s overview.Snapshot) []Hint {
 	return hs
 }
 
-// ---- Processes ----
-
 func (a *App) ListProcesses() ([]procs.Process, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -168,8 +159,6 @@ func (a *App) KillProcess(pid int32, name string) error {
 	return a.procs.Kill(pid, name)
 }
 
-// ---- Cleanup ----
-
 func (a *App) ScanCleanup() ([]cleanup.TargetReport, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -184,14 +173,12 @@ func (a *App) RunCleanup(targetIDs []string) ([]cleanup.CleanResult, error) {
 	res := cleanup.Clean(targetIDs, elevation.IsAdmin())
 	for _, r := range res {
 		if r.Error == "" {
-			_ = a.state.MarkTidy(time.Now()) // remember for the "time for a tidy" nudge
+			_ = a.state.MarkTidy(time.Now())
 			break
 		}
 	}
 	return res, nil
 }
-
-// ---- Startup ----
 
 func (a *App) ListStartup() ([]startup.Item, error) {
 	if err := a.guard(); err != nil {
@@ -207,8 +194,6 @@ func (a *App) SetStartupEnabled(id string, enabled bool) error {
 	return startup.SetEnabled(id, enabled)
 }
 
-// ---- Drivers ----
-
 func (a *App) ListDrivers() ([]drivers.Driver, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -216,7 +201,6 @@ func (a *App) ListDrivers() ([]drivers.Driver, error) {
 	return drivers.ListInstalled()
 }
 
-// DriverScanState returns the cached result of the last driver check.
 func (a *App) DriverScanState() (DriverScanState, error) {
 	if err := a.guard(); err != nil {
 		return DriverScanState{}, err
@@ -254,8 +238,6 @@ func (a *App) InstallDriverUpdates(updateIDs []string) (drivers.InstallResult, e
 	return res, err
 }
 
-// ---- Move installs ----
-
 func (a *App) ScanInstalls() ([]mover.Install, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -281,8 +263,6 @@ func (a *App) MoveInstallBack(path string) (mover.Result, error) {
 	return mover.MoveBack(path, a.emitMove)
 }
 
-// ---- Old versions ----
-
 func (a *App) ScanOldVersions() ([]oldver.Old, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -290,7 +270,6 @@ func (a *App) ScanOldVersions() ([]oldver.Old, error) {
 	return oldver.Scan()
 }
 
-// UninstallOldVersion launches the program's own uninstaller and waits for it.
 func (a *App) UninstallOldVersion(id string) error {
 	if err := a.guard(); err != nil {
 		return err
@@ -298,7 +277,6 @@ func (a *App) UninstallOldVersion(id string) error {
 	return oldver.Uninstall(id)
 }
 
-// ScanLeftovers lists copies left on other drives by failed or undone moves.
 func (a *App) ScanLeftovers() ([]mover.Leftover, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -312,8 +290,6 @@ func (a *App) DeleteLeftover(path string) error {
 	}
 	return mover.DeleteLeftover(path)
 }
-
-// ---- Health, preferences and the welcome guide ----
 
 // GetHealth combines a few quick measurements into a score and a short list
 // of suggestions, each pointing at the tab that helps.
@@ -369,8 +345,6 @@ func (a *App) GetPrefs() Prefs {
 func (a *App) SetReminderDays(n int) error { return a.state.SetReminderDays(n) }
 func (a *App) MarkWelcomed() error         { return a.state.MarkWelcomed() }
 
-// ---- Storage ----
-
 func (a *App) AnalyzeFolder(path string) (storage.Result, error) {
 	if err := a.guard(); err != nil {
 		return storage.Result{}, err
@@ -403,8 +377,6 @@ func (a *App) RevealInExplorer(path string) error {
 	return exec.Command("explorer.exe", "/select,"+path).Start()
 }
 
-// ---- Installed apps ----
-
 func (a *App) ListApps() ([]oldver.App, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
@@ -412,15 +384,12 @@ func (a *App) ListApps() ([]oldver.App, error) {
 	return oldver.ListApps(), nil
 }
 
-// UninstallApp launches the program's own uninstaller and waits for it.
 func (a *App) UninstallApp(id string) error {
 	if err := a.guard(); err != nil {
 		return err
 	}
 	return oldver.UninstallApp(id)
 }
-
-// ---- Settings ----
 
 type AppInfo struct {
 	Version string          `json:"version"`
@@ -436,7 +405,6 @@ func (a *App) AppInfo() (AppInfo, error) {
 	return AppInfo{Version: version, Admin: elevation.IsAdmin(), Install: in}, nil
 }
 
-// CheckUpdate asks the project site for the latest release.
 func (a *App) CheckUpdate() (appinfo.Update, error) {
 	return appinfo.CheckUpdate(a.ctx, version)
 }

@@ -141,5 +141,4 @@ func rebootPending() bool {
 	return false
 }
 
-// RebootPending reports whether Windows is waiting for a restart.
 func RebootPending() bool { return rebootPending() }

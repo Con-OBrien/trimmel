@@ -18,8 +18,6 @@ import (
 	"github.com/yusufpapurcu/wmi"
 )
 
-// ---- Installed drivers (WMI) ----
-
 type win32PnPSignedDriver struct {
 	DeviceName         *string
 	DeviceClass        *string
@@ -87,8 +85,6 @@ func cimDate(s string) string {
 	}
 	return t.Format("2006-01-02")
 }
-
-// ---- Windows Update Agent (COM) ----
 
 const driverCriteria = "IsInstalled=0 and Type='Driver' and IsHidden=0"
 
@@ -278,8 +274,6 @@ func InstallUpdates(ids []string, emit func(Progress)) (InstallResult, error) {
 	return res, err
 }
 
-// ---- small IDispatch helpers ----
-
 func eachUpdate(updates *ole.IDispatch, fn func(item *ole.IDispatch)) error {
 	n := getInt(updates, "Count")
 	for i := 0; i < n; i++ {
@@ -361,8 +355,6 @@ func getInt(d *ole.IDispatch, prop string) int {
 	return 0
 }
 
-// ---- Safety net and errors ----
-
 // createRestorePoint makes a System Restore point before drivers change, so a
 // bad driver can be rolled back. Windows allows one per 24 hours by default and
 // System Protection may be off, so a failure here is reported, not fatal.
@@ -404,7 +396,6 @@ func OnMeteredConnection() bool {
 	return t == "2" || t == "3"
 }
 
-// friendlyWUError turns common Windows Update COM failures into plain English.
 func friendlyWUError(what string, err error) error {
 	msg := err.Error()
 	low := strings.ToLower(msg)

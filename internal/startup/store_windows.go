@@ -24,7 +24,6 @@ const (
 	// 3 and 4 mean a policy decides; those are left out of the list.
 )
 
-// listStoreApps returns the startup tasks of packaged apps for the current user.
 func listStoreApps() ([]Item, error) {
 	root, err := registry.OpenKey(registry.CURRENT_USER, storeRoot, registry.ENUMERATE_SUB_KEYS)
 	if err != nil {

@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Lowest total statement coverage that still passes. Raise it as tests are added.
+  COVERAGE_FLOOR: "24"
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Type check and build
+        run: npm run build
+      - name: Unused code and dependencies
+        run: npx --yes knip@5 --no-progress
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 1
+
+  go:
+    runs-on: windows-latest
+    needs: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Staticcheck
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./...
+
+      - name: Unreachable code
+        run: |
+          go install golang.org/x/tools/cmd/deadcode@latest
+          $out = deadcode ./...
+          if ($out) { $out; throw "deadcode found unreachable functions" }
+
+      - name: Vulnerable dependencies
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      - name: Test with coverage
+        run: go test ./... -covermode=atomic -coverprofile=coverage.out
+
+      - name: Coverage report
+        shell: pwsh
+        run: |
+          go tool cover -html=coverage.out -o coverage.html
+          $lines = go tool cover -func=coverage.out
+          $total = [double](($lines | Select-Object -Last 1) -replace '.*\s([\d.]+)%.*', '$1')
+          $summary = @("## Go test coverage", "", "**Total: $total%** (floor $env:COVERAGE_FLOOR%)", "", "| Function | Coverage |", "| --- | --- |")
+          $summary += $lines | Where-Object { $_ -notmatch '^total' } | Sort-Object { [double](($_ -replace '.*\s([\d.]+)%.*', '$1')) } | Select-Object -First 15 | ForEach-Object {
+            $p = $_ -split '\s+' ; "| $($p[0]) $($p[1]) | $($p[-1]) |" }
+          $summary | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+          "Total coverage: $total%"
+          if ($total -lt [double]$env:COVERAGE_FLOOR) { throw "coverage $total% is below the floor of $env:COVERAGE_FLOOR%" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage.out
+            coverage.html
+
+      - name: Upload to Codecov (optional)
+        if: ${{ env.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.out
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Installer module
+        shell: bash
+        working-directory: installer
+        run: |
+          touch payload/trimmel.exe
+          go vet ./...
+          go build ./...

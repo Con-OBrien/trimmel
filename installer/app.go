@@ -10,7 +10,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// App is bound to the setup UI.
 type App struct {
 	ctx  context.Context
 	mode string // "install", "modify" (change location) or "uninstall"
@@ -21,7 +20,6 @@ func NewApp(mode string) *App { return &App{mode: mode} }
 
 func (a *App) startup(ctx context.Context) { a.ctx = ctx }
 
-// Info describes what the UI should show.
 type Info struct {
 	Version    string `json:"version"`
 	Mode       string `json:"mode"` // "install", "modify" or "uninstall"
@@ -39,7 +37,6 @@ func (a *App) Info() Info {
 	return Info{Version: version, Mode: a.mode, DefaultDir: dir, Existing: existing, SizeMB: payloadSizeMB()}
 }
 
-// Options chosen on the options screen.
 type Options struct {
 	Dir          string `json:"dir"`
 	DesktopLink  bool   `json:"desktopLink"`

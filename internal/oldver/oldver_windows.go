@@ -148,7 +148,6 @@ func Uninstall(id string) error {
 	return launch(target)
 }
 
-// launch runs an entry's own uninstaller and waits for it.
 func launch(target *entry) error {
 	if exe := uninstallerExe(target.uninstall); exe != "" {
 		if _, err := os.Stat(exe); err != nil {

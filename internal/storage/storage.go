@@ -44,7 +44,6 @@ func contextWithBudget(d time.Duration) (context.Context, context.CancelFunc) {
 // point at another drive or loop back, and would double-count space.
 func isLink(t fs.FileMode) bool { return t&(fs.ModeSymlink|fs.ModeIrregular) != 0 }
 
-// Analyze measures every entry directly inside dir.
 func Analyze(dir string) (Result, error) {
 	dir = filepath.Clean(dir)
 	if !filepath.IsAbs(dir) {
@@ -103,7 +102,6 @@ func Analyze(dir string) (Result, error) {
 	return res, nil
 }
 
-// measure totals the regular files under root.
 func measure(ctx context.Context, root string) (size uint64, files int64, skipped int) {
 	_ = filepath.WalkDir(root, func(_ string, d fs.DirEntry, err error) error {
 		if ctx.Err() != nil {
@@ -130,8 +128,6 @@ func measure(ctx context.Context, root string) (size uint64, files int64, skippe
 	})
 	return
 }
-
-// ---- Largest files ----
 
 type fileHeap []Entry
 

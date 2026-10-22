@@ -95,7 +95,6 @@ type User struct {
 	Picture string `json:"picture"`
 }
 
-// Status is what the frontend needs to decide between the app and the login screen.
 type Status struct {
 	Configured bool   `json:"configured"`
 	User       *User  `json:"user"`

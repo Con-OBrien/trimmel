@@ -86,7 +86,6 @@ func Scan(isAdmin bool) []TargetReport {
 	return out
 }
 
-// Clean deletes eligible files in the selected targets.
 func Clean(ids []string, isAdmin bool) []CleanResult {
 	want := map[string]bool{}
 	for _, id := range ids {

@@ -29,8 +29,6 @@ const (
 
 var busy sync.Mutex
 
-// ---- Scanning ----
-
 var uninstallKeys = []struct {
 	root registry.Key
 	path string
@@ -40,7 +38,6 @@ var uninstallKeys = []struct {
 	{registry.CURRENT_USER, `SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`},
 }
 
-// enumerate lists installed programs with an install folder, without sizes.
 func enumerate() []Install {
 	seen := map[string]bool{}
 	var found []Install
@@ -96,7 +93,6 @@ func enumerate() []Install {
 	return found
 }
 
-// Scan lists installed programs with a known install folder, largest first.
 func Scan() ([]Install, error) {
 	found := enumerate()
 
@@ -182,8 +178,6 @@ func integratedReason(name, publisher string) string {
 	return ""
 }
 
-// ---- Moving ----
-
 // verifyMovable checks the folder against the installed-program list, with the
 // same rules the scan used (publisher, system component), so a direct call
 // can't move an arbitrary folder. Tests replace it.
@@ -244,7 +238,6 @@ func Move(src, destRoot string, emit func(Progress)) (Result, error) {
 		return Result{}, fmt.Errorf("not enough free space on %s (needs %s)", vol, human(size))
 	}
 
-	// Copy.
 	if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
 		return Result{}, err
 	}
@@ -282,7 +275,6 @@ func Move(src, destRoot string, emit func(Progress)) (Result, error) {
 		return Result{}, fmt.Errorf("link check failed, restored the original: %w", err)
 	}
 
-	// Done and verified; reclaim the space.
 	step("cleaning", 100)
 	res := Result{Dest: dest, Bytes: size}
 	if err := os.RemoveAll(old); err != nil {
@@ -348,9 +340,6 @@ func MoveBack(src string, emit func(Progress)) (Result, error) {
 	return res, nil
 }
 
-// ---- helpers ----
-
-// CheckDest reports why a drive can't hold a moved program, or nil if it can.
 func CheckDest(root string) error { return checkDestVolume(root) }
 
 // checkDestVolume refuses drives a moved program can't safely live on: ones
@@ -452,7 +441,6 @@ func dirStats(root string) (size uint64, files int, err error) {
 	return
 }
 
-// dirStatsLinks totals regular files and reports whether any link was found.
 func dirStatsLinks(root string) (size uint64, files int, links bool) {
 	filepath.WalkDir(root, func(_ string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -474,7 +462,6 @@ func dirStatsLinks(root string) (size uint64, files int, links bool) {
 	return
 }
 
-// runningFrom lists processes whose executable lives under dir.
 func runningFrom(dir string) []string {
 	prefix := strings.ToLower(filepath.Clean(dir)) + `\`
 	procs, err := process.Processes()

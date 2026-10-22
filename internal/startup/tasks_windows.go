@@ -160,8 +160,6 @@ func setTaskEnabled(path string, enabled bool) error {
 	})
 }
 
-// ---- small IDispatch helpers ----
-
 func dispatchResult(v *ole.VARIANT, err error) (*ole.IDispatch, error) {
 	if err != nil {
 		return nil, err

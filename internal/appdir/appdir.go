@@ -35,7 +35,6 @@ func Dir() string {
 	return filepath.Join(b, Name)
 }
 
-// LegacyDir is the folder used by PC Optimizer 0.1.x.
 func LegacyDir() string { return filepath.Join(base(), Legacy) }
 
 // migrate copies <base>\pcoptimizer to <base>\trimmel if the latter does not

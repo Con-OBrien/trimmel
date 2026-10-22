@@ -79,7 +79,6 @@ func Suggest(o Options) []Suggestion {
 	return rank(out)
 }
 
-// rank sorts biggest first and keeps the top maxResults.
 func rank(in []Suggestion) []Suggestion {
 	sort.SliceStable(in, func(i, j int) bool { return in[i].Size > in[j].Size })
 	if len(in) > maxResults {
@@ -98,8 +97,6 @@ func systemDrive() string {
 func onDrive(path, drive string) bool {
 	return strings.EqualFold(filepath.VolumeName(path), drive)
 }
-
-// ---- Cleanup ----
 
 func cleanupSuggestions(o Options) []Suggestion {
 	if !strings.EqualFold(o.Drive, systemDrive()) {
@@ -143,8 +140,6 @@ func cleanupSuggestions(o Options) []Suggestion {
 	}
 	return out
 }
-
-// ---- Programs ----
 
 func appSuggestions(o Options) []Suggestion {
 	var out []Suggestion
@@ -213,8 +208,6 @@ func bestDest(others []Drive, size uint64) string {
 	}
 	return best
 }
-
-// ---- Personal files and developer caches ----
 
 type folderRule struct {
 	id, title, detail string
@@ -296,8 +289,6 @@ func folderSuggestions(o Options) []Suggestion {
 	return out
 }
 
-// ---- Known Windows space hogs ----
-
 func systemSuggestions(o Options) []Suggestion {
 	sys := systemDrive()
 	if !strings.EqualFold(o.Drive, sys) {
@@ -329,7 +320,6 @@ func systemSuggestions(o Options) []Suggestion {
 	return out
 }
 
-// HumanBytes formats a size like "1.4 GB".
 func HumanBytes(n uint64) string {
 	const unit = 1024
 	if n < unit {

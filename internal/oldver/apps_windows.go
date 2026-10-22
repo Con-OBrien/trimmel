@@ -86,7 +86,6 @@ func isUpdateName(name string) bool {
 		strings.HasPrefix(ln, "hotfix") || strings.Contains(ln, "(kb")
 }
 
-// formatDate turns the registry's YYYYMMDD into YYYY-MM-DD, or "" if it isn't one.
 func formatDate(s string) string {
 	s = strings.TrimSpace(s)
 	if len(s) != 8 {

@@ -61,7 +61,6 @@ func (s *driverScan) finish(updates []drivers.Update, err error) {
 	s.state.CheckedAt = time.Now().UnixMilli()
 }
 
-// remove drops updates that were just installed.
 func (s *driverScan) remove(titles []string) {
 	gone := map[string]bool{}
 	for _, t := range titles {

@@ -65,7 +65,6 @@ async function renderAdminStatus() {
   el.innerHTML = '<span><span class="dot"></span>Limited: not admin</span>'
 }
 
-// ---- Sign-in ----
 
 const loginEl = document.getElementById("login")!
 const loginMsg = document.getElementById("login-msg")!
@@ -114,7 +113,6 @@ loginBtn.addEventListener("click", async () => {
 })
 loginCancel.addEventListener("click", () => { api.CancelLogin() })
 
-// ---- First-run guide ----
 
 async function maybeWelcome() {
   const prefs = await api.GetPrefs().catch(() => null)

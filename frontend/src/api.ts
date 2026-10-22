@@ -2,7 +2,7 @@
 // runtime as window.go.main.App.*; each returns a Promise and rejects with
 // the Go error message. Field names match the json tags on the Go structs.
 
-export interface Hint { level: "info" | "warn"; message: string }
+interface Hint { level: "info" | "warn"; message: string }
 
 export interface Overview {
   system: {
@@ -39,7 +39,7 @@ export interface CleanupTarget {
   error?: string
 }
 
-export interface CleanResult {
+interface CleanResult {
   id: string
   freedBytes: number
   deleted: number
@@ -80,7 +80,7 @@ export interface DriverUpdate {
   needsEula: boolean
 }
 
-export interface InstallResult {
+interface InstallResult {
   installed: string[] | null
   failed: string[] | null
   skipped: string[] | null
@@ -88,7 +88,7 @@ export interface InstallResult {
   restorePoint: boolean
 }
 
-export interface AuthUser {
+interface AuthUser {
   subject: string
   name: string
   email: string
@@ -102,7 +102,7 @@ export interface AuthStatus {
   error?: string
 }
 
-export interface HealthIssue {
+interface HealthIssue {
   level: "warn" | "info"
   title: string
   detail: string
@@ -254,7 +254,7 @@ export interface MoveProgress {
   percent: number
 }
 
-export interface MoveResult {
+interface MoveResult {
   dest: string
   bytes: number
   warning?: string

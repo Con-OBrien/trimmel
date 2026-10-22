@@ -24,7 +24,6 @@ const (
 	versionURL = SiteURL + "/downloads/version.json"
 )
 
-// Install describes how the running copy was installed.
 type Install struct {
 	Installed    bool   `json:"installed"`    // run from a folder registered by setup
 	Dir          string `json:"dir"`          // folder of the running exe
@@ -33,7 +32,6 @@ type Install struct {
 	SettingsDir  string `json:"settingsDir"`
 }
 
-// Update is the result of a release check.
 type Update struct {
 	Current   string `json:"current"`
 	Latest    string `json:"latest"`
@@ -42,14 +40,12 @@ type Update struct {
 	URL       string `json:"url"`
 }
 
-// SettingsDir is the per-user folder where the app keeps its settings.
 func SettingsDir() string { return appdir.Dir() }
 
 // LegacySettingsDir is the folder PC Optimizer 0.1.x used. It is kept after
 // migration, so "delete my settings" has to remove it too.
 func LegacySettingsDir() string { return appdir.LegacyDir() }
 
-// Current describes the running copy.
 func Current() (Install, error) {
 	exe, err := os.Executable()
 	if err != nil {
@@ -67,10 +63,8 @@ func Current() (Install, error) {
 	return in, nil
 }
 
-// UninstallerPath is setup's copy of itself inside the install folder.
 func UninstallerPath(dir string) string { return filepath.Join(dir, "uninstall.exe") }
 
-// CheckUpdate compares current with the latest published release.
 func CheckUpdate(ctx context.Context, current string) (Update, error) {
 	ctx, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()

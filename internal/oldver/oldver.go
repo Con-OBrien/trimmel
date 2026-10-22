@@ -24,7 +24,6 @@ type Old struct {
 	Newer     string `json:"newer"` // e.g. "IntelliJ IDEA 2026.2.2 (262.1234)"
 }
 
-// App is one installed program as Windows lists it.
 type App struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
@@ -36,7 +35,6 @@ type App struct {
 	Shared      bool   `json:"shared"`      // other programs may depend on it (runtimes, Microsoft components)
 }
 
-// entry is one row of the Windows uninstall registry.
 type entry struct {
 	id, name, version, publisher, uninstall, location, date string
 	size                                                    uint64
@@ -118,7 +116,6 @@ func cmpVersion(a, b []int) int {
 	return 0
 }
 
-// find returns the older entries, each paired with the entry that supersedes it.
 func find(entries []entry) []Old {
 	groups := map[string][]entry{}
 	for _, e := range entries {

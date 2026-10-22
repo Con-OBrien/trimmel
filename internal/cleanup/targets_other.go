@@ -15,5 +15,4 @@ func targets() []target {
 	}}
 }
 
-// RebootPending is always false off Windows.
 func RebootPending() bool { return false }

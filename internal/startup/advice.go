@@ -42,7 +42,6 @@ var rules = []rule{
 	{[]string{"cortana", "yourphone", "phone link", "widgets", "gamebar"}, Advice{"low", "Optional Windows feature. Safe to disable if you don't use it.", "disable"}},
 }
 
-// Advise returns advice for an entry, or a low-impact "no opinion" default.
 func Advise(name, command string) Advice {
 	hay := strings.ToLower(name + " " + exeName(command))
 	for _, r := range rules {
