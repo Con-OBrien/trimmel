@@ -46,6 +46,7 @@ func read() []entry {
 			e.name, _, _ = sub.GetStringValue("DisplayName")
 			e.version, _, _ = sub.GetStringValue("DisplayVersion")
 			e.publisher, _, _ = sub.GetStringValue("Publisher")
+			e.date, _, _ = sub.GetStringValue("InstallDate")
 			e.uninstall, _, _ = sub.GetStringValue("UninstallString")
 			loc, _, _ := sub.GetStringValue("InstallLocation")
 			e.location = strings.Trim(strings.TrimSpace(loc), "\"")
@@ -144,6 +145,11 @@ func Uninstall(id string) error {
 	if target == nil {
 		return errors.New("that program is no longer listed as an older version")
 	}
+	return launch(target)
+}
+
+// launch runs an entry's own uninstaller and waits for it.
+func launch(target *entry) error {
 	if exe := uninstallerExe(target.uninstall); exe != "" {
 		if _, err := os.Stat(exe); err != nil {
 			return fmt.Errorf("the uninstaller is missing (%s). Windows still lists %s, but it looks already removed. "+

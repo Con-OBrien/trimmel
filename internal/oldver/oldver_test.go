@@ -61,3 +61,19 @@ func TestMeasurable(t *testing.T) {
 		}
 	}
 }
+
+func TestFormatDate(t *testing.T) {
+	for in, want := range map[string]string{"20240315": "2024-03-15", "": "", "2024-03": "", "20241399": ""} {
+		if got := formatDate(in); got != want {
+			t.Errorf("%q: got %q want %q", in, got, want)
+		}
+	}
+}
+
+func TestIsUpdateName(t *testing.T) {
+	for in, want := range map[string]bool{"Update for Windows (KB123)": true, "Security Update for X": true, "Foo Bar": false} {
+		if got := isUpdateName(in); got != want {
+			t.Errorf("%q: got %v want %v", in, got, want)
+		}
+	}
+}

@@ -74,6 +74,44 @@ func targets() []target {
 			},
 		},
 		{
+			ID: "shader-cache", Name: "Graphics shader caches",
+			Description: "Compiled shaders saved by DirectX, NVIDIA and AMD drivers. They rebuild on demand, so a game may stutter briefly the first time you run it afterwards.",
+			Roots: func() []string {
+				return []string{
+					filepath.Join(local, "D3DSCache"),
+					filepath.Join(local, "NVIDIA", "DXCache"),
+					filepath.Join(local, "NVIDIA", "GLCache"),
+					filepath.Join(local, "AMD", "DxCache"),
+					filepath.Join(local, "AMD", "GLCache"),
+				}
+			},
+		},
+		{
+			ID: "error-reports", Name: "Windows error reports",
+			Description:   "Crash and error reports Windows keeps for sending to Microsoft. Safe to remove.",
+			RequiresAdmin: true, MinAge: day,
+			Roots: func() []string {
+				pd := os.Getenv("ProgramData")
+				if pd == "" {
+					pd = `C:\ProgramData`
+				}
+				return []string{
+					filepath.Join(pd, "Microsoft", "Windows", "WER", "ReportQueue"),
+					filepath.Join(pd, "Microsoft", "Windows", "WER", "ReportArchive"),
+					filepath.Join(local, "Microsoft", "Windows", "WER", "ReportQueue"),
+					filepath.Join(local, "Microsoft", "Windows", "WER", "ReportArchive"),
+				}
+			},
+		},
+		{
+			ID: "delivery-optimization", Name: "Delivery Optimization cache",
+			Description:   "Update files Windows keeps to share with other PCs. Windows downloads them again if it needs them.",
+			RequiresAdmin: true, MinAge: day,
+			Roots: func() []string {
+				return []string{filepath.Join(winDir, "ServiceProfiles", "NetworkService", "AppData", "Local", "Microsoft", "Windows", "DeliveryOptimization", "Cache")}
+			},
+		},
+		{
 			ID: "crash-dumps", Name: "Crash dumps",
 			Description: "Memory dumps written when apps crash. Only useful for debugging those crashes.",
 			Roots:       func() []string { return []string{filepath.Join(local, "CrashDumps")} },
@@ -102,3 +140,6 @@ func rebootPending() bool {
 	}
 	return false
 }
+
+// RebootPending reports whether Windows is waiting for a restart.
+func RebootPending() bool { return rebootPending() }

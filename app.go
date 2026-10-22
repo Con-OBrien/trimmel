@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -11,11 +14,14 @@ import (
 	"pcoptimizer/internal/cleanup"
 	"pcoptimizer/internal/drivers"
 	"pcoptimizer/internal/elevation"
+	"pcoptimizer/internal/health"
 	"pcoptimizer/internal/mover"
 	"pcoptimizer/internal/oldver"
 	"pcoptimizer/internal/overview"
 	"pcoptimizer/internal/procs"
 	"pcoptimizer/internal/startup"
+	"pcoptimizer/internal/state"
+	"pcoptimizer/internal/storage"
 )
 
 // App is the single object bound to the frontend. Every exported method
@@ -25,10 +31,11 @@ type App struct {
 	procs *procs.Monitor
 	auth  *auth.Manager
 	scan  driverScan
+	state *state.Store
 }
 
 func NewApp() *App {
-	a := &App{procs: procs.NewMonitor()}
+	a := &App{procs: procs.NewMonitor(), state: state.Open("")}
 	a.auth = auth.NewManager(func(url string) { runtime.BrowserOpenURL(a.ctx, url) })
 	return a
 }
@@ -169,7 +176,14 @@ func (a *App) RunCleanup(targetIDs []string) ([]cleanup.CleanResult, error) {
 	if err := a.guard(); err != nil {
 		return nil, err
 	}
-	return cleanup.Clean(targetIDs, elevation.IsAdmin()), nil
+	res := cleanup.Clean(targetIDs, elevation.IsAdmin())
+	for _, r := range res {
+		if r.Error == "" {
+			_ = a.state.MarkTidy(time.Now()) // remember for the "time for a tidy" nudge
+			break
+		}
+	}
+	return res, nil
 }
 
 // ---- Startup ----
@@ -286,4 +300,111 @@ func (a *App) DeleteLeftover(path string) error {
 		return err
 	}
 	return mover.DeleteLeftover(path)
+}
+
+// ---- Health, preferences and the welcome guide ----
+
+// GetHealth combines a few quick measurements into a score and a short list
+// of suggestions, each pointing at the tab that helps.
+func (a *App) GetHealth() (health.Report, error) {
+	if err := a.guard(); err != nil {
+		return health.Report{}, err
+	}
+	snap, err := overview.Collect()
+	if err != nil {
+		return health.Report{}, err
+	}
+	in := health.Input{
+		WorstDiskFreePct: 100,
+		MemoryUsedPct:    snap.Memory.UsedPercent,
+		UptimeDays:       float64(snap.UptimeSeconds) / 86400,
+		RebootPending:    cleanup.RebootPending(),
+	}
+	for _, d := range snap.Disks {
+		if d.Total == 0 {
+			continue
+		}
+		if pct := float64(d.Free) / float64(d.Total) * 100; pct < in.WorstDiskFreePct {
+			in.WorstDiskFreePct, in.WorstDiskMount = pct, d.Mount
+		}
+	}
+	if items, err := startup.List(); err == nil {
+		for _, it := range items {
+			if it.Enabled {
+				in.StartupEnabled++
+				if it.Recommend == "disable" {
+					in.StartupSuggested++
+				}
+			}
+		}
+	}
+	st := a.state.Get()
+	in.DaysSinceTidy = st.DaysSinceTidy(time.Now())
+	in.TidyReminderOn = st.ReminderDays > 0
+	return health.Evaluate(in), nil
+}
+
+type Prefs struct {
+	Welcomed      bool `json:"welcomed"`
+	ReminderDays  int  `json:"reminderDays"`
+	DaysSinceTidy int  `json:"daysSinceTidy"` // -1 = never
+}
+
+func (a *App) GetPrefs() Prefs {
+	d := a.state.Get()
+	return Prefs{Welcomed: d.Welcomed, ReminderDays: d.ReminderDays, DaysSinceTidy: d.DaysSinceTidy(time.Now())}
+}
+
+func (a *App) SetReminderDays(n int) error { return a.state.SetReminderDays(n) }
+func (a *App) MarkWelcomed() error         { return a.state.MarkWelcomed() }
+
+// ---- Storage ----
+
+func (a *App) AnalyzeFolder(path string) (storage.Result, error) {
+	if err := a.guard(); err != nil {
+		return storage.Result{}, err
+	}
+	return storage.Analyze(path)
+}
+
+type LargestFilesResult struct {
+	Files   []storage.Entry `json:"files"`
+	Partial bool            `json:"partial"`
+}
+
+func (a *App) LargestFiles(path string) (LargestFilesResult, error) {
+	if err := a.guard(); err != nil {
+		return LargestFilesResult{}, err
+	}
+	files, partial, err := storage.LargestFiles(path, 50)
+	return LargestFilesResult{Files: files, Partial: partial}, err
+}
+
+// RevealInExplorer opens Explorer with path selected. It never opens or
+// changes the file.
+func (a *App) RevealInExplorer(path string) error {
+	if err := a.guard(); err != nil {
+		return err
+	}
+	if _, err := os.Stat(path); err != nil {
+		return fmt.Errorf("that item no longer exists")
+	}
+	return exec.Command("explorer.exe", "/select,"+path).Start()
+}
+
+// ---- Installed apps ----
+
+func (a *App) ListApps() ([]oldver.App, error) {
+	if err := a.guard(); err != nil {
+		return nil, err
+	}
+	return oldver.ListApps(), nil
+}
+
+// UninstallApp launches the program's own uninstaller and waits for it.
+func (a *App) UninstallApp(id string) error {
+	if err := a.guard(); err != nil {
+		return err
+	}
+	return oldver.UninstallApp(id)
 }

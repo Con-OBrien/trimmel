@@ -24,11 +24,22 @@ type Old struct {
 	Newer     string `json:"newer"` // e.g. "IntelliJ IDEA 2026.2.2 (262.1234)"
 }
 
+// App is one installed program as Windows lists it.
+type App struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Publisher   string `json:"publisher"`
+	Size        uint64 `json:"size"`        // installer estimate, else measured; 0 = unknown
+	InstallDate string `json:"installDate"` // YYYY-MM-DD, "" if unknown
+	Shared      bool   `json:"shared"`      // other programs may depend on it (runtimes, Microsoft components)
+}
+
 // entry is one row of the Windows uninstall registry.
 type entry struct {
-	id, name, version, publisher, uninstall, location string
-	size                                              uint64
-	hasParent                                         bool // update or hotfix of another product
+	id, name, version, publisher, uninstall, location, date string
+	size                                                    uint64
+	hasParent                                               bool // update or hotfix of another product
 }
 
 var excluded = []string{

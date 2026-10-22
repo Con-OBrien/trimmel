@@ -14,3 +14,6 @@ func targets() []target {
 		Roots:       func() []string { return []string{os.TempDir()} },
 	}}
 }
+
+// RebootPending is always false off Windows.
+func RebootPending() bool { return false }
