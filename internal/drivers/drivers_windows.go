@@ -44,6 +44,10 @@ func ListInstalled() ([]Driver, error) {
 		return nil, errors.New("Windows took too long to list the installed drivers. Try again in a minute")
 	}
 
+	return toDrivers(rows), nil
+}
+
+func toDrivers(rows []win32PnPSignedDriver) []Driver {
 	out := make([]Driver, 0, len(rows))
 	for _, r := range rows {
 		if str(r.DeviceName) == "" || str(r.DriverVersion) == "" {
@@ -65,7 +69,7 @@ func ListInstalled() ([]Driver, error) {
 		}
 		return out[i].Device < out[j].Device
 	})
-	return out, nil
+	return out
 }
 
 func str(p *string) string {
