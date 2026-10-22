@@ -1,12 +1,12 @@
 # Brand plan: from "PC Optimizer" to a name and identity we can own
 
-Status: draft, 2026-10-22. Nothing in the app has been renamed or restyled yet.
+Status: direction agreed 2026-10-22 (Fettle as working name, shaving-on-a-board mark, keep teal and honey). Nothing in the app has been renamed or restyled yet.
 Open `brand-board.html` in a browser to see the identity. Assets are in this folder.
 
 ## 1. Why change
 
 - **The current name cannot be owned.** "PC Optimizer" is a description, not a name. A search for the exact term turns up several products and at least one USPTO record for PCOPTIMIZER (I have not checked its owner or status). A generic name is hard to trademark, hard to search for, and easy to confuse with the many scareware "PC optimizer" tools, which is exactly the company we do not want to keep.
-- **The look is generic.** Cream background, teal buttons, a lightning bolt in a gauge. It says "utility", not who we are.
+- **The look has no signature.** Cream background, teal buttons, a lightning bolt in a gauge. The colours are good and stay; the logo and name do not say who we are.
 - **The product already has a point of view** that the brand never states: plain English, nothing done behind your back, everything undoable. The brand should be that.
 
 ## 2. Positioning
@@ -52,42 +52,44 @@ Whatever we choose must pass three tests: it can be said on the phone and spelle
 
 ## 4. The mark
 
-**A brass shaving curling off a clean board.** The board is your drive or your PC; the curl is the rough stuff coming away. It is the visual form of "fettling".
+**A honey shaving curling off a clean board.** The board is your drive or your PC; the curl is the rough stuff coming away. It is the visual form of "fettling".
 
 - It does not depend on a letter, so a name change does not mean a new logo.
 - It is two shapes (a slab and one stroke), so it holds up at 16 px in the taskbar.
-- Brass-on-iron is distinctive in a category full of blue shields and green leaves.
+- Honey on plum is distinctive in a category full of blue shields and green leaves, and it is the palette the app already uses.
 
 Files in this folder:
 
 | File | Use |
 | --- | --- |
-| `mark-tile.svg` | App icon (iron tile, cream board, brass curl) |
-| `mark.svg` | Bare mark for light backgrounds (iron board, glaze curl) |
+| `mark-tile.svg` | App icon (plum tile, cream board, honey curl) |
+| `mark.svg` | Bare mark for light backgrounds (plum board, deep teal curl) |
 | `mark-mono.svg` | One colour, uses `currentColor` |
 | `lockup.svg` | Icon plus the wordmark. **The text is live**: convert to outlines before sending to a printer or another person, or it falls back to a system font |
 | `icons/mark-tile-256.png`, `-512.png` | Raster app icon |
 | `icons/mark.ico` | Windows icon, 16 to 256 px |
 
-Rules: keep clear space of one board-height; never add gradients or shine; never rotate it; brass is only for the curl and never for text or thin lines on light backgrounds (2.0 : 1 contrast).
+Rules: keep clear space of one board-height; never add gradients or shine; never rotate it; honey is only for the curl and the current tab, never for text or thin lines on light backgrounds (1.5 : 1 contrast).
 
 Open work on the mark: a hand-tuned 16 px version (the curl will be thicker), a monochrome favicon, and an animated version of the curl for the welcome screen. Have a human designer review the curve before it is final.
 
 ## 5. Colour
 
+Decision: **keep teal and honey.** This is the palette the app already uses, given names and rules. The one change is that text and buttons use a deeper teal, because the original teal (`#178F86`) is only 3.8 : 1 on cream and 4.0 : 1 under white text, which fails WCAG AA for small text. (The app's CSS already carries this fix from the accessibility pass.)
+
 | Name | Hex | Use |
 | --- | --- | --- |
-| Iron | `#1D2125` | Text, sidebar, icon tile |
-| Plaster | `#F3F4F1` | Backgrounds |
-| Glaze | `#0E6B73` | Buttons, links, the health score |
-| Glaze mist | `#D8EBEC` | Tips, selected rows |
-| Brass | `#E0A526` | The curl, the current tab |
-| Slate | `#4F5A60` | Secondary text |
-| Done / Check first / Problem | `#1E7B4F` / `#8A5300` / `#B42318` | Status |
+| Plum | `#3B2A3F` | Sidebar, icon tile, headings |
+| Text plum | `#3A2B3D` | Body text (the app's current text colour) |
+| Cream | `#FFF8F1` | Backgrounds |
+| Teal | `#178F86` | Brand colour for icons and large shapes, never small text |
+| Deep teal | `#12786F` | Buttons, links, the health score |
+| Teal mist | `#DFF3F0` | Tips, selected rows |
+| Honey | `#FFC25A` | The curl, the current tab |
+| Dusk | `#6C5C70` | Secondary text |
+| Done / Check first / Problem | `#2E9E6B` text-safe `#1E7B4F` / `#9A5A00` / `#D64545` text-safe `#B42318` | Status. Use the text-safe values for words, the brighter ones for dots and bars |
 
-Contrast (WCAG): iron on plaster 14.7, slate on plaster 6.4, glaze on plaster 5.7, plaster on glaze 5.7, brass on iron 7.4, all passing AA. Brass on plaster is 2.0 and is never used for text.
-
-This replaces the current cream, teal and honey, which sit close to a very common AI-and-wellness look. Cooler plaster and iron read more like a tool; glaze keeps some of the existing teal so the change is not jarring.
+Contrast (WCAG): text on cream 12.5, dusk on cream 5.9, deep teal on cream 5.1, cream on deep teal 5.1, honey on plum 8.3, all passing AA. Teal on cream is 3.8 (icons and large shapes only). Honey on cream is 1.5 and is never used for text or thin lines.
 
 ## 6. Type
 
@@ -132,9 +134,16 @@ Do this only after the name is cleared. It is a contained change but has more pl
 4. **Rename** (about 1 week): installer, data migration, site, repository, with a clear "formerly PC Optimizer" note on the site and in the update notes for existing users.
 5. **Launch assets**: a short product page, three screenshots, one 30-second screen recording, the tagline test.
 
-## 10. Decisions for you
+## 10. Decisions
 
-1. Go ahead with **Fettle** as the working name while clearance runs, or start from the alternatives list?
-2. Is a **brass shaving on a board** the right feeling, or do you want a different metaphor? (I can draw 2 to 3 other directions, for example a stylised drive, a soft tool-handle shape, or a pure lettermark.)
-3. Do you want to keep **today's teal and honey** for continuity, or move to **iron, plaster and glaze**?
-4. Is a **hand-drawn designer review** in the budget before launch? I recommend it for the final mark.
+Agreed:
+
+1. Go ahead with **Fettle** as the working name while clearance runs.
+2. The **shaving on a board** mark is the right feeling.
+3. **Keep today's teal and honey.**
+
+Still open:
+
+4. Is a **designer review** of the final mark in the budget before launch? Recommended.
+5. **Clearance outcome.** If the trademark search or attorney opinion says no, pick from the alternatives in section 3. Mark and palette stay.
+6. Which **tagline** to lead with on the website.

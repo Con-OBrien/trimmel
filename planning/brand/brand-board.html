@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --iron: #1D2125;
-    --plaster: #F3F4F1;
-    --glaze: #0E6B73;
-    --glaze-soft: #D8EBEC;
-    --brass: #E0A526;
-    --muted: #4F5A60;
+    --plum: #3B2A3F;
+    --cream: #FFF8F1;
+    --teal-deep: #12786F;
+    --mist: #DFF3F0;
+    --honey: #FFC25A;
+    --muted: #6C5C70;
     --warn: #8A5300;
     --crit: #B42318;
     --ok: #1E7B4F;
@@ -22,20 +22,20 @@
     --text: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--plaster); color: var(--iron); font: 17px/1.6 var(--text); }
+  body { margin: 0; background: var(--cream); color: var(--plum); font: 17px/1.6 var(--text); }
   h1, h2, h3 { font-family: var(--display); line-height: 1.05; margin: 0; letter-spacing: -.02em; }
   p { margin: 0 0 12px; max-width: 62ch; }
-  a { color: var(--glaze); }
-  :focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  a { color: var(--teal-deep); }
+  :focus-visible { outline: 3px solid var(--honey); outline-offset: 3px; }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
   /* Hero: the wordmark is the one big moment */
-  .hero { background: var(--iron); color: var(--plaster); padding: 64px 0 72px; overflow: hidden; }
+  .hero { background: var(--plum); color: var(--cream); padding: 64px 0 72px; overflow: hidden; }
   .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 40px; align-items: center; }
   .hero h1 { font-size: clamp(88px, 18vw, 196px); font-weight: 800; letter-spacing: -.045em; }
   .hero p { color: #C9D0D4; font-size: 20px; margin-top: 18px; }
   .hero img { width: 100%; height: auto; display: block; }
-  .tag { display: inline-block; background: var(--brass); color: var(--iron); font-weight: 700; padding: 2px 12px; border-radius: 999px; font-size: 14px; margin-bottom: 18px; }
+  .tag { display: inline-block; background: var(--honey); color: var(--plum); font-weight: 700; padding: 2px 12px; border-radius: 999px; font-size: 14px; margin-bottom: 18px; }
 
   section { padding: 64px 0 8px; }
   h2 { font-size: 40px; font-weight: 800; margin-bottom: 14px; }
@@ -49,8 +49,8 @@
   .mk img { width: 120px; height: 120px; }
   .mk small { position: absolute; left: 16px; bottom: 12px; font-size: 14px; }
   .mk.light { background: #fff; border: 1px solid #DCDFDA; }
-  .mk.dark { background: var(--iron); color: var(--plaster); }
-  .mk.glaze { background: var(--glaze); color: var(--plaster); }
+  .mk.dark { background: var(--plum); color: var(--cream); }
+  .mk.teal { background: var(--teal-deep); color: var(--cream); }
   .sizes { display: flex; align-items: flex-end; gap: 22px; margin-top: 22px; }
   .sizes img { display: block; }
 
@@ -59,12 +59,14 @@
   .sw { border-radius: 20px; padding: 20px; min-height: 168px; display: flex; flex-direction: column; justify-content: flex-end; }
   .sw b { font-family: var(--display); font-size: 24px; font-weight: 700; }
   .sw span { font-size: 14px; }
-  .sw.iron { background: var(--iron); color: var(--plaster); }
-  .sw.plaster { background: var(--plaster); border: 2px solid var(--iron); }
-  .sw.glaze { background: var(--glaze); color: var(--plaster); }
-  .sw.soft { background: var(--glaze-soft); }
-  .sw.brass { background: var(--brass); color: var(--iron); }
-  .sw.muted { background: var(--muted); color: var(--plaster); }
+  .sw.plum { background: var(--plum); color: var(--cream); }
+  .sw.cream { background: var(--cream); border: 2px solid var(--plum); }
+  .sw.teal { background: #178F86; color: var(--cream); }
+  .sw.teal span { background: var(--cream); color: var(--plum); padding: 0 8px; border-radius: 6px; width: fit-content; }
+  .sw.mist { background: var(--mist); }
+  .sw.honey { background: var(--honey); color: var(--plum); }
+  .sw.dusk { background: var(--muted); color: var(--cream); }
+  .sw.deep { background: var(--teal-deep); color: var(--cream); }
   .status { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
   .pill { padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: 15px; background: #fff; border: 1px solid #DCDFDA; }
   .pill i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
@@ -83,24 +85,24 @@
   .say { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
   .say div { border-radius: 18px; padding: 18px 20px; }
   .say .was { background: #fff; border: 1px solid #DCDFDA; color: var(--muted); }
-  .say .now { background: var(--glaze-soft); }
+  .say .now { background: var(--mist); }
   .say small { display: block; font-weight: 700; margin-bottom: 4px; }
 
   /* App preview */
-  .app { margin-top: 24px; display: grid; grid-template-columns: 190px 1fr; border-radius: 22px; overflow: hidden; border: 1px solid #DCDFDA; background: var(--plaster); box-shadow: 0 18px 40px rgba(29,33,37,.12); }
-  .side { background: var(--iron); color: var(--plaster); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .app { margin-top: 24px; display: grid; grid-template-columns: 190px 1fr; border-radius: 22px; overflow: hidden; border: 1px solid #DCDFDA; background: var(--cream); box-shadow: 0 18px 40px rgba(29,33,37,.12); }
+  .side { background: var(--plum); color: var(--cream); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
   .side .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; font-size: 20px; padding: 2px 8px 18px; letter-spacing: -.02em; }
   .side .brand img { width: 30px; height: 30px; }
   .side a { color: #B8C0C5; text-decoration: none; padding: 8px 12px; border-radius: 10px; font-weight: 500; }
-  .side a.on { background: var(--brass); color: var(--iron); font-weight: 700; }
+  .side a.on { background: var(--honey); color: var(--plum); font-weight: 700; }
   .main { padding: 22px 26px; }
   .main h3 { margin: 0 0 14px; font-size: 26px; }
   .health { display: flex; gap: 22px; background: #fff; border: 1px solid #DCDFDA; border-radius: 18px; padding: 20px; }
-  .score { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 1; color: var(--glaze); letter-spacing: -.04em; }
+  .score { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 1; color: var(--teal-deep); letter-spacing: -.04em; }
   .health ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
-  .health li { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--glaze-soft); border-radius: 12px; padding: 10px 14px; font-size: 15px; }
-  .btn { border: 0; border-radius: 999px; padding: 8px 18px; font: 700 14px var(--text); background: var(--glaze); color: var(--plaster); white-space: nowrap; }
-  .btn.ghost { background: transparent; color: var(--glaze); border: 1.5px solid var(--glaze); }
+  .health li { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--mist); border-radius: 12px; padding: 10px 14px; font-size: 15px; }
+  .btn { border: 0; border-radius: 999px; padding: 8px 18px; font: 700 14px var(--text); background: var(--teal-deep); color: var(--cream); white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--teal-deep); border: 1.5px solid var(--teal-deep); }
 
   .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; }
   .rules div { background: #fff; border: 1px solid #DCDFDA; border-radius: 18px; padding: 18px 20px; }
@@ -125,7 +127,7 @@
       <h1>fettle</h1>
       <p>To fettle is to trim the rough edges off a casting until it is finished and fit to use. In fine fettle means in good condition. That is the whole job of the app.</p>
     </div>
-    <img src="icons/mark-tile-512.png" alt="Fettle app icon: a brass shaving curling off a clean board" width="220" height="220">
+    <img src="icons/mark-tile-512.png" alt="Fettle app icon: a honey shaving curling off a clean board" width="220" height="220">
   </div>
 </header>
 
@@ -149,12 +151,12 @@
 <section>
   <div class="wrap">
     <h2>The mark</h2>
-    <p class="lead">A brass shaving curling off a clean board. The board is your drive or your PC; the curl is the rough stuff coming away. It is a simple shape that survives at 16 pixels, and it does not depend on the letter F, so the name can change without redrawing it.</p>
+    <p class="lead">A honey shaving curling off a clean board. The board is your drive or your PC; the curl is the rough stuff coming away. It is a simple shape that survives at 16 pixels, and it does not depend on the letter F, so the name can change without redrawing it.</p>
     <div class="marks">
       <div class="mk light"><img src="mark-tile.svg" alt="App icon on white"><small class="muted">App icon</small></div>
       <div class="mk light"><img src="mark.svg" alt="Bare mark on white"><small class="muted">Bare mark, light backgrounds</small></div>
-      <div class="mk dark"><img src="mark-mono.svg" alt="One-colour mark, set to cream" style="filter: invert(.95) sepia(.05)"><small>One colour, on iron</small></div>
-      <div class="mk glaze"><img src="mark-tile.svg" alt="App icon on glaze green"><small>On glaze</small></div>
+      <div class="mk dark"><img src="mark-mono.svg" alt="One-colour mark, set to cream" style="filter: invert(.95) sepia(.05)"><small>One colour, on plum</small></div>
+      <div class="mk teal"><img src="mark-tile.svg" alt="App icon on teal"><small>On teal</small></div>
     </div>
     <div class="sizes" aria-label="The icon at 16, 24, 32, 48 and 64 pixels">
       <img src="icons/mark-tile-256.png" width="16" height="16" alt="16 px">
@@ -165,21 +167,22 @@
       <span class="muted">From the taskbar to the installer.</span>
     </div>
     <h3>Rules for the mark</h3>
-    <p>Keep clear space of one board-height around it. Never recolour the curl except to a single colour, never add shine or a gradient, never rotate it. Brass is only for the curl: it has too little contrast to be text or a thin line on light backgrounds.</p>
+    <p>Keep clear space of one board-height around it. Never recolour the curl except to a single colour, never add shine or a gradient, never rotate it. Honey is only for the curl and the current tab: it has too little contrast to be text or a thin line on light backgrounds.</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
     <h2>Colour</h2>
-    <p class="lead">Named after the workshop. Cast iron and plaster carry the page; glaze is the one working colour; brass is the spark and is used sparingly.</p>
+    <p class="lead">Kept from the app you already know, now with names and rules. Plum and cream carry the page, teal is the working colour, and honey is the spark, used sparingly. Teal has two strengths: the brand teal for icons and large shapes, and a deeper teal for anything that has to be read.</p>
     <div class="swatches">
-      <div class="sw iron"><b>Iron</b><span>#1D2125 · text, sidebar, icon</span></div>
-      <div class="sw plaster"><b>Plaster</b><span>#F3F4F1 · backgrounds</span></div>
-      <div class="sw glaze"><b>Glaze</b><span>#0E6B73 · buttons, links, scores</span></div>
-      <div class="sw soft"><b>Glaze mist</b><span>#D8EBEC · tips, selected rows</span></div>
-      <div class="sw brass"><b>Brass</b><span>#E0A526 · the curl, current tab</span></div>
-      <div class="sw muted"><b>Slate</b><span>#4F5A60 · secondary text</span></div>
+      <div class="sw plum"><b>Plum</b><span>#3B2A3F · text, sidebar, icon tile</span></div>
+      <div class="sw cream"><b>Cream</b><span>#FFF8F1 · backgrounds</span></div>
+      <div class="sw teal"><b>Teal</b><span>#178F86 · brand colour, large shapes</span></div>
+      <div class="sw deep"><b>Deep teal</b><span>#12786F · buttons, links, scores</span></div>
+      <div class="sw mist"><b>Teal mist</b><span>#DFF3F0 · tips, selected rows</span></div>
+      <div class="sw honey"><b>Honey</b><span>#FFC25A · the curl, current tab</span></div>
+      <div class="sw dusk"><b>Dusk</b><span>#6C5C70 · secondary text</span></div>
     </div>
     <div class="status" aria-label="Status colours">
       <span class="pill"><i style="background:var(--ok)"></i>Done #1E7B4F</span>
@@ -189,14 +192,15 @@
     <h3>Contrast, measured</h3>
     <table>
       <tr><th>Pair</th><th>Ratio</th><th>Use</th></tr>
-      <tr><td>Iron on plaster</td><td>14.7 : 1</td><td>Body text</td></tr>
-      <tr><td>Slate on plaster</td><td>6.4 : 1</td><td>Secondary text</td></tr>
-      <tr><td>Glaze on plaster</td><td>5.7 : 1</td><td>Links, large scores, outlines</td></tr>
-      <tr><td>Plaster on glaze</td><td>5.7 : 1</td><td>Button text</td></tr>
-      <tr><td>Brass on iron</td><td>7.4 : 1</td><td>Curl, current tab</td></tr>
-      <tr><td>Brass on plaster</td><td>2.0 : 1</td><td>Never for text or thin lines</td></tr>
-    </table>
-    <p class="muted" style="margin-top:12px">Today's app uses cream, teal and honey. This replaces them. The new palette is cooler and more grown-up, and every text pair passes WCAG AA.</p>
+      <tr><td>Text plum on cream</td><td>12.5 : 1</td><td>Body text</td></tr>
+      <tr><td>Dusk on cream</td><td>5.9 : 1</td><td>Secondary text</td></tr>
+      <tr><td>Deep teal on cream</td><td>5.1 : 1</td><td>Links, large scores, outlines</td></tr>
+      <tr><td>Cream on deep teal</td><td>5.1 : 1</td><td>Button text</td></tr>
+      <tr><td>Honey on plum</td><td>8.3 : 1</td><td>Curl, current tab</td></tr>
+      <tr><td>Teal on cream</td><td>3.8 : 1</td><td>Icons and large shapes only, not text</td></tr>
+      <tr><td>Honey on cream</td><td>1.5 : 1</td><td>Never for text or thin lines</td></tr>
+      </table>
+    <p class="muted" style="margin-top:12px">This is today's palette, kept on purpose. The only change is that text and buttons use the deeper teal, so every text pair passes WCAG AA.</p>
   </div>
 </section>
 
@@ -237,7 +241,7 @@
 <section>
   <div class="wrap">
     <h2>In the app</h2>
-    <p class="lead">The Overview with the new identity. Iron sidebar, brass marking the current place, glaze for the one thing to press.</p>
+    <p class="lead">The Overview with the new identity. Plum sidebar, honey marking the current place, deep teal for the one thing to press.</p>
     <div class="app" role="img" aria-label="Mock-up of the Overview screen in the new colours">
       <div class="side">
         <div class="brand"><img src="mark-tile.svg" alt="">fettle</div>
