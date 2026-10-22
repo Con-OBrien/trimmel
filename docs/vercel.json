@@ -10,5 +10,16 @@
       "destination": "/downloads/Trimmel-Portable.zip",
       "permanent": true
     }
+  ],
+  "headers": [
+    {
+      "source": "/downloads/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
   ]
 }
