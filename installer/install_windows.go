@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
+	"unsafe"
 
 	"github.com/go-ole/go-ole"
 	"github.com/go-ole/go-ole/oleutil"
+	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -70,11 +70,56 @@ func desktopLink() string {
 	return filepath.Join(pub, "Desktop", appName+".lnk")
 }
 
-func killApp() {
-	c := exec.Command("taskkill", "/F", "/IM", appExe)
-	c.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	_ = c.Run()
-	time.Sleep(400 * time.Millisecond)
+// killApp ends any running copy of the app that lives in one of dirs, so its
+// exe can be replaced or removed. Other programs with the same name are left alone.
+func killApp(dirs ...string) {
+	snap, err := windows.CreateToolhelp32Snapshot(windows.TH32CS_SNAPPROCESS, 0)
+	if err != nil {
+		return
+	}
+	defer windows.CloseHandle(snap)
+
+	want := map[string]bool{}
+	for _, d := range dirs {
+		if d != "" {
+			want[strings.ToLower(filepath.Join(d, appExe))] = true
+		}
+	}
+
+	killed := false
+	var e windows.ProcessEntry32
+	e.Size = uint32(unsafe.Sizeof(e))
+	for err = windows.Process32First(snap, &e); err == nil; err = windows.Process32Next(snap, &e) {
+		if !strings.EqualFold(windows.UTF16ToString(e.ExeFile[:]), appExe) {
+			continue
+		}
+		h, err := windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION|windows.PROCESS_TERMINATE|windows.SYNCHRONIZE, false, e.ProcessID)
+		if err != nil {
+			continue
+		}
+		buf := make([]uint16, windows.MAX_PATH)
+		n := uint32(len(buf))
+		if windows.QueryFullProcessImageName(h, 0, &buf[0], &n) == nil && want[strings.ToLower(windows.UTF16ToString(buf[:n]))] {
+			if windows.TerminateProcess(h, 1) == nil {
+				_, _ = windows.WaitForSingleObject(h, 3000)
+				killed = true
+			}
+		}
+		windows.CloseHandle(h)
+	}
+	if killed {
+		time.Sleep(300 * time.Millisecond)
+	}
+}
+
+// removeAtReboot schedules a path for deletion at the next restart. Used for the
+// running uninstaller, which cannot delete itself.
+func removeAtReboot(path string) {
+	p, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return
+	}
+	_ = windows.MoveFileEx(p, nil, windows.MOVEFILE_DELAY_UNTIL_REBOOT)
 }
 
 func writeFile(path string, data []byte) error {
@@ -154,7 +199,7 @@ func install(o Options, emit emitFn) error {
 	}
 
 	emit("Closing PC Optimizer if it is running…", 4)
-	killApp()
+	killApp(dir, existingInstallDir())
 
 	emit("Creating the install folder…", 10)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -224,7 +269,7 @@ func uninstall(o Options, emit emitFn) error {
 	}
 
 	emit("Closing PC Optimizer…", 10)
-	killApp()
+	killApp(dir)
 
 	emit("Removing shortcuts…", 35)
 	_ = os.Remove(startMenuLink())
@@ -240,27 +285,15 @@ func uninstall(o Options, emit emitFn) error {
 
 	emit("Deleting program files…", 85)
 	_ = os.Remove(filepath.Join(dir, appExe))
-	// This running exe can't delete itself, so a detached script waits for it
-	// to exit, removes the folder, then deletes itself.
-	bat := filepath.Join(os.TempDir(), "pcoptimizer-cleanup.bat")
-	script := strings.Join([]string{
-		`@echo off`,
-		`for /l %%i in (1,1,60) do (`,
-		`  rmdir /s /q "` + dir + `" 2>nul`,
-		`  if not exist "` + dir + `" goto done`,
-		`  ping 127.0.0.1 -n 2 >nul`,
-		`)`,
-		`:done`,
-		`del "%~f0"`,
-		``,
-	}, "\r\n")
-	if err := os.WriteFile(bat, []byte(script), 0o600); err != nil {
-		return err
+	// This running exe can't delete itself, so Windows removes it, and then the
+	// now-empty folder, at the next restart. Only known files are removed, so
+	// anything else the user put in the folder is kept.
+	un := filepath.Join(dir, uninstallExe)
+	if err := os.Remove(un); err != nil && !os.IsNotExist(err) {
+		removeAtReboot(un)
 	}
-	cmd := exec.Command("cmd", "/c", bat)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: 0x00000008 /* DETACHED_PROCESS */}
-	if err := cmd.Start(); err != nil {
-		return err
+	if err := os.Remove(dir); err != nil && !os.IsNotExist(err) {
+		removeAtReboot(dir)
 	}
 	emit("All done", 100)
 	return nil

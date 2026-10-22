@@ -88,6 +88,11 @@
     summary { cursor:pointer; font-weight:700; }
     details p { margin:10px 0 0; color:var(--muted); }
 
+    .dl details.warn { background:rgba(255,255,255,.08); border-color:rgba(243,230,239,.2); margin:20px 0 0; }
+    .dl details.warn p, .dl details.warn li { color:#d9c6d6; font-size:14px; }
+    .dl ol { padding-left:20px; margin:8px 0 0; }
+    .dl code { background:rgba(0,0,0,.25); padding:1px 5px; border-radius:5px; }
+    .dl .btn + .btn { margin-left:8px; }
     footer { text-align:center; color:var(--muted); font-size:14px; padding:56px 20px 40px; }
 
     .reveal { opacity:0; transform:translateY(18px); transition:opacity .6s, transform .6s; }
@@ -186,13 +191,23 @@
           <h2>Get PC Optimizer</h2>
           <p>Free for Windows 10 and 11 (64-bit). The app asks for administrator rights when it starts, so it can clean system folders and install drivers.</p>
           <a class="btn" id="dl-btn" href="downloads/PC-Optimizer-Setup.exe" download>Download installer</a>
-          <div class="note">Windows may warn that the publisher is unknown, because the installer is not code signed yet. Choose <b>More info</b> then <b>Run anyway</b>.</div>
+          <a class="btn ghost" href="downloads/PC-Optimizer-Portable.zip" download>Portable zip</a>
+          <details class="warn" open>
+            <summary>Windows or Edge shows a warning?</summary>
+            <p>The app is free and not code signed yet, so Windows does not know the publisher. This is expected for new, small apps.</p>
+            <ol>
+              <li><b>Edge:</b> open the downloads list, click <b>&hellip;</b> beside the file, choose <b>Keep</b>, then <b>Show more</b> and <b>Keep anyway</b>.</li>
+              <li><b>SmartScreen:</b> choose <b>More info</b>, then <b>Run anyway</b>.</li>
+              <li><b>Check it:</b> in PowerShell run <code>Get-FileHash .\PC-Optimizer-Setup.exe</code> and compare with the SHA-256 shown here.</li>
+            </ol>
+          </details>
         </div>
         <dl>
           <dt>Version</dt><dd id="dl-version">latest</dd>
           <dt>Size</dt><dd id="dl-size">&ndash;</dd>
           <dt>Released</dt><dd id="dl-date">&ndash;</dd>
           <dt>SHA-256</dt><dd><code id="dl-sha">&ndash;</code><button class="copy" id="copy" hidden>Copy</button></dd>
+          <dt>Zip SHA-256</dt><dd><code id="dl-zsha">&ndash;</code></dd>
         </dl>
       </div>
     </section>
@@ -242,6 +257,7 @@
       document.getElementById('dl-size').textContent = (v.bytes / 1048576).toFixed(1) + ' MB';
       document.getElementById('dl-date').textContent = v.date;
       document.getElementById('dl-sha').textContent = v.sha256;
+      if (v.zipSha256) document.getElementById('dl-zsha').textContent = v.zipSha256;
       document.getElementById('hero-meta').textContent = 'v' + v.version + ' · ' + (v.bytes / 1048576).toFixed(0) + ' MB · Windows 10 and 11';
       var c = document.getElementById('copy'); c.hidden = false;
       c.addEventListener('click', function () {

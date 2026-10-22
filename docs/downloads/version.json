@@ -1,6 +1,8 @@
 ﻿{
-    "date":  "22 Oct 2026",
-    "sha256":  "b04656441794b33391ac0e71dca7fdf0b72d50282760df40bfc0c5f5ffe46c1b",
+    "zipBytes":  7271677,
     "version":  "0.1.0",
-    "bytes":  25665536
+    "bytes":  27721216,
+    "sha256":  "c39a5866e409b94a3b3514fb3e62b00ffa0169fe18d206f7b9f6e1a0d6fe7ad9",
+    "date":  "22 Oct 2026",
+    "zipSha256":  "1840fa034d4dafa92f24e95e9a15a0754718f85ad852a448d908ce63359c956a"
 }
