@@ -163,6 +163,21 @@ func blockReason(path, publisher string, systemComponent bool) string {
 
 // ---- Moving ----
 
+// verifyMovable checks the folder against the installed-program list, with the
+// same rules the scan used (publisher, system component), so a direct call
+// can't move an arbitrary folder. Tests replace it.
+var verifyMovable = func(src string) error {
+	for _, in := range enumerate() {
+		if strings.EqualFold(in.Path, src) {
+			if !in.Movable {
+				return errors.New("this install can't be moved: " + in.Reason)
+			}
+			return nil
+		}
+	}
+	return errors.New("that folder isn't a program Windows lists as installed")
+}
+
 func Move(src, destRoot string, emit func(Progress)) (Result, error) {
 	if !busy.TryLock() {
 		return Result{}, errBusy
@@ -178,8 +193,8 @@ func Move(src, destRoot string, emit func(Progress)) (Result, error) {
 	if err != nil || !fi.IsDir() || isLink(fi) {
 		return Result{}, errors.New("that folder isn't a regular install folder (already moved, or missing)")
 	}
-	if r := blockReason(src, "", false); r != "" {
-		return Result{}, errors.New("this install can't be moved: " + r)
+	if err := verifyMovable(src); err != nil {
+		return Result{}, err
 	}
 	vol := filepath.VolumeName(destRoot)
 	if vol == "" || strings.EqualFold(vol, filepath.VolumeName(src)) {

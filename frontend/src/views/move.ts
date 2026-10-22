@@ -114,7 +114,7 @@ export const moveView: View = root => {
       leftovers = left ?? []
       renderDest()
       if (drives.length < 2) {
-        bodyEl.innerHTML = '<div class="panel"><p class="muted">Only one drive was found. Connect or add a second drive to move programs.</p></div>'
+        bodyEl.innerHTML = '<div class="panel"><p class="muted">Only one drive with a drive letter was found. Connect a second drive, or give an existing partition a letter in Disk Management, to move programs.</p></div>'
         return
       }
       render()

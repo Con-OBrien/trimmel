@@ -97,6 +97,8 @@ wails dev          # hot-reloading dev build
 wails build        # release build -> build\bin\pcoptimizer.exe
 ```
 
+`frontend/dist` is not committed. `wails dev` and `wails build` create it. If you only want `go build` or `go test ./...` to compile the root package, run `npm install && npm run build` in `frontend` first.
+
 ### Build the installer
 
 ```powershell

@@ -3,6 +3,7 @@
 package mover
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -27,6 +28,16 @@ func TestMoveAndBack(t *testing.T) {
 		t.Skip("no free drive letter for subst")
 	}
 	defer exec.Command("subst", letter, "/D").Run()
+
+	// The temp folder isn't a registered install; keep only the path rules.
+	orig := verifyMovable
+	verifyMovable = func(src string) error {
+		if r := blockReason(src, "", false); r != "" {
+			return errors.New(r)
+		}
+		return nil
+	}
+	defer func() { verifyMovable = orig }()
 
 	src := filepath.Join(base, "App")
 	os.MkdirAll(filepath.Join(src, "sub"), 0o755)

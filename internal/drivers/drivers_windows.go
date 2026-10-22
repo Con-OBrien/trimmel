@@ -32,8 +32,17 @@ type win32PnPSignedDriver struct {
 func ListInstalled() ([]Driver, error) {
 	var rows []win32PnPSignedDriver
 	q := "SELECT DeviceName, DeviceClass, DriverProviderName, DriverVersion, DriverDate, IsSigned, InfName FROM Win32_PnPSignedDriver"
-	if err := wmi.Query(q, &rows); err != nil {
-		return nil, fmt.Errorf("querying drivers: %w", err)
+	// wmi.Query takes no context and can hang on a damaged WMI repository,
+	// so give up waiting after a while rather than leave the tab spinning.
+	errc := make(chan error, 1)
+	go func() { errc <- wmi.Query(q, &rows) }()
+	select {
+	case err := <-errc:
+		if err != nil {
+			return nil, fmt.Errorf("querying drivers: %w", err)
+		}
+	case <-time.After(60 * time.Second):
+		return nil, errors.New("Windows took too long to list the installed drivers. Try again in a minute")
 	}
 
 	out := make([]Driver, 0, len(rows))

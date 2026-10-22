@@ -248,10 +248,14 @@ func (m *Manager) Login(ctx context.Context) (*User, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
+		if q.Get("state") != state {
+			// Not our redirect (a stray or hostile request). Ignore it so it
+			// can't end the sign-in the user is completing in the browser.
+			http.Error(w, "Unexpected request", http.StatusBadRequest)
+			return
+		}
 		var res result
 		switch {
-		case q.Get("state") != state:
-			res.err = errors.New("state mismatch")
 		case q.Get("error") != "":
 			res.err = fmt.Errorf("%s: %s", q.Get("error"), q.Get("error_description"))
 		case q.Get("code") == "":
