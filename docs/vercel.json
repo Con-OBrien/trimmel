@@ -23,13 +23,23 @@
       "permanent": true
     },
     {
+      "source": "/downloads/Trimmel-Setup.exe",
+      "destination": "https://github.com/Con-OBrien/trimmel/releases/latest/download/Trimmel-Setup.exe",
+      "permanent": false
+    },
+    {
+      "source": "/downloads/Trimmel-Portable.zip",
+      "destination": "https://github.com/Con-OBrien/trimmel/releases/latest/download/Trimmel-Portable.zip",
+      "permanent": false
+    },
+    {
       "source": "/downloads/PC-Optimizer-Setup.exe",
-      "destination": "/downloads/Trimmel-Setup.exe",
+      "destination": "https://github.com/Con-OBrien/trimmel/releases/latest/download/Trimmel-Setup.exe",
       "permanent": true
     },
     {
       "source": "/downloads/PC-Optimizer-Portable.zip",
-      "destination": "/downloads/Trimmel-Portable.zip",
+      "destination": "https://github.com/Con-OBrien/trimmel/releases/latest/download/Trimmel-Portable.zip",
       "permanent": true
     }
   ],

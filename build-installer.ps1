@@ -88,8 +88,10 @@ Sign-File (Resolve-Path installer\build\bin\Trimmel-Setup.exe).Path
 
 Write-Host "3/3 Done: installer\build\bin\Trimmel-Setup.exe"
 
-# -Publish copies the installer into docs\downloads so Vercel serves it, and
-# writes version.json for the download section of the site and the in-app update check.
+# -Publish stages the installer and zip in docs\downloads (git-ignored: the exe embeds
+# the Google client secret, which GitHub push protection rejects) and writes version.json
+# for the download section of the site and the in-app update check. The binaries ship
+# as GitHub Release assets; docs/vercel.json redirects /downloads/* to them.
 if ($Publish) {
   New-Item -ItemType Directory -Force docs\downloads | Out-Null
   Copy-Item installer\build\bin\Trimmel-Setup.exe docs\downloads\Trimmel-Setup.exe -Force
@@ -103,5 +105,6 @@ if ($Publish) {
      sha256 = (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLower();
      zipBytes = $z.Length; zipSha256 = (Get-FileHash $z.FullName -Algorithm SHA256).Hash.ToLower() } |
     ConvertTo-Json | Set-Content docs\downloads\version.json -Encoding utf8
-  Write-Host "Published to docs\downloads. Commit and push to release."
+  Write-Host "Staged in docs\downloads. Commit and push version.json, then upload the binaries:"
+  Write-Host "  gh release create v$version docs\downloads\Trimmel-Setup.exe docs\downloads\Trimmel-Portable.zip --title v$version"
 }

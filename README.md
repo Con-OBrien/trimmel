@@ -8,7 +8,7 @@
   <img alt="Go" src="https://img.shields.io/badge/Go-1.26-3b2a3f?style=flat-square&logo=go&logoColor=ffc25a">
   <img alt="Wails v2" src="https://img.shields.io/badge/Wails-v2-3b2a3f?style=flat-square&logoColor=ffc25a">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-frontend-3b2a3f?style=flat-square&logo=typescript&logoColor=ffc25a">
-  <img alt="Version 0.2.1" src="https://img.shields.io/badge/version-0.2.1-ffc25a?style=flat-square&labelColor=3b2a3f">
+  <img alt="Version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-ffc25a?style=flat-square&labelColor=3b2a3f">
 </p>
 
 <p align="center">
