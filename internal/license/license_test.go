@@ -175,7 +175,7 @@ func TestActivateAndDeactivate(t *testing.T) {
 	}
 
 	st, err := m.Activate(key, "0.3.0")
-	if err != nil || st.Tier != Plus || st.Email != "a@b.c" {
+	if err != nil || st.Tier != Plus || st.Email != "a@b.c" || st.Expires != "" {
 		t.Fatalf("activate: %+v, %v", st, err)
 	}
 	if Open(path, m.pub, c.now).Status("0.3.0").Tier != Plus {
@@ -188,6 +188,15 @@ func TestActivateAndDeactivate(t *testing.T) {
 	}
 	if Open(path, m.pub, c.now).Status("0.3.0").Tier != Free {
 		t.Fatal("deactivation not persisted")
+	}
+}
+
+func TestYearlyKeyReportsExpiryDate(t *testing.T) {
+	m, _, priv, _ := newManager(t)
+	key := Sign(priv, Claims{Issued: t0, Expires: t0.AddDate(1, 0, 0), Major: 0})
+	st, err := m.Activate(key, "0.3.0")
+	if err != nil || st.Expires != "2027-11-01" {
+		t.Fatalf("got %+v, %v", st, err)
 	}
 }
 

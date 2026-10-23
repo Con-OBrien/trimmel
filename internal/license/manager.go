@@ -23,13 +23,13 @@ type saved struct {
 // Status is what the UI shows. Tier is what the app may use right now;
 // Note explains it in plain English.
 type Status struct {
-	Tier          Tier      `json:"tier"`
-	Note          string    `json:"note"`
-	Email         string    `json:"email,omitempty"`
-	Expires       time.Time `json:"expires,omitzero"`
-	TrialDaysLeft int       `json:"trialDaysLeft"` // only while Tier is Trial
-	CanTrial      bool      `json:"canTrial"`      // the trial has not been used yet
-	CanActivate   bool      `json:"canActivate"`   // this build can check keys
+	Tier          Tier   `json:"tier"`
+	Note          string `json:"note"`
+	Email         string `json:"email,omitempty"`
+	Expires       string `json:"expires,omitempty"` // yyyy-mm-dd; a string so Wails binds it cleanly
+	TrialDaysLeft int    `json:"trialDaysLeft"`     // only while Tier is Trial
+	CanTrial      bool   `json:"canTrial"`          // the trial has not been used yet
+	CanActivate   bool   `json:"canActivate"`       // this build can check keys
 }
 
 // Manager holds licence state for one user. It never blocks the app: any
@@ -105,7 +105,10 @@ func (m *Manager) status(appVersion string) Status {
 		c, err := Verify(m.pub, m.s.Key, now, major(appVersion))
 		switch {
 		case err == nil:
-			st.Tier, st.Email, st.Expires = Plus, c.Email, c.Expires
+			st.Tier, st.Email = Plus, c.Email
+			if !c.Expires.IsZero() {
+				st.Expires = c.Expires.Format("2006-01-02")
+			}
 			st.Note = "Trimmel Plus is active."
 			return st
 		case errors.Is(err, ErrExpired):
