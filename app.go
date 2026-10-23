@@ -18,6 +18,7 @@ import (
 	"trimmel/internal/drivers"
 	"trimmel/internal/elevation"
 	"trimmel/internal/health"
+	"trimmel/internal/license"
 	"trimmel/internal/mover"
 	"trimmel/internal/oldver"
 	"trimmel/internal/overview"
@@ -35,10 +36,11 @@ type App struct {
 	auth  *auth.Manager
 	scan  driverScan
 	state *state.Store
+	lic   *license.Manager
 }
 
 func NewApp() *App {
-	a := &App{procs: procs.NewMonitor(), state: state.Open("")}
+	a := &App{procs: procs.NewMonitor(), state: state.Open(""), lic: license.Open("", nil, nil)}
 	a.auth = auth.NewManager(func(url string) { runtime.BrowserOpenURL(a.ctx, url) })
 	return a
 }
@@ -407,6 +409,27 @@ func (a *App) AppInfo() (AppInfo, error) {
 
 func (a *App) CheckUpdate() (appinfo.Update, error) {
 	return appinfo.CheckUpdate(a.ctx, version)
+}
+
+// LicenseStatus reports whether Plus is active, in trial or off. The free app
+// does not depend on it; nothing is locked by this call.
+func (a *App) LicenseStatus() license.Status { return a.lic.Status(version) }
+
+func (a *App) StartTrial() (license.Status, error) {
+	if err := a.lic.StartTrial(); err != nil {
+		return a.lic.Status(version), err
+	}
+	return a.lic.Status(version), nil
+}
+
+func (a *App) ActivateLicense(key string) (license.Status, error) {
+	return a.lic.Activate(key, version)
+}
+
+func (a *App) RemoveLicense() (license.Status, error) { return a.lic.Deactivate(version) }
+
+func (a *App) OpenPlusPage() {
+	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/plus.html")
 }
 
 func (a *App) OpenDownloadPage() {

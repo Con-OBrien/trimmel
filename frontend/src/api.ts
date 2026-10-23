@@ -175,6 +175,16 @@ export interface UpdateInfo {
   url: string
 }
 
+export interface LicenseStatus {
+  tier: "free" | "trial" | "plus"
+  note: string
+  email?: string
+  expires?: string
+  trialDaysLeft: number
+  canTrial: boolean
+  canActivate: boolean
+}
+
 interface AppBindings {
   GetHealth(): Promise<HealthReport>
   GetPrefs(): Promise<Prefs>
@@ -202,6 +212,11 @@ interface AppBindings {
   AppInfo(): Promise<AppInfo>
   CheckUpdate(): Promise<UpdateInfo>
   OpenDownloadPage(): Promise<void>
+  LicenseStatus(): Promise<LicenseStatus>
+  StartTrial(): Promise<LicenseStatus>
+  ActivateLicense(key: string): Promise<LicenseStatus>
+  RemoveLicense(): Promise<LicenseStatus>
+  OpenPlusPage(): Promise<void>
   OpenFolder(kind: "install" | "settings"): Promise<void>
   RunSetup(mode: "modify" | "uninstall"): Promise<void>
   DeleteSettings(): Promise<void>

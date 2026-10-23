@@ -150,3 +150,23 @@ All telemetry stays opt-in and is described in the privacy policy.
 - **Competing with free.** Microsoft PC Manager is free and built in. Our edge is explanation, reversibility and moving apps, so those must stay clearly better, not merely different.
 - **Support load.** Driver installs and moves create support work. Gate them behind safety nets and write the support page before launch.
 - **Code signing cost and delay.** Certificate validation can take weeks; start it now.
+
+## 10. Progress log
+
+### Preparation without code signing (2026-10-23)
+
+Built, none of it visible to free users yet:
+
+- `internal/license`: offline Ed25519 key check (`TRIM1-<payload>.<signature>`), 14-day trial the user starts by hand (once per PC), plan state in `licence.json`, plain-English status notes. Expired or old-major keys fall back to Free and say why; undo is never affected. Tests cover about 96 percent.
+- `tools/licensegen`: `keygen` (writes the private key, refuses to overwrite) and `sign` (prints a key; `-years` for a yearly key, none for lifetime). Private keys are ignored by git (`*.key`).
+- App bindings (`LicenseStatus`, `StartTrial`, `ActivateLicense`, `RemoveLicense`, `OpenPlusPage`) and a **Trimmel Plus** section in Settings. The key box and trial button appear only in builds that carry a public key, so today's build shows only the status line and an "About Plus" button.
+- Website: `docs/plus.html` (what stays free, what is planned, how keys work; no price promised), linked from the home page section and footer, added to the sitemap.
+
+Deliberately not done:
+
+- No Plus feature exists yet, so nothing is gated. The Move apps allowance (10 GB or one app) is not wired to anything; add it together with the first gated feature, not before.
+- No public key is embedded (`publicKeyB64` is empty), so keys cannot be activated and the trial buttons stay hidden.
+- No checkout, Merchant of Record account, refund process or online device check.
+- The open-core decision (section 5) is still open. `internal/license` is MIT for now; if you pick open core, only the gated features need to move to a private module.
+
+To switch licensing on later: run `go run ./tools/licensegen keygen -out plus-private.key`, back the file up somewhere safe, paste the printed public key into `internal/license/publickey.go`, and ship the first gated feature in the same release. Sign keys with `licensegen sign`.
