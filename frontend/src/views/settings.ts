@@ -1,4 +1,4 @@
-import { api, AppInfo, UpdateInfo } from "../api"
+import { api, AppInfo, LicenseStatus, UpdateInfo } from "../api"
 import { busy, errMsg, esc, toast, View } from "../ui"
 
 const row = (title: string, sub: string, action = "") => `
@@ -6,6 +6,25 @@ const row = (title: string, sub: string, action = "") => `
     <div class="grow"><strong>${title}</strong><div class="muted small mono">${sub}</div></div>
     <div class="row-actions">${action}</div>
   </div>`
+
+// Plus controls appear only in builds that can check keys. Until then the
+// section just says what is planned; the free app is never locked.
+const plusRows = (lic: LicenseStatus) => {
+  const who = lic.tier === "plus" && lic.email ? ` Licensed to ${esc(lic.email)}.` : ""
+  const rows = [row("Trimmel Plus", `${esc(lic.note)}${who}<br><span class="muted">Every feature you can use today stays free.</span>`,
+    `<button class="btn" id="se-plus-about">About Plus</button>`)]
+  if (!lic.canActivate) return rows.join("")
+  if (lic.tier === "plus") {
+    rows.push(row("Licence key", "Saved on this PC.", `<button class="btn" id="se-plus-remove">Remove key</button>`))
+  } else {
+    rows.push(`<div class="list-row"><div class="grow"><strong>Have a key?</strong>
+      <div><input type="search" id="se-plus-key" placeholder="TRIM1-…" aria-label="Plus licence key" autocomplete="off" spellcheck="false"></div></div>
+      <div class="row-actions"><button class="btn primary" id="se-plus-activate">Activate</button></div></div>`)
+    if (lic.canTrial) rows.push(row("Free trial", "14 days of everything in Plus. No card needed. It ends by itself.",
+      `<button class="btn" id="se-plus-trial">Start free trial</button>`))
+  }
+  return rows.join("")
+}
 
 export const settingsView: View = root => {
   root.innerHTML = `
@@ -16,6 +35,7 @@ export const settingsView: View = root => {
   const render = async (info: AppInfo) => {
     const { install } = info
     const auth = await api.AuthStatus().catch(() => null)
+    const lic = await api.LicenseStatus().catch(() => null)
     const canChange = install.installed && install.hasUninstall
     const where = install.installed ? "Installed with setup" : "Not installed with setup (portable or development copy)"
 
@@ -35,6 +55,8 @@ export const settingsView: View = root => {
         ${row("Uninstall", "Removes the app, its shortcuts and its entry in Windows Settings.",
           `<button class="btn danger" id="se-uninstall" ${canChange ? "" : "disabled"}>Uninstall…</button>`)}
       </div>
+
+      ${lic ? `<h2 class="section-title">Trimmel Plus</h2><div class="panel list" id="se-plus">${plusRows(lic)}</div>` : ""}
 
       ${auth?.configured ? `
       <h2 class="section-title">Account</h2>
@@ -64,6 +86,22 @@ export const settingsView: View = root => {
         : `<div class="grow muted">You are up to date${r.current === "dev" ? " (development build)" : ""}. Latest release: ${esc(r.latest)}.</div>`
       msg.querySelector("#se-get")?.addEventListener("click", () => api.OpenDownloadPage())
     }))
+    const plus = body.querySelector<HTMLElement>("#se-plus")
+    const refreshPlus = (next: LicenseStatus) => { if (plus) plus.innerHTML = plusRows(next); wirePlus() }
+    const wirePlus = () => {
+      const click = (id: string, fn: (btn: HTMLButtonElement) => void | Promise<void>) =>
+        plus?.querySelector<HTMLButtonElement>(id)?.addEventListener("click", e => fn(e.currentTarget as HTMLButtonElement))
+      click("#se-plus-about", () => api.OpenPlusPage())
+      click("#se-plus-trial", btn => safe(async () => refreshPlus(await busy(btn, "Starting…", () => api.StartTrial()))))
+      click("#se-plus-remove", btn => safe(async () => refreshPlus(await busy(btn, "Removing…", () => api.RemoveLicense()))))
+      click("#se-plus-activate", btn => safe(async () => {
+        const key = plus!.querySelector<HTMLInputElement>("#se-plus-key")!.value
+        refreshPlus(await busy(btn, "Checking…", () => api.ActivateLicense(key)))
+        toast("Trimmel Plus is active")
+      }))
+    }
+    wirePlus()
+
     on("#se-open-install", () => safe(() => api.OpenFolder("install")))
     on("#se-open-settings", () => safe(() => api.OpenFolder("settings")))
     on("#se-change", () => safe(async () => {

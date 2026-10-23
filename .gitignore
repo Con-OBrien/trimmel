@@ -19,3 +19,8 @@ frontend/package.json.md5
 # Release binaries ship as GitHub Release assets (they embed the OAuth client secret)
 docs/downloads/*.exe
 docs/downloads/*.zip
+
+# Licence signing key (see tools/licensegen). Never commit it.
+*.key
+plus-private*
+/licensegen.exe
