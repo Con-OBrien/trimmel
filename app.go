@@ -12,6 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"trimmel/internal/advisor"
+	"trimmel/internal/alerts"
 	"trimmel/internal/appinfo"
 	"trimmel/internal/auth"
 	"trimmel/internal/cleanup"
@@ -23,6 +24,7 @@ import (
 	"trimmel/internal/oldver"
 	"trimmel/internal/overview"
 	"trimmel/internal/procs"
+	"trimmel/internal/schedule"
 	"trimmel/internal/startup"
 	"trimmel/internal/state"
 	"trimmel/internal/storage"
@@ -37,10 +39,12 @@ type App struct {
 	scan  driverScan
 	state *state.Store
 	lic   *license.Manager
+	sched *schedule.Store
+	alert *alerts.Store
 }
 
 func NewApp() *App {
-	a := &App{procs: procs.NewMonitor(), state: state.Open(""), lic: license.Open("", nil, nil)}
+	a := &App{procs: procs.NewMonitor(), state: state.Open(""), lic: license.Open("", nil, nil), sched: schedule.Open(""), alert: alerts.Open("")}
 	a.auth = auth.NewManager(func(url string) { runtime.BrowserOpenURL(a.ctx, url) })
 	return a
 }
@@ -255,7 +259,44 @@ func (a *App) MoveInstall(path, destDrive string) (mover.Result, error) {
 	if err := a.guard(); err != nil {
 		return mover.Result{}, err
 	}
+	if err := a.checkMoveAllowance(path); err != nil {
+		return mover.Result{}, err
+	}
 	return mover.Move(path, destDrive, a.emitMove)
+}
+
+// checkMoveAllowance applies the free-tier limit on moved apps. If the scan
+// fails or does not list the path, it lets the move go on: the mover has its
+// own safety checks, and a licence rule should never be the reason a user is
+// stuck.
+func (a *App) checkMoveAllowance(path string) error {
+	tier := a.lic.Status(version).Tier
+	if tier != license.Free {
+		return nil
+	}
+	installs, err := mover.Scan()
+	if err != nil {
+		return nil
+	}
+	var count int
+	var moved, size uint64
+	var found bool
+	for _, in := range installs {
+		switch {
+		case in.MovedTo != "" && !in.Broken:
+			count++
+			moved += in.Size
+		case strings.EqualFold(in.Path, path):
+			size, found = in.Size, true
+		}
+	}
+	if !found {
+		return nil
+	}
+	if ok, why := license.MoveAllowed(tier, count, moved, size); !ok {
+		return errors.New(why)
+	}
+	return nil
 }
 
 func (a *App) MoveInstallBack(path string) (mover.Result, error) {
@@ -428,6 +469,61 @@ func (a *App) ActivateLicense(key string) (license.Status, error) {
 
 func (a *App) RemoveLicense() (license.Status, error) { return a.lic.Deactivate(version) }
 
+// GetSchedule reports the scheduled-cleanup switch and the last quiet run.
+func (a *App) GetSchedule() schedule.View { return schedule.ViewOf(a.sched.Load()) }
+
+// SetSchedule switches scheduled cleanup on or off. Turning it on needs Plus or
+// the trial; turning it off is always allowed. The Windows task is created
+// first, so a failure leaves the saved setting unchanged.
+func (a *App) SetSchedule(enabled bool, frequency string) (schedule.View, error) {
+	cur := a.sched.Load()
+	if enabled && a.lic.Status(version).Tier == license.Free {
+		return schedule.ViewOf(cur), errors.New("scheduled cleanup is part of Trimmel Plus. See Plus in Settings, or start the free trial")
+	}
+	var err error
+	if enabled {
+		var exe string
+		if exe, err = os.Executable(); err == nil {
+			err = schedule.Install(exe, frequency)
+		}
+	} else {
+		err = schedule.Remove()
+	}
+	if err != nil {
+		return schedule.ViewOf(cur), err
+	}
+	st, err := a.sched.Configure(enabled, frequency)
+	return schedule.ViewOf(st), err
+}
+
+// GetAlerts reports the low-disk and weekly-summary switches.
+func (a *App) GetAlerts() alerts.View { return alerts.ViewOf(a.alert.Load()) }
+
+// SetAlerts saves the alert switches and creates or removes the daily check
+// task to match. Turning anything on needs Plus or the trial; turning
+// everything off is always allowed. The task is changed first, so a failure
+// leaves the saved settings unchanged.
+func (a *App) SetAlerts(lowDisk bool, threshold int, report bool) (alerts.View, error) {
+	cur := a.alert.Load()
+	if (lowDisk || report) && a.lic.Status(version).Tier == license.Free {
+		return alerts.ViewOf(cur), errors.New("alerts are part of Trimmel Plus. See Plus in Settings, or start the free trial")
+	}
+	var err error
+	if lowDisk || report {
+		var exe string
+		if exe, err = os.Executable(); err == nil {
+			err = schedule.InstallCheck(exe)
+		}
+	} else {
+		err = schedule.RemoveCheck()
+	}
+	if err != nil {
+		return alerts.ViewOf(cur), err
+	}
+	st, err := a.alert.Configure(lowDisk, threshold, report, time.Now())
+	return alerts.ViewOf(st), err
+}
+
 func (a *App) OpenPlusPage() {
 	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/plus.html")
 }
@@ -509,4 +605,23 @@ func (a *App) GetStorageSuggestions(drive string) ([]advisor.Suggestion, error) 
 		}
 	}
 	return advisor.Suggest(advisor.Options{Drive: drive, Others: others, IsAdmin: elevation.IsAdmin()}), nil
+}
+
+// runScheduled is "trimmel.exe --scheduled": clean the safe targets quietly,
+// record the result and exit. It opens no window.
+func runScheduled() {
+	tier := license.Open("", nil, nil).Status(version).Tier
+	schedule.Open("").Run(tier, elevation.IsAdmin(), time.Now(), cleanup.Clean)
+}
+
+// runCheck is "trimmel.exe --check": send any low-disk or weekly notification
+// that is due, then exit. It opens no window.
+func runCheck() {
+	snap, _ := overview.Collect()
+	disks := make([]alerts.Disk, 0, len(snap.Disks))
+	for _, d := range snap.Disks {
+		disks = append(disks, alerts.Disk{Mount: d.Mount, Total: d.Total, Free: d.Free})
+	}
+	tier := license.Open("", nil, nil).Status(version).Tier
+	alerts.Open("").Check(tier, time.Now(), disks, schedule.Open("").Load().LastFreed, showToast)
 }

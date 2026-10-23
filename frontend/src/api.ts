@@ -185,6 +185,20 @@ export interface LicenseStatus {
   canActivate: boolean
 }
 
+export interface ScheduleView {
+  enabled: boolean
+  frequency: "weekly" | "monthly"
+  lastRun?: string
+  lastFreed: number
+  lastNote?: string
+}
+
+export interface AlertsView {
+  lowDisk: boolean
+  threshold: number
+  report: boolean
+}
+
 interface AppBindings {
   GetHealth(): Promise<HealthReport>
   GetPrefs(): Promise<Prefs>
@@ -217,6 +231,10 @@ interface AppBindings {
   ActivateLicense(key: string): Promise<LicenseStatus>
   RemoveLicense(): Promise<LicenseStatus>
   OpenPlusPage(): Promise<void>
+  GetAlerts(): Promise<AlertsView>
+  SetAlerts(lowDisk: boolean, threshold: number, report: boolean): Promise<AlertsView>
+  GetSchedule(): Promise<ScheduleView>
+  SetSchedule(enabled: boolean, frequency: string): Promise<ScheduleView>
   OpenFolder(kind: "install" | "settings"): Promise<void>
   RunSetup(mode: "modify" | "uninstall"): Promise<void>
   DeleteSettings(): Promise<void>

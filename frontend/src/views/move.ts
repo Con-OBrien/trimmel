@@ -21,6 +21,7 @@ export const moveView: View = root => {
       <input id="mv-filter" type="search" placeholder="Filter by name or publisher" />
       <span class="muted small" id="mv-admin"></span>
     </div>
+    <p class="muted small" id="mv-plan"></p>
     <div id="mv-left"></div>
     <div id="mv-progress"></div>
     <div id="mv-body"><p class="muted"><span class="spinner"></span>Looking for installed programs…</p></div>`
@@ -107,8 +108,14 @@ export const moveView: View = root => {
   const load = async () => {
     bodyEl.innerHTML = '<p class="muted"><span class="spinner"></span>Looking for installed programs…</p>'
     try {
-      const [o, list, left] = await Promise.all([api.GetOverview(), api.ScanInstalls(), api.ScanLeftovers()])
+      const [o, list, left, lic] = await Promise.all([
+        api.GetOverview(), api.ScanInstalls(), api.ScanLeftovers(), api.LicenseStatus().catch(() => null)])
       if (stopped) return
+      const moved = (list ?? []).filter(i => i.movedTo && !i.broken)
+      const movedSize = moved.reduce((n, i) => n + i.size, 0)
+      root.querySelector("#mv-plan")!.textContent = lic && lic.tier === "free"
+        ? `Free version: keep one app moved, or up to 10 GB in total (${moved.length ? `${fmtBytes(movedSize)} moved now` : "nothing moved now"}). Moving back is always free. Trimmel Plus removes the limit.`
+        : ""
       drives = (o.system.disks ?? []).map(d => ({ mount: d.mount, free: d.free, total: d.total }))
       installs = list ?? []
       leftovers = left ?? []
