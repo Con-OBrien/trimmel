@@ -118,7 +118,6 @@
     .dl dt { color:#b9a3b7; }
     .dl dd { margin:0; word-break:break-all; }
     .dl code { font-size:12px; background:rgba(0,0,0,.25); padding:1px 5px; border-radius:5px; }
-    .copybtn { background:none; border:1px solid rgba(243,230,239,.35); color:#f3e6ef; border-radius:8px; padding:2px 8px; font:inherit; font-size:12px; cursor:pointer; margin-left:6px; }
     .dl details { background:rgba(255,255,255,.08); border:1px solid rgba(243,230,239,.2); border-radius:14px; padding:14px 18px; margin-top:22px; }
     .dl summary { cursor:pointer; font-weight:700; }
     .dl details p, .dl details li { color:#d9c6d6; font-size:15px; }
@@ -243,22 +242,11 @@
           <p>Free for Windows 10 and 11 (64-bit). It asks for administrator rights on launch so it can clean system folders and install drivers.</p>
           <a class="btn" id="dl-btn" href="downloads/Trimmel-Setup.exe" download data-umami-event="download-installer">Download installer</a>
           <a class="btn ghost" href="downloads/Trimmel-Portable.zip" download data-umami-event="download-portable">Portable zip</a>
-          <details open>
-            <summary>Windows or Edge shows a warning?</summary>
-            <p>The app is not code signed yet, so Windows does not know the publisher. That is expected for a new, small app.</p>
-            <ol>
-              <li><b>Edge:</b> open the downloads list, click <b>&hellip;</b> beside the file, choose <b>Keep</b>, then <b>Show more</b> and <b>Keep anyway</b>.</li>
-              <li><b>SmartScreen:</b> choose <b>More info</b>, then <b>Run anyway</b>.</li>
-              <li><b>Check it:</b> in PowerShell run <code>Get-FileHash .\Trimmel-Setup.exe</code> and compare with the SHA-256 shown here.</li>
-            </ol>
-          </details>
         </div>
         <dl>
           <dt>Version</dt><dd id="dl-version">latest</dd>
           <dt>Size</dt><dd id="dl-size">&ndash;</dd>
           <dt>Released</dt><dd id="dl-date">&ndash;</dd>
-          <dt>SHA-256</dt><dd><code id="dl-sha">&ndash;</code><button class="copybtn" id="copy" hidden>Copy</button></dd>
-          <dt>Zip SHA-256</dt><dd><code id="dl-zsha">&ndash;</code></dd>
         </dl>
       </div>
     </section>
@@ -303,13 +291,7 @@
       document.getElementById('dl-version').textContent = 'v' + v.version;
       document.getElementById('dl-size').textContent = (v.bytes / 1048576).toFixed(1) + ' MB';
       document.getElementById('dl-date').textContent = v.date;
-      document.getElementById('dl-sha').textContent = v.sha256;
-      if (v.zipSha256) document.getElementById('dl-zsha').textContent = v.zipSha256;
       document.getElementById('hero-meta').textContent = 'Free · v' + v.version + ' · ' + (v.bytes / 1048576).toFixed(0) + ' MB · Windows 10 and 11';
-      var c = document.getElementById('copy'); c.hidden = false;
-      c.addEventListener('click', function () {
-        navigator.clipboard.writeText(v.sha256).then(function () { c.textContent = 'Copied'; setTimeout(function () { c.textContent = 'Copy'; }, 1500); });
-      });
     }).catch(function () {
       document.getElementById('dl-version').textContent = 'coming soon';
     });
