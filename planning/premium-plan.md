@@ -162,9 +162,30 @@ Built, none of it visible to free users yet:
 - App bindings (`LicenseStatus`, `StartTrial`, `ActivateLicense`, `RemoveLicense`, `OpenPlusPage`) and a **Trimmel Plus** section in Settings. The key box and trial button appear only in builds that carry a public key, so today's build shows only the status line and an "About Plus" button.
 - Website: `docs/plus.html` (what stays free, what is planned, how keys work; no price promised), linked from the home page section and footer, added to the sitemap.
 
+### Move apps allowance (2026-10-23)
+
+- `license.MoveAllowed` (`internal/license/limits.go`): Free may keep one app moved (any size), or moved apps up to 10 GB in total. Plus and trial are unlimited. Moving back is never limited and frees the room. No stored counter: `App.checkMoveAllowance` derives it from the current junctions via `mover.Scan`, and lets the move go on if the scan fails.
+- **Live as soon as it ships**: every build without a Plus key counts as Free, so do not release this before the public key, checkout and trial are ready, or free users get limited with no way to upgrade.
+
+### Scheduled cleanup (2026-10-23)
+
+- `internal/schedule`: settings in `schedule.json`, `Run` for `trimmel.exe --scheduled` (handled at the top of `main`, no window). Cleans only `SafeTargets` (temp, browser and shader caches, error reports, crash dumps, Delivery Optimization). Never the Recycle Bin or Windows Update downloads. Does nothing, and says so in `lastNote`, if switched off or not Plus/trial.
+- Windows task `Trimmel\Scheduled cleanup` via `schtasks` (weekly Sunday 12:00 or monthly on the 1st, highest privileges since the exe needs admin). Created by `SetSchedule`, which is refused for Free. No service.
+- Cleanup page has a "Scheduled cleanup" panel (switch, frequency, last run and amount freed). The Move apps page shows the free allowance.
+- Not verified on a real PC: creating the task needs an admin run of the built app. A missed run (PC off at 12:00) is not caught up, because `schtasks` cannot set "run when available".
+
+### Alerts (2026-10-23)
+
+- `internal/alerts`: low-disk alert (threshold 5 to 20 percent free, default 10; at most once a week per drive; a drive that recovers can alert again) and a weekly free-space summary (first one a week after switching on). Settings in `alerts.json`. Does nothing for Free.
+- Daily Windows task `Trimmel\Alerts check` runs `trimmel.exe --check` (no window), created by `SetAlerts` and removed when both switches are off.
+- Toasts use `git.sr.ht/~jackmordaunt/go-toast/v2`, already in the module graph through Wails; it only moved from indirect to direct in `go.mod`. The button just opens Trimmel; it cleans nothing.
+- Alerts panel on the Cleanup page.
+- Not verified on a real PC: the toast itself, the button launch (protocol activation on the exe path), and task creation.
+
 Deliberately not done:
 
-- No Plus feature exists yet, so nothing is gated. The Move apps allowance (10 GB or one app) is not wired to anything; add it together with the first gated feature, not before.
+- Alert wording and a "Clean now" that runs a cleanup straight from the toast. The button opens the app instead, on purpose.
+- Health score in the weekly summary (needs the app's inputs; free space only for now).
 - No public key is embedded (`publicKeyB64` is empty), so keys cannot be activated and the trial buttons stay hidden.
 - No checkout, Merchant of Record account, refund process or online device check.
 - The open-core decision (section 5) is still open. `internal/license` is MIT for now; if you pick open core, only the gated features need to move to a private module.

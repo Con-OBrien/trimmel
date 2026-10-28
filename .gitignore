@@ -23,4 +23,6 @@ docs/downloads/*.zip
 # Licence signing key (see tools/licensegen). Never commit it.
 *.key
 plus-private*
+
+# Built by go build ./tools/licensegen
 /licensegen.exe

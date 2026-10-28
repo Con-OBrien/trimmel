@@ -1,0 +1,107 @@
+name: Release
+
+# Builds Trimmel from a version tag and publishes a GitHub Release. The binaries are not
+# code signed.
+#
+# To release: bump productVersion in wails.json (and installer/wails.json), update the
+# changelog, merge to main, then push a tag:  git tag v0.3.1 && git push origin v0.3.1
+#
+# One-time setup (repo Settings > Secrets and variables > Actions):
+#   secrets   TRIMMEL_GOOGLE_CLIENT_ID, TRIMMEL_GOOGLE_CLIENT_SECRET
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag matches wails.json
+        run: |
+          $version = (Get-Content wails.json | ConvertFrom-Json).info.productVersion
+          $installer = (Get-Content installer/wails.json | ConvertFrom-Json).info.productVersion
+          if ("v$version" -ne $env:GITHUB_REF_NAME -or $installer -ne $version) {
+            throw "Tag $env:GITHUB_REF_NAME, wails.json $version and installer/wails.json $installer must all agree."
+          }
+          "VERSION=$version" >> $env:GITHUB_ENV
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.26"
+          check-latest: true
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
+
+      - name: Build the app
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.TRIMMEL_GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.TRIMMEL_GOOGLE_CLIENT_SECRET }}
+        run: |
+          if (-not $env:GOOGLE_CLIENT_ID) { throw "TRIMMEL_GOOGLE_CLIENT_ID secret is not set" }
+          $ldflags = "-X main.version=$env:VERSION -X trimmel/internal/auth.GoogleClientID=$env:GOOGLE_CLIENT_ID"
+          if ($env:GOOGLE_CLIENT_SECRET) { $ldflags += " -X trimmel/internal/auth.GoogleClientSecret=$env:GOOGLE_CLIENT_SECRET" }
+          wails build -clean -trimpath -webview2 embed -ldflags $ldflags
+          if ($LASTEXITCODE) { throw "app build failed" }
+
+      - name: Build the installer around the app
+        run: |
+          Copy-Item build/bin/trimmel.exe installer/payload/trimmel.exe -Force
+          Push-Location installer
+          go mod tidy
+          wails build -clean -trimpath -webview2 embed -ldflags "-X main.version=$env:VERSION"
+          if ($LASTEXITCODE) { throw "installer build failed" }
+          Pop-Location
+
+      - name: Package and checksum
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item installer/build/bin/Trimmel-Setup.exe dist/Trimmel-Setup.exe
+          Compress-Archive -Path build/bin/trimmel.exe -DestinationPath dist/Trimmel-Portable.zip
+          $i = Get-Item dist/Trimmel-Setup.exe
+          $z = Get-Item dist/Trimmel-Portable.zip
+          @{ version = $env:VERSION; bytes = $i.Length; date = (Get-Date -Format "d MMM yyyy");
+             sha256 = (Get-FileHash $i.FullName -Algorithm SHA256).Hash.ToLower();
+             zipBytes = $z.Length; zipSha256 = (Get-FileHash $z.FullName -Algorithm SHA256).Hash.ToLower() } |
+            ConvertTo-Json | Set-Content docs/downloads/version.json -Encoding utf8
+
+      - name: Publish the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create $env:GITHUB_REF_NAME dist/Trimmel-Setup.exe dist/Trimmel-Portable.zip `
+            --verify-tag --title $env:GITHUB_REF_NAME --notes "See https://trimmel.app/changelog.html"
+          if ($LASTEXITCODE) { throw "release failed" }
+
+      - name: Update version.json on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          Copy-Item docs/downloads/version.json $env:RUNNER_TEMP/version.json
+          git fetch origin main
+          git checkout -f -B main origin/main
+          Copy-Item $env:RUNNER_TEMP/version.json docs/downloads/version.json -Force
+          git add docs/downloads/version.json
+          if (git diff --cached --quiet) { "version.json unchanged"; exit 0 }
+          git commit -m "Update version.json for $env:GITHUB_REF_NAME"
+          git push origin main
