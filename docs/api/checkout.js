@@ -1,8 +1,8 @@
-// POST. Creates a Lemon Squeezy checkout for the signed-in user and returns its URL.
+// POST. Creates a Stripe Checkout Session for the signed-in user and returns its URL.
 import { fail, guardPost, json } from "./_lib/http.js";
 import { readSession } from "./_lib/session.js";
 import { orderFor } from "./_lib/store.js";
-import { createCheckout } from "./_lib/lemon.js";
+import { createCheckout } from "./_lib/stripe.js";
 
 export async function POST(request) {
   const blocked = guardPost(request);
