@@ -7,17 +7,18 @@ const row = (title: string, sub: string, action = "") => `
     <div class="row-actions">${action}</div>
   </div>`
 
-// Plus controls appear only in builds that can check keys. Until then the
-// section just says what is planned; the free app is never locked.
+// Plus controls appear only in builds that can check keys. The free app is never locked.
 const plusRows = (lic: LicenseStatus) => {
   const who = lic.tier === "plus" && lic.email ? ` Licensed to ${esc(lic.email)}.` : ""
+  const upgrade = lic.canActivate && lic.tier !== "plus" ? `<button class="btn primary" id="se-plus-upgrade">Upgrade to Plus</button> ` : ""
   const rows = [row("Trimmel Plus", `${esc(lic.note)}${who}<br><span class="muted">Every feature you can use today stays free.</span>`,
-    `<button class="btn" id="se-plus-about">About Plus</button>`)]
+    `${upgrade}<button class="btn" id="se-plus-about">About Plus</button>`)]
   if (!lic.canActivate) return rows.join("")
   if (lic.tier === "plus") {
     rows.push(row("Licence key", "Saved on this PC.", `<button class="btn" id="se-plus-remove">Remove key</button>`))
   } else {
     rows.push(`<div class="list-row"><div class="grow"><strong>Have a key?</strong>
+      <div class="muted">Bought Plus on the website? Sign in here with the same Google account, then paste the key.</div>
       <div><input type="search" id="se-plus-key" placeholder="TRIM1-…" aria-label="Plus licence key" autocomplete="off" spellcheck="false"></div></div>
       <div class="row-actions"><button class="btn primary" id="se-plus-activate">Activate</button></div></div>`)
     if (lic.canTrial) rows.push(row("Free trial", "14 days of everything in Plus. No card needed. It ends by itself.",
@@ -92,6 +93,7 @@ export const settingsView: View = root => {
       const click = (id: string, fn: (btn: HTMLButtonElement) => void | Promise<void>) =>
         plus?.querySelector<HTMLButtonElement>(id)?.addEventListener("click", e => fn(e.currentTarget as HTMLButtonElement))
       click("#se-plus-about", () => api.OpenPlusPage())
+      click("#se-plus-upgrade", () => api.OpenAccountPage())
       click("#se-plus-trial", btn => safe(async () => refreshPlus(await busy(btn, "Starting…", () => api.StartTrial()))))
       click("#se-plus-remove", btn => safe(async () => refreshPlus(await busy(btn, "Removing…", () => api.RemoveLicense()))))
       click("#se-plus-activate", btn => safe(async () => {

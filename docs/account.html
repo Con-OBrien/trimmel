@@ -40,7 +40,7 @@
 
     <section id="buy" class="card" hidden>
       <h2>Upgrade to Trimmel Plus</h2>
-      <p>Signed in as <b id="buy-email"></b>. One payment, no subscription. The price and any tax are shown at checkout, and you have 30 days to ask for a refund.</p>
+      <p>Signed in as <b id="buy-email"></b>. One payment of £30, no subscription. Tax is shown at checkout, and you have 30 days to ask for a refund.</p>
       <button class="btn" id="buy-btn" type="button">Continue to checkout</button>
       <button class="ghost" type="button" data-signout>Sign out</button>
     </section>
@@ -65,7 +65,7 @@
       <p>The key from that order is no longer shown here. You can buy Plus again at any time.</p>
     </section>
 
-    <p>Questions or a refund request: <a href="mailto:conobr97@gmail.com">conobr97@gmail.com</a>. See the <a href="privacy.html">privacy policy</a> for what the site stores.</p>
+    <p>Questions or a refund request: <a href="mailto:support@trimmel.app">support@trimmel.app</a>. See the <a href="privacy.html">privacy policy</a> for what the site stores.</p>
   </main>
   <footer><a href="./">Trimmel</a> &middot; <a href="plus.html">Plus</a> &middot; <a href="privacy.html">Privacy policy</a></footer>
 
@@ -96,7 +96,7 @@
         show(null); say('Thanks. Preparing your key…'); tries++;
         return setTimeout(function () { me().then(render).catch(fail); }, 2000);
       }
-      if (returning) say('Your payment is still being processed. Refresh this page in a minute, or email conobr97@gmail.com if the key does not appear.');
+      if (returning) say('Your payment is still being processed. Refresh this page in a minute, or email support@trimmel.app if the key does not appear.');
       $('buy-email').textContent = s.email;
       show('buy');
       $('refunded').hidden = !s.refunded;
