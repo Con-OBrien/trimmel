@@ -173,6 +173,7 @@ test("a paid order stores a key that the account page shows, and the key verifie
   const claims = JSON.parse(payload.toString());
   assert.equal(claims.id, "cs_test_9001");
   assert.equal(claims.email, "buyer@example.com");
+  assert.equal(claims.account, "g-1");
   assert.equal(claims.major, 1);
   assert.equal(claims.devices, 3);
   assert.equal(claims.expires, undefined);
@@ -191,7 +192,7 @@ test("webhook retries do not mint a second key", async () => {
 
 test("buying with another email still lands on the signed-in account", async () => {
   const cookie = await signIn("g-1", "me@example.com");
-  await hook(sessionEvent({ customer_details: { email: "other@example.com" } }));
+  await hook(sessionEvent({ customer_email: null, customer_details: { email: "other@example.com" } }));
   assert.ok((await (await getMe(cookie)).json()).plus);
 });
 

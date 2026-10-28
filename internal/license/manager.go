@@ -157,12 +157,20 @@ func (m *Manager) StartTrial() error {
 }
 
 // Activate checks a pasted key and, if it is good, saves it.
-func (m *Manager) Activate(key, appVersion string) (Status, error) {
+func (m *Manager) Activate(key, appVersion string) (Status, error) { return m.ActivateFor(key, appVersion, nil) }
+
+// ActivateFor is Activate for a signed-in user: the key must have been bought with that Google
+// account. Pass nil when the build has no sign-in, so there is no account to match.
+func (m *Manager) ActivateFor(key, appVersion string, who *Holder) (Status, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	key = strings.Join(strings.Fields(key), "")
-	if _, err := Verify(m.pub, key, m.now(), major(appVersion)); err != nil {
+	c, err := Verify(m.pub, key, m.now(), major(appVersion))
+	if err != nil {
 		return m.status(appVersion), err
+	}
+	if who != nil && !c.belongsTo(*who) {
+		return m.status(appVersion), ErrOtherAccount{Email: c.Email}
 	}
 	m.s.Key = key
 	if err := m.save(); err != nil {

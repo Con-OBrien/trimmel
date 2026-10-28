@@ -13,7 +13,8 @@ function privateKey() {
 }
 
 // A lifetime key: no expiry, three PCs, valid for app versions up to LICENCE_MAJOR (default 1).
-export function mintKey({ id, email, now = new Date() }) {
+// account is the buyer's Google account id; the app only activates the key for that account.
+export function mintKey({ id, email, account = "", now = new Date() }) {
   const major = Number.parseInt(process.env.LICENCE_MAJOR || "1", 10);
   const claims = {
     id: String(id),
@@ -21,6 +22,7 @@ export function mintKey({ id, email, now = new Date() }) {
     issued: now.toISOString().replace(/\.\d+Z$/, "Z"),
     major: Number.isInteger(major) && major >= 0 ? major : 1,
     devices: 3,
+    ...(account ? { account } : {}),
   };
   const payload = Buffer.from(JSON.stringify(claims));
   const sig = sign(null, payload, privateKey());
