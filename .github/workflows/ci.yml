@@ -40,6 +40,16 @@ jobs:
           path: frontend/dist
           retention-days: 1
 
+  site-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Website API tests
+        run: node --test tests/site/api.test.mjs
+
   go:
     runs-on: windows-latest
     needs: frontend
