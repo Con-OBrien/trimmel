@@ -15,5 +15,10 @@ export async function POST(request) {
     return fail(500, "Sign-in is not available right now.");
   }
   if (!user) return fail(401, "Google did not accept that sign-in. Please try again.");
-  return json({ email: user.email }, 200, { "set-cookie": cookieHeader(createSession(user)) });
+  try {
+    return json({ email: user.email }, 200, { "set-cookie": cookieHeader(createSession(user)) });
+  } catch (err) {
+    console.error("session:", err.message);
+    return fail(500, "Sign-in is not available right now.");
+  }
 }
