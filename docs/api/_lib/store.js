@@ -10,9 +10,10 @@
 // A user can hold one order. The licence key is stored so the account page can show it again.
 
 async function cmd(...args) {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
-  if (!url || !token) throw new Error("KV_REST_API_URL / KV_REST_API_TOKEN are not set");
+  // The Vercel integration sets KV_REST_API_*; a database made directly at Upstash gives UPSTASH_REDIS_REST_*.
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) throw new Error("no Redis REST URL/token: set KV_REST_API_URL and KV_REST_API_TOKEN");
   const res = await fetch(url, {
     method: "POST",
     headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
