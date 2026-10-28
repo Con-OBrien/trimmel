@@ -537,6 +537,11 @@ func (a *App) OpenPlusPage() {
 	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/plus.html")
 }
 
+// OpenAccountPage opens the website account page, where Plus is bought and the key is shown.
+func (a *App) OpenAccountPage() {
+	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/account.html")
+}
+
 func (a *App) OpenDownloadPage() {
 	runtime.BrowserOpenURL(a.ctx, appinfo.SiteURL+"/#download")
 }

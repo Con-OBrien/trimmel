@@ -231,6 +231,7 @@ interface AppBindings {
   ActivateLicense(key: string): Promise<LicenseStatus>
   RemoveLicense(): Promise<LicenseStatus>
   OpenPlusPage(): Promise<void>
+  OpenAccountPage(): Promise<void>
   GetAlerts(): Promise<AlertsView>
   SetAlerts(lowDisk: boolean, threshold: number, report: boolean): Promise<AlertsView>
   GetSchedule(): Promise<ScheduleView>
