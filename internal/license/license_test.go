@@ -284,3 +284,63 @@ func TestPlural(t *testing.T) {
 		t.Fatal("plural")
 	}
 }
+
+func TestActivateForChecksTheSignedInAccount(t *testing.T) {
+	me := &Holder{Subject: "g-1", Email: "Me@Example.com"}
+
+	t.Run("key with an account id needs that account", func(t *testing.T) {
+		m, _, priv, _ := newManager(t)
+		key := Sign(priv, Claims{ID: "o1", Email: "me@example.com", Account: "g-1", Issued: t0, Major: 0})
+		if st, err := m.ActivateFor(key, "0.3.0", me); err != nil || st.Tier != Plus {
+			t.Fatalf("owner: %+v, %v", st, err)
+		}
+		m2, _, _, _ := newManager(t)
+		m2.pub = m.pub
+		var other ErrOtherAccount
+		_, err := m2.ActivateFor(key, "0.3.0", &Holder{Subject: "g-2", Email: "me@example.com"})
+		if !errors.As(err, &other) {
+			t.Fatalf("same email but different account must be refused, got %v", err)
+		}
+		if m2.Status("0.3.0").Tier != Free {
+			t.Fatal("a refused key must not unlock Plus")
+		}
+	})
+
+	t.Run("older key without an account id matches by email, ignoring case", func(t *testing.T) {
+		m, _, priv, _ := newManager(t)
+		key := Sign(priv, Claims{ID: "o2", Email: "ME@example.com", Issued: t0, Major: 0})
+		if _, err := m.ActivateFor(key, "0.3.0", me); err != nil {
+			t.Fatalf("email match: %v", err)
+		}
+		_, err := m.ActivateFor(key, "0.3.0", &Holder{Subject: "g-9", Email: "someone@else.com"})
+		if !errors.As(err, new(ErrOtherAccount)) {
+			t.Fatalf("other email: %v", err)
+		}
+	})
+
+	t.Run("no sign-in in this build means no account to match", func(t *testing.T) {
+		m, _, priv, _ := newManager(t)
+		key := Sign(priv, Claims{ID: "o3", Email: "a@b.c", Account: "g-7", Issued: t0, Major: 0})
+		if _, err := m.ActivateFor(key, "0.3.0", nil); err != nil {
+			t.Fatalf("nil holder: %v", err)
+		}
+	})
+
+	t.Run("a key with neither account nor email is refused", func(t *testing.T) {
+		m, _, priv, _ := newManager(t)
+		key := Sign(priv, Claims{ID: "o4", Issued: t0, Major: 0})
+		if _, err := m.ActivateFor(key, "0.3.0", me); !errors.As(err, new(ErrOtherAccount)) {
+			t.Fatalf("unbound key: %v", err)
+		}
+	})
+}
+
+func TestErrOtherAccountMasksTheEmail(t *testing.T) {
+	msg := ErrOtherAccount{Email: "alice@example.com"}.Error()
+	if !strings.Contains(msg, "a***@example.com") || strings.Contains(msg, "alice") {
+		t.Fatalf("message leaks or misses the address: %q", msg)
+	}
+	if msg := (ErrOtherAccount{}).Error(); !strings.Contains(msg, "another Google account") {
+		t.Fatalf("no email: %q", msg)
+	}
+}

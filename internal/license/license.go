@@ -42,6 +42,7 @@ type Claims struct {
 	Expires time.Time `json:"expires,omitzero"`  // zero = never (lifetime)
 	Major   int       `json:"major"`             // covers app versions up to this major version
 	Devices int       `json:"devices,omitempty"` // PCs covered; 0 = MaxDevices
+	Account string    `json:"account,omitempty"` // Google account id (sub) of the buyer; empty on older keys
 }
 
 var (
@@ -51,6 +52,41 @@ var (
 	ErrVersion    = errors.New("that key covers an older version of Trimmel")
 	ErrNoKeyInApp = errors.New("this build of Trimmel cannot check licence keys")
 )
+
+// Holder is the signed-in Google account that is activating a key.
+type Holder struct {
+	Subject string
+	Email   string
+}
+
+// ErrOtherAccount says a key was bought with a different Google account.
+type ErrOtherAccount struct{ Email string }
+
+func (e ErrOtherAccount) Error() string {
+	who := "another Google account"
+	if e.Email != "" {
+		who = maskEmail(e.Email)
+	}
+	return "that key belongs to " + who + ". Sign in to Trimmel with that Google account to use it"
+}
+
+// maskEmail keeps enough of an address to be recognised without publishing it: a***@example.com.
+func maskEmail(email string) string {
+	local, domain, ok := strings.Cut(email, "@")
+	if !ok || local == "" {
+		return "another Google account"
+	}
+	return local[:1] + "***@" + domain
+}
+
+// belongsTo reports whether the claims were issued to this account. A key with an account id must
+// match it; an older key without one is matched by email, ignoring case.
+func (c Claims) belongsTo(h Holder) bool {
+	if c.Account != "" && h.Subject != "" {
+		return c.Account == h.Subject
+	}
+	return c.Email != "" && strings.EqualFold(c.Email, h.Email)
+}
 
 // Verify checks a key against the public key and the app's major version, and
 // returns its claims. Leading and trailing whitespace (from pasting) is ignored.

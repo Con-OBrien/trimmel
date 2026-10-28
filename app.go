@@ -463,8 +463,17 @@ func (a *App) StartTrial() (license.Status, error) {
 	return a.lic.Status(version), nil
 }
 
+// ActivateLicense saves a pasted key. When the app has Google sign-in, the key must belong to the
+// signed-in account; a build without sign-in has no account to match.
 func (a *App) ActivateLicense(key string) (license.Status, error) {
-	return a.lic.Activate(key, version)
+	st := a.auth.Status()
+	if !st.Configured {
+		return a.lic.Activate(key, version)
+	}
+	if st.User == nil {
+		return a.lic.Status(version), errSignedOut
+	}
+	return a.lic.ActivateFor(key, version, &license.Holder{Subject: st.User.Subject, Email: st.User.Email})
 }
 
 func (a *App) RemoveLicense() (license.Status, error) { return a.lic.Deactivate(version) }

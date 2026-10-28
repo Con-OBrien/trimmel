@@ -35,14 +35,16 @@ export async function POST(request) {
 async function paid(s) {
   // Only Plus checkouts created by /api/checkout carry this tag; anything else in the account is ignored.
   if (s.payment_status !== "paid" || s.metadata?.product !== PRODUCT_TAG) return json({ ignored: true });
-  const email = String(s.customer_details?.email || s.customer_email || "").toLowerCase();
+  // customer_email is the Google account email we pre-filled; prefer it to whatever was typed at checkout.
+  const email = String(s.customer_email || s.customer_details?.email || "").toLowerCase();
   if (!email) return fail(400, "Order has no email.");
+  const userSub = String(s.metadata?.user_sub || s.client_reference_id || "");
   const rec = {
     id: s.id,
     email,
-    userSub: String(s.metadata?.user_sub || s.client_reference_id || ""),
+    userSub,
     paymentIntent: typeof s.payment_intent === "string" ? s.payment_intent : "",
-    key: mintKey({ id: s.id, email }),
+    key: mintKey({ id: s.id, email, account: userSub }),
     issued: new Date().toISOString(),
     testMode: s.livemode === false,
     refunded: false,
