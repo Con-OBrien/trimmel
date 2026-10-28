@@ -1,5 +1,5 @@
 // Tests for the website API in docs/api. Run:  node --test tests/site
-// Google, Lemon Squeezy and Upstash are replaced by an in-memory fake fetch.
+// Google, Stripe and Upstash are replaced by an in-memory fake fetch.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHmac, generateKeyPairSync, createPublicKey, verify } from "node:crypto";
@@ -8,7 +8,7 @@ import { POST as googleSignIn } from "../../docs/api/auth/google.js";
 import { POST as logout } from "../../docs/api/auth/logout.js";
 import { GET as me } from "../../docs/api/me.js";
 import { POST as checkout } from "../../docs/api/checkout.js";
-import { POST as webhook } from "../../docs/api/webhooks/lemonsqueezy.js";
+import { POST as webhook } from "../../docs/api/webhooks/stripe.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ed25519");
 const seed = privateKey.export({ format: "der", type: "pkcs8" }).subarray(-32);
@@ -20,25 +20,24 @@ Object.assign(process.env, {
   GOOGLE_WEB_CLIENT_ID: "client-123",
   KV_REST_API_URL: "https://kv.test",
   KV_REST_API_TOKEN: "tok",
-  LS_API_KEY: "ls-key",
-  LS_STORE_ID: "11",
-  LS_VARIANT_ID: "22",
-  LS_WEBHOOK_SECRET: "whsec",
+  STRIPE_SECRET_KEY: "sk_test_123",
+  STRIPE_PRICE_ID: "price_plus",
+  STRIPE_WEBHOOK_SECRET: "whsec_test",
   LICENCE_PRIVATE_KEY: Buffer.concat([seed, pubRaw]).toString("base64"),
   LICENCE_MAJOR: "1",
 });
 
 const kv = new Map();
 let googleReply = {};
-let checkoutBody = null;
+let checkoutReq = null;
 
 globalThis.fetch = async (url, init = {}) => {
   url = String(url);
   const reply = (body, status = 200) => new Response(JSON.stringify(body), { status });
   if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) return reply(googleReply);
-  if (url === "https://api.lemonsqueezy.com/v1/checkouts") {
-    checkoutBody = JSON.parse(init.body);
-    return reply({ data: { attributes: { url: "https://pay.test/c/abc" } } }, 201);
+  if (url === "https://api.stripe.com/v1/checkout/sessions") {
+    checkoutReq = { headers: init.headers, form: new URLSearchParams(String(init.body)) };
+    return reply({ id: "cs_test_1", url: "https://pay.test/c/abc" });
   }
   if (url === "https://kv.test") {
     const [op, key, val, flag] = JSON.parse(init.body);
@@ -68,15 +67,18 @@ async function signIn(sub = "g-1", email = "Buyer@Example.com") {
 
 const getMe = (cookie) => me(new Request("https://trimmel.app/api/me", { headers: cookie ? { cookie } : {} }));
 
-function orderEvent(over = {}, custom = { user_sub: "g-1" }) {
-  const body = JSON.stringify({
-    meta: { event_name: "order_created", custom_data: custom },
-    data: { id: "9001", attributes: { status: "paid", store_id: 11, user_email: "Buyer@Example.com", test_mode: false, first_order_item: { variant_id: 22 }, ...over } },
+const NOW = () => Math.floor(Date.now() / 1000);
+const sign = (body, t = NOW(), secret = "whsec_test") => `t=${t},v1=${createHmac("sha256", secret).update(`${t}.${body}`).digest("hex")}`;
+
+function sessionEvent(over = {}, type = "checkout.session.completed") {
+  return JSON.stringify({
+    id: "evt_1",
+    type,
+    data: { object: { id: "cs_test_9001", object: "checkout.session", payment_status: "paid", livemode: false, payment_intent: "pi_9001", client_reference_id: "g-1", customer_details: { email: "Buyer@Example.com" }, metadata: { user_sub: "g-1", product: "trimmel-plus" }, ...over } },
   });
-  return body;
 }
 const hook = (body, sig) =>
-  webhook(new Request("https://trimmel.app/api/webhooks/lemonsqueezy", { method: "POST", body, headers: { "x-signature": sig ?? createHmac("sha256", "whsec").update(body).digest("hex") } }));
+  webhook(new Request("https://trimmel.app/api/webhooks/stripe", { method: "POST", body, headers: { "stripe-signature": sig ?? sign(body) } }));
 
 test.beforeEach(() => kv.clear());
 
@@ -122,35 +124,54 @@ test("POST endpoints refuse other origins and non-JSON bodies", async () => {
   assert.match((await logout(json("/api/auth/logout", {}))).headers.get("set-cookie"), /Max-Age=0/);
 });
 
-test("checkout needs a session and sends the account to Lemon Squeezy", async () => {
+test("checkout needs a session and sends the account to Stripe", async () => {
   assert.equal((await checkout(json("/api/checkout", {}))).status, 401);
   const cookie = await signIn();
   const res = await checkout(json("/api/checkout", {}, { cookie }));
   assert.equal(res.status, 200);
   assert.equal((await res.json()).url, "https://pay.test/c/abc");
-  assert.equal(checkoutBody.data.attributes.checkout_data.custom.user_sub, "g-1");
-  assert.equal(checkoutBody.data.attributes.checkout_data.email, "buyer@example.com");
-  assert.equal(checkoutBody.data.relationships.variant.data.id, "22");
+  const f = checkoutReq.form;
+  assert.equal(checkoutReq.headers.authorization, "Bearer sk_test_123");
+  assert.equal(checkoutReq.headers["stripe-version"], "2026-04-22.dahlia");
+  assert.equal(f.get("mode"), "payment");
+  assert.equal(f.get("managed_payments[enabled]"), "true");
+  assert.equal(f.get("line_items[0][price]"), "price_plus");
+  assert.equal(f.get("client_reference_id"), "g-1");
+  assert.equal(f.get("metadata[user_sub]"), "g-1");
+  assert.equal(f.get("metadata[product]"), "trimmel-plus");
+  assert.equal(f.get("customer_email"), "buyer@example.com");
+  assert.equal(f.get("success_url"), "https://trimmel.app/account.html?paid=1");
 });
 
-test("webhook rejects a bad signature", async () => {
-  assert.equal((await hook(orderEvent(), "00")).status, 400);
+test("webhook rejects bad, wrong-secret, tampered and stale signatures", async () => {
+  const body = sessionEvent();
+  assert.equal((await hook(body, "t=1,v1=00")).status, 400);
+  assert.equal((await hook(body, sign(body, NOW(), "whsec_other"))).status, 400);
+  assert.equal((await hook(body + " ", sign(body))).status, 400);
+  assert.equal((await hook(body, sign(body, NOW() - 3600))).status, 400);
+  assert.equal((await hook(body, "")).status, 400);
   assert.equal(kv.size, 0);
+});
+
+test("webhook accepts any matching v1 signature in the header", async () => {
+  const body = sessionEvent();
+  assert.equal((await hook(body, sign(body) + ",v1=" + "ab".repeat(32))).status, 200);
+  assert.ok(kv.has("order:cs_test_9001"));
 });
 
 test("a paid order stores a key that the account page shows, and the key verifies", async () => {
   const cookie = await signIn();
-  assert.equal((await hook(orderEvent())).status, 200);
+  assert.equal((await hook(sessionEvent())).status, 200);
   const body = await (await getMe(cookie)).json();
   assert.ok(body.plus.key.startsWith("TRIM1-"));
-  assert.equal(body.plus.orderId, "9001");
+  assert.equal(body.plus.orderId, "cs_test_9001");
 
   // Same check the Go app makes: Ed25519 over the payload bytes.
   const [p, s] = body.plus.key.slice(6).split(".");
   const payload = Buffer.from(p, "base64url");
   assert.ok(verify(null, payload, createPublicKey(publicKey.export({ format: "pem", type: "spki" })), Buffer.from(s, "base64url")));
   const claims = JSON.parse(payload.toString());
-  assert.equal(claims.id, "LS-9001");
+  assert.equal(claims.id, "cs_test_9001");
   assert.equal(claims.email, "buyer@example.com");
   assert.equal(claims.major, 1);
   assert.equal(claims.devices, 3);
@@ -162,36 +183,51 @@ test("a paid order stores a key that the account page shows, and the key verifie
 });
 
 test("webhook retries do not mint a second key", async () => {
-  await hook(orderEvent());
-  const first = kv.get("order:9001");
-  assert.deepEqual(await (await hook(orderEvent())).json(), { stored: false });
-  assert.equal(kv.get("order:9001"), first);
+  await hook(sessionEvent());
+  const first = kv.get("order:cs_test_9001");
+  assert.deepEqual(await (await hook(sessionEvent())).json(), { stored: false });
+  assert.equal(kv.get("order:cs_test_9001"), first);
 });
 
 test("buying with another email still lands on the signed-in account", async () => {
   const cookie = await signIn("g-1", "me@example.com");
-  await hook(orderEvent({ user_email: "paypal-address@example.com" }));
+  await hook(sessionEvent({ customer_details: { email: "other@example.com" } }));
   assert.ok((await (await getMe(cookie)).json()).plus);
 });
 
 test("with no account attached, the email still finds the order", async () => {
-  await hook(orderEvent({}, {}));
+  await hook(sessionEvent({ client_reference_id: null, metadata: { product: "trimmel-plus" } }));
   const cookie = await signIn("g-2", "buyer@example.com");
   assert.ok((await (await getMe(cookie)).json()).plus);
 });
 
-test("orders for another store or product, or unpaid, are ignored", async () => {
-  for (const over of [{ store_id: 99 }, { first_order_item: { variant_id: 1 } }, { status: "pending" }]) {
-    assert.deepEqual(await (await hook(orderEvent(over))).json(), { ignored: true });
+test("other products, unpaid sessions and unrelated events are ignored", async () => {
+  for (const over of [{ metadata: {} }, { metadata: { product: "other" } }, { payment_status: "unpaid" }]) {
+    assert.deepEqual(await (await hook(sessionEvent(over))).json(), { ignored: true });
   }
+  assert.deepEqual(await (await hook(sessionEvent({}, "customer.created"))).json(), { ignored: true });
   assert.equal(kv.size, 0);
 });
 
-test("a refund hides the key and allows a new purchase", async () => {
+test("a delayed payment that later succeeds issues the key", async () => {
+  await hook(sessionEvent({ payment_status: "unpaid" }));
+  assert.equal(kv.size, 0);
+  await hook(sessionEvent({}, "checkout.session.async_payment_succeeded"));
+  assert.ok(kv.has("order:cs_test_9001"));
+});
+
+test("live-mode sessions are not marked as test orders", async () => {
+  await hook(sessionEvent({ livemode: true }));
+  assert.equal(JSON.parse(kv.get("order:cs_test_9001")).testMode, false);
+});
+
+test("a partial refund keeps the key; a full refund hides it and allows a new purchase", async () => {
   const cookie = await signIn();
-  await hook(orderEvent());
-  const body = JSON.stringify({ meta: { event_name: "order_refunded" }, data: { id: "9001", attributes: {} } });
-  assert.deepEqual(await (await hook(body)).json(), { refunded: true });
+  await hook(sessionEvent());
+  const charge = (refunded) => JSON.stringify({ id: "evt_2", type: "charge.refunded", data: { object: { id: "ch_1", payment_intent: "pi_9001", refunded } } });
+  assert.deepEqual(await (await hook(charge(false))).json(), { ignored: true });
+  assert.ok((await (await getMe(cookie)).json()).plus);
+  assert.deepEqual(await (await hook(charge(true))).json(), { refunded: true });
   const me1 = await (await getMe(cookie)).json();
   assert.equal(me1.plus, null);
   assert.equal(me1.refunded, true);
