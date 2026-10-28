@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "Marks the serverless functions in api/ as ES modules. The site itself is static and has no dependencies."
+}

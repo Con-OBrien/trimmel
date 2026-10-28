@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Trimmel account</title>
+  <meta name="description" content="Sign in with Google to buy Trimmel Plus and get your licence key.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://trimmel.app/account.html">
+  <meta name="theme-color" content="#3b2a3f">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="guides.css">
+  <script defer src="analytics.js"></script>
+  <style>
+    .card { background:var(--white); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:18px 0; }
+    .card h2 { margin:0 0 8px; font-size:24px; }
+    .key { display:block; word-break:break-all; background:var(--plum); color:#f3e6ef; padding:14px 16px; border-radius:12px; margin:10px 0; font-size:13px; line-height:1.5; user-select:all; }
+    button.btn { border:0; font:inherit; font-weight:700; cursor:pointer; }
+    button.ghost { background:none; border:1px solid var(--line); color:var(--text); border-radius:999px; padding:9px 20px; font:inherit; font-weight:700; cursor:pointer; margin-left:8px; }
+    #msg { min-height:1.6em; color:var(--muted); }
+    #msg.err { color:#a3361f; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+  <nav><div class="in"><a class="brand" href="./">trimmel</a><a class="l" href="plus.html">Plus</a><a class="l" href="./#download">Download</a></div></nav>
+  <main>
+    <h1>Your account</h1>
+    <p class="meta">Sign in to buy Trimmel Plus and see your licence key.</p>
+    <p id="msg" role="status" aria-live="polite">Loading&hellip;</p>
+
+    <section id="out" class="card" hidden>
+      <h2>Sign in</h2>
+      <p>Use your Google account. Trimmel only asks Google for your email address, to link your purchase to you. The free app does not need an account.</p>
+      <div id="gbtn"></div>
+    </section>
+
+    <section id="buy" class="card" hidden>
+      <h2>Upgrade to Trimmel Plus</h2>
+      <p>Signed in as <b id="buy-email"></b>. One payment, no subscription. The price and any tax are shown at checkout, and you have 30 days to ask for a refund.</p>
+      <button class="btn" id="buy-btn" type="button">Continue to checkout</button>
+      <button class="ghost" type="button" data-signout>Sign out</button>
+    </section>
+
+    <section id="have" class="card" hidden>
+      <h2>Trimmel Plus is active</h2>
+      <p>Signed in as <b id="have-email"></b>. Your licence key:</p>
+      <code class="key" id="key"></code>
+      <button class="btn" id="copy" type="button">Copy key</button>
+      <button class="ghost" type="button" data-signout>Sign out</button>
+      <h3>Enter it in Trimmel</h3>
+      <ol>
+        <li>Open Trimmel and go to <b>Settings</b>, then <b>Trimmel Plus</b>.</li>
+        <li>Paste the key into the box and choose <b>Activate</b>.</li>
+      </ol>
+      <p>The key works offline and covers up to three of your PCs. Keep it somewhere safe; you can come back here to see it again.</p>
+    </section>
+
+    <section id="refunded" class="card" hidden>
+      <h2>Your last order was refunded</h2>
+      <p>The key from that order is no longer shown here. You can buy Plus again at any time.</p>
+    </section>
+
+    <p>Questions or a refund request: <a href="mailto:conobr97@gmail.com">conobr97@gmail.com</a>. See the <a href="privacy.html">privacy policy</a> for what the site stores.</p>
+  </main>
+  <footer><a href="./">Trimmel</a> &middot; <a href="plus.html">Plus</a> &middot; <a href="privacy.html">Privacy policy</a></footer>
+
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var msg = $('msg');
+    var panels = ['out', 'buy', 'have', 'refunded'];
+    function say(text, isErr) { msg.textContent = text || ''; msg.className = isErr ? 'err' : ''; }
+    function show(name) { panels.forEach(function (p) { $(p).hidden = p !== name; }); }
+    function post(path, body) {
+      return fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body || {}) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || 'Something went wrong.'); return j; }); });
+    }
+    function me() { return fetch('/api/me', { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error('Your account could not be loaded. Please try again.'); return r.json(); }); }
+
+    var returning = /[?&]paid=1\b/.test(location.search);
+    var tries = 0;
+
+    function render(s) {
+      say('');
+      if (!s.signedIn) { show('out'); return loadGoogle(s.googleClientId); }
+      if (s.plus) {
+        $('have-email').textContent = s.email; $('key').textContent = s.plus.key; show('have'); return;
+      }
+      if (returning && tries < 15) {
+        // Paid, but the webhook has not arrived yet. Check again for up to about 30 seconds.
+        show(null); say('Thanks. Preparing your key…'); tries++;
+        return setTimeout(function () { me().then(render).catch(fail); }, 2000);
+      }
+      if (returning) say('Your payment is still being processed. Refresh this page in a minute, or email conobr97@gmail.com if the key does not appear.');
+      $('buy-email').textContent = s.email;
+      show('buy');
+      $('refunded').hidden = !s.refunded;
+    }
+    function fail(e) { say(e.message, true); }
+
+    var gLoaded = false;
+    function loadGoogle(clientId) {
+      if (!clientId) { say('Sign-in is not set up yet.', true); return; }
+      if (gLoaded) return; gLoaded = true;
+      var s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+      s.onload = function () {
+        google.accounts.id.initialize({ client_id: clientId, callback: function (resp) {
+          say('Signing in…');
+          post('/api/auth/google', { credential: resp.credential }).then(function () { return me(); }).then(render).catch(fail);
+        } });
+        google.accounts.id.renderButton($('gbtn'), { theme: 'outline', size: 'large', text: 'signin_with' });
+      };
+      s.onerror = function () { say('Google sign-in could not be loaded. Check your connection or ad blocker.', true); };
+      document.head.appendChild(s);
+    }
+
+    $('buy-btn').addEventListener('click', function () {
+      var b = this; b.disabled = true; say('Opening checkout…');
+      post('/api/checkout').then(function (j) { location.href = j.url; }).catch(function (e) { b.disabled = false; fail(e); });
+    });
+    $('copy').addEventListener('click', function () {
+      var b = this, k = $('key').textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(k) : Promise.reject()).then(function () {
+        b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy key'; }, 1500);
+      }).catch(function () { var r = document.createRange(); r.selectNode($('key')); getSelection().removeAllRanges(); getSelection().addRange(r); say('Press Ctrl+C to copy the selected key.'); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-signout]'), function (b) {
+      b.addEventListener('click', function () { post('/api/auth/logout').then(function () { location.href = 'account.html'; }).catch(fail); });
+    });
+
+    me().then(render).catch(fail);
+  })();
+  </script>
+</body>
+</html>
