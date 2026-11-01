@@ -5,20 +5,20 @@ go 1.26.0
 require (
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3
 	github.com/coreos/go-oidc/v3 v3.21.0
-	github.com/go-jose/go-jose/v4 v4.1.4
+	github.com/go-jose/go-jose/v4 v4.1.6
 	github.com/go-ole/go-ole v1.3.0
-	github.com/shirou/gopsutil/v4 v4.26.9
+	github.com/shirou/gopsutil/v4 v4.26.10
 	github.com/wailsapp/wails/v2 v2.17.0
 	github.com/yusufpapurcu/wmi v1.2.4
 	github.com/zalando/go-keyring v0.2.8
 	golang.org/x/oauth2 v0.37.0
-	golang.org/x/sys v0.48.0
+	golang.org/x/sys v0.49.0
 )
 
 require (
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
-	github.com/ebitengine/purego v0.11.1 // indirect
+	github.com/ebitengine/purego v0.11.2 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
