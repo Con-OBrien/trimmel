@@ -26,3 +26,6 @@ plus-private*
 
 # Built by go build ./tools/licensegen
 /licensegen.exe
+
+# Python bytecode caches (e.g. from .claude/skills/last30days)
+__pycache__/
